@@ -22,7 +22,7 @@ rquickjs-core = { path = "target/patch/rquickjs-core-0.6.2" }
 llrt_modules = { path = "../llrt_modules", features = ["all"] }
 llrt_utils = { path = "../llrt_utils", features = ["all"] }
 chrono = { version = "0.4.38", default-features = false, features = ["std"] }
-quick-xml = "0.36.0"
+quick-xml = "0.36.1"
 crc32c = { version = "0.6.8" }
 crc32fast = "1.4.2"
 phf = "0.11.2"
@@ -47,8 +47,8 @@ tracing-core = "0.1.32"
 webpki = "0.22.4"
 async-trait = "0.1.81"
 zstd = { version = "0.13.2", default-features = false, features = [] }
-libc = "0.2.155"
-bytes = "1.6.1"
+libc = "0.2.157"
+bytes = "1.7.1"
 uuid-simd = "0.8.0"
 simd-json = { version = "0.13.10", default-features = false, features = [
     "big-int-as-float",
@@ -64,20 +64,20 @@ hyper-rustls = { version = "0.27.2", default-features = false, features = [
     "webpki-tokio",
     "ring",
 ] }
-hyper-util = "0.1.6"
+hyper-util = "0.1.7"
 http-body-util = "0.1.2"
-rustls = { version = "0.23.11", default-features = false, features = [
+rustls = { version = "0.23.12", default-features = false, features = [
     "tls12",
     "ring",
 ] }
 webpki-roots = "0.26.3"
 ring = "0.17.8"
 rand = "0.8.5"
-flate2 = { version = "1.0.30", features = [
+flate2 = { version = "1.0.31", features = [
     "zlib-ng",
 ], default-features = false }
 brotlic = "0.8.2"
-rustls-pemfile = "2.1.2"
+rustls-pemfile = "2.1.3"
 url = "=2.5.1"
 
 [target.'cfg(target_os = "windows")'.dependencies]
@@ -97,7 +97,7 @@ nanoid = "0.4.0"
 cargo-patch = "0.3.2"
 
 [dev-dependencies]
-wiremock = "0.6.0"
+wiremock = "0.6.1"
 criterion = "0.5.1"
 
 [[bench]]
