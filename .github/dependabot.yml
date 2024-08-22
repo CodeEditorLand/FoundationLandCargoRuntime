@@ -1,44 +1,68 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
+enable-beta-ecosystems: true
+
 updates:
-  # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "daily"
 
-    # Maintain dependencies for JS
-  - package-ecosystem: "npm"
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "monthly"
-    groups:
-      "@types":
-        patterns:
-          - "@types*"
-        update-types:
-          - "minor"
-          - "patch"
-      "@aws-sdk":
-        patterns:
-          - "@aws-sdk*"
-        update-types:
-          - "minor"
-          - "patch"
-      aws-cdk:
-        patterns:
-          - "aws-cdk"
-          - "aws-cdk-lib"
-        update-types:
-          - "minor"
-          - "patch"
+    - package-ecosystem: "cargo"
+      directory: "/"
+      schedule:
+          interval: "daily"
+      versioning-strategy: lockfile-only
 
-    # Maintain dependencies for rust
-  - package-ecosystem: "cargo"
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "weekly"
+    - package-ecosystem: "npm"
+      directory: "/example/functions"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "npm"
+      directory: "/example/infrastructure"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "npm"
+      directory: "/example/llrt-sam/hello-world"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "cargo"
+      directory: "/llrt"
+      schedule:
+          interval: "daily"
+      versioning-strategy: lockfile-only
+
+    - package-ecosystem: "cargo"
+      directory: "/llrt_core"
+      schedule:
+          interval: "daily"
+      versioning-strategy: lockfile-only
+
+    - package-ecosystem: "cargo"
+      directory: "/llrt_modules"
+      schedule:
+          interval: "daily"
+      versioning-strategy: lockfile-only
+
+    - package-ecosystem: "cargo"
+      directory: "/llrt_utils"
+      schedule:
+          interval: "daily"
+      versioning-strategy: lockfile-only
+
+    - package-ecosystem: "npm"
+      directory: "/"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
+
+    - package-ecosystem: "npm"
+      directory: "/types"
+      schedule:
+          interval: "daily"
+      versioning-strategy: increase
