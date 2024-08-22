@@ -1,0 +1,516 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charset="utf-8"/><meta name="keywords" content="@playform/document"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@codeeditorland/foundation - v0.0.1</title><meta name="description" content="Documentation for @codeeditorland/foundation"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><link rel="stylesheet" href="assets/custom.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@codeeditorland/foundation - v0.0.1</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h2>@codeeditorland/foundation - v0.0.1</h2></div><div class="tsd-panel tsd-typography"><p><a href="https://github.com/awslabs/llrt/actions/workflows/ci.yml"><img src="https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main" alt="LLRT CI"></a>
+<a href="https://github.com/awslabs/llrt/actions/workflows/release.yml"><img src="https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg" alt="LLRT Release"></a></p>
+<p>LLRT (<strong>L</strong>ow <strong>L</strong>atency <strong>R</strong>un<strong>t</strong>ime) is a lightweight JavaScript runtime
+designed to address the growing demand for fast and efficient Serverless
+applications. LLRT offers up to over <strong>10x</strong> faster startup and up to <strong>2x</strong>
+overall lower cost compared to other JavaScript runtimes running on <strong>AWS
+Lambda</strong></p>
+<p>It's built in Rust, utilizing QuickJS as JavaScript engine, ensuring efficient
+memory usage and swift startup.</p>
+<blockquote>
+<p>[!WARNING] LLRT is an <strong>experimental</strong> package. It is subject to change and
+intended only for evaluation purposes.</p>
+</blockquote>
+<p><sub>LLRT - <a href="media/v3-lib.mjs">DynamoDB Put, ARM, 128MB</a>:<sub>
+<img src="media/llrt-ddb-put.png" alt="DynamoDB Put LLRT" title="LLRT DynamoDB Put"></p>
+<p><sub>Node.js 20 -
+<a href="media/v3-lib.mjs">DynamoDB Put, ARM, 128MB</a>:<sub>
+<img src="media/node20-ddb-put.png" alt="DynamoDB Put Node20" title="Node20 DynamoDB Put"></p>
+<p>HTTP benchmarks measured in <strong>round trip time</strong> for a cold start
+(<a href="#md:benchmark-methodology">why?</a>)</p>
+<a id="md:configure-lambda-functions-to-use-llrt" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Configure Lambda functions to use LLRT<a href="#md:configure-lambda-functions-to-use-llrt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Download the last LLRT release from <a href="https://github.com/awslabs/llrt/releases">https://github.com/awslabs/llrt/releases</a></p>
+<a id="md:option-1-custom-runtime-recommended" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Option 1: Custom runtime (recommended)<a href="#md:option-1-custom-runtime-recommended" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Choose <code>Custom Runtime on Amazon Linux 2023</code> and package the LLRT <code>bootstrap</code>
+binary together with your JS code.</p>
+<a id="md:option-2-use-a-layer" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Option 2: Use a layer<a href="#md:option-2-use-a-layer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Choose <code>Custom Runtime on Amazon Linux 2023</code>, upload <code>llrt-lambda-arm64.zip</code> or
+<code>llrt-lambda-x64.zip</code> as a layer and add to your function</p>
+<a id="md:option-3-package-llrt-in-a-container-image" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Option 3: Package LLRT in a container image<a href="#md:option-3-package-llrt-in-a-container-image" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>See our <a href="./example/llrt-sam-container-image">AWS SAM example</a> or:</p>
+<pre><code class="dockerfile">FROM --platform=arm64 busybox
+WORKDIR /var/task/
+COPY app.mjs ./
+ADD https://github.com/awslabs/llrt/releases/latest/download/llrt-container-arm64 /usr/bin/llrt
+RUN chmod +x /usr/bin/llrt
+
+ENV LAMBDA_HANDLER "app.handler"
+
+CMD [ "llrt" ]
+</code><button type="button">Copy</button></pre>
+
+<a id="md:option-4-aws-sam" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Option 4: AWS SAM<a href="#md:option-4-aws-sam" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The following <a href="example/llrt-sam/">example project</a> sets up a lambda instrumented
+with a layer containing the llrt runtime.</p>
+<a id="md:option-5-aws-cdk" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Option 5: AWS CDK<a href="#md:option-5-aws-cdk" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>You can use
+<a href="https://github.com/tmokmss/cdk-lambda-llrt"><code>cdk-lambda-llrt</code> construct library</a>
+to deploy LLRT Lambda functions with AWS CDK.</p>
+<pre><code class="ts"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">LlrtFunction</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;cdk-lambda-llrt&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">handler</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">LlrtFunction</span><span class="hl-1">(</span><span class="hl-4">this</span><span class="hl-1">, </span><span class="hl-3">&quot;Handler&quot;</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-2">entry:</span><span class="hl-1"> </span><span class="hl-3">&quot;lambda/index.ts&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<p>See <a href="https://constructs.dev/packages/cdk-lambda-llrt/">Construct Hub</a> and
+<a href="https://github.com/tmokmss/cdk-lambda-llrt/tree/main/example">its examples</a> for
+more details.</p>
+<p>That's it 🎉</p>
+<blockquote>
+<p>[!IMPORTANT] Even though LLRT supports
+<a href="https://262.ecma-international.org/14.0/">ES2023</a> it's <strong>NOT</strong> a drop in
+replacement for Node.js. Consult <a href="#md:compatibility-matrix">Compatibility matrix</a>
+and <a href="media/API.md">API</a> for more details. All dependencies should be bundled for a
+<code>browser</code> platform and mark included <code>@aws-sdk</code> packages as external.</p>
+</blockquote>
+<a id="md:testing--ensuring-compatibility" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Testing &amp; ensuring compatibility<a href="#md:testing--ensuring-compatibility" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>The best way to ensure your code is compatible with LLRT is to write tests and
+execute them using the built-in test runner. The test runner currently supports
+Jest/Chai assertions. There are two main types of tests you can create:</p>
+<p>Unit Tests</p>
+<ul>
+<li>Useful for validating specific modules and functions in isolation</li>
+<li>Allow focused testing of individual components</li>
+</ul>
+<p>End-to-End (E2E) Tests</p>
+<ul>
+<li>Validate overall compatibility with AWS SDK and WinterCG compliance</li>
+<li>Test the integration between all components</li>
+<li>Confirm expected behavior from end-user perspective</li>
+</ul>
+<p>For more information about the E2E Tests and how to run them, see
+<a href="media/README.md">here</a>.</p>
+<a id="md:test-runner" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Test runner<a href="#md:test-runner" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Test runner uses a lightweight Jest-like API and supports Jest/Chai assertions.
+For examples on how to implement tests for LLRT see the <code>/tests</code> folder of this
+repository.</p>
+<p>To run tests, execute the <code>llrt test</code> command. LLRT scans the current directory
+and sub-directories for files that ends with <code>*.test.js</code> or <code>*.test.mjs</code>. You
+can also provide a specific test directory to scan by using the
+<code>llrt test -d &lt;directory&gt;</code> option.</p>
+<p>The test runner also has support for filters. Using filters is as simple as
+adding additional command line arguments, i.e: <code>llrt test crypto</code> will only run
+tests that match the filename containing <code>crypto</code>.</p>
+<a id="md:compatibility-matrix" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Compatibility matrix<a href="#md:compatibility-matrix" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><blockquote>
+<p>[!NOTE] LLRT only support a fraction of the Node.js APIs. It is <strong>NOT</strong> a drop
+in replacement for Node.js, nor will it ever be. Below is a high level
+overview of partially supported APIs and modules. For more details consult the
+<a href="media/API.md">API</a> documentation</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Node.js</th>
+<th>LLRT ⚠️</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>buffer</td>
+<td>✔︎</td>
+<td>✔︎️</td>
+</tr>
+<tr>
+<td>streams</td>
+<td>✔︎</td>
+<td>✔︎*</td>
+</tr>
+<tr>
+<td>child_process</td>
+<td>✔︎</td>
+<td>✔︎⏱</td>
+</tr>
+<tr>
+<td>net:sockets</td>
+<td>✔︎</td>
+<td>✔︎⏱</td>
+</tr>
+<tr>
+<td>net:server</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>tls</td>
+<td>✔︎</td>
+<td>✘⏱</td>
+</tr>
+<tr>
+<td>fetch</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>http</td>
+<td>✔︎</td>
+<td>✘⏱**</td>
+</tr>
+<tr>
+<td>https</td>
+<td>✔︎</td>
+<td>✘⏱**</td>
+</tr>
+<tr>
+<td>fs/promises</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>fs</td>
+<td>✔︎</td>
+<td>✘⏱</td>
+</tr>
+<tr>
+<td>path</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>timers</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>crypto</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>process</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>encoding</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>console</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>events</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>zlib</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>ESM</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>CJS</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>async/await</td>
+<td>✔︎</td>
+<td>✔︎</td>
+</tr>
+<tr>
+<td>Other modules</td>
+<td>✔︎</td>
+<td>✘</td>
+</tr>
+</tbody>
+</table>
+<p><em>⚠️ = partially supported in LLRT</em> <em>⏱ = planned partial support</em> <em>* = Not
+native</em> <em>** = Use fetch instead</em></p>
+<a id="md:using-node_modules-dependencies-with-llrt" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Using node_modules (dependencies) with LLRT<a href="#md:using-node_modules-dependencies-with-llrt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Since LLRT is meant for performance critical application it's not recommended to
+deploy <code>node_modules</code> without bundling, minification and tree-shaking.</p>
+<p>LLRT can work with any bundler of your choice. Below are some configurations for
+popular bundlers:</p>
+<blockquote>
+<p>[!WARNING] LLRT implements native modules that are largely compatible with the
+following external packages. By implementing the following conversions in the
+bundler's alias function, your application may be faster, but we recommend
+that you test thoroughly as they are not fully compatible.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Node.js</th>
+<th>LLRT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fast-xml-parser</td>
+<td>llrt:xml</td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>llrt:uuid</td>
+</tr>
+</tbody>
+</table>
+<a id="md:esbuild" class="tsd-anchor"></a><h3 class="tsd-anchor-link">ESBuild<a href="#md:esbuild" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="shell"><span class="hl-6">esbuild</span><span class="hl-1"> </span><span class="hl-3">index.js</span><span class="hl-1"> </span><span class="hl-4">--platform=node</span><span class="hl-1"> </span><span class="hl-4">--target=es2023</span><span class="hl-1"> </span><span class="hl-4">--format=esm</span><span class="hl-1"> </span><span class="hl-4">--bundle</span><span class="hl-1"> </span><span class="hl-4">--minify</span><span class="hl-1"> </span><span class="hl-4">--external:@aws-sdk</span><span class="hl-1"> </span><span class="hl-4">--external:@smithy</span>
+</code><button type="button">Copy</button></pre>
+
+<a id="md:rollup" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Rollup<a href="#md:rollup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="javascript"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">resolve</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;@rollup/plugin-node-resolve&quot;</span><span class="hl-1">;</span><br/><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">commonjs</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;@rollup/plugin-commonjs&quot;</span><span class="hl-1">;</span><br/><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">terser</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;@rollup/plugin-terser&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-0">default</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-2">input:</span><span class="hl-1"> </span><span class="hl-3">&quot;index.js&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">output:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">file:</span><span class="hl-1"> </span><span class="hl-3">&quot;dist/bundle.js&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">format:</span><span class="hl-1"> </span><span class="hl-3">&quot;esm&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">sourcemap:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">target:</span><span class="hl-1"> </span><span class="hl-3">&quot;es2023&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-2">plugins:</span><span class="hl-1"> [</span><span class="hl-6">resolve</span><span class="hl-1">(), </span><span class="hl-6">commonjs</span><span class="hl-1">(), </span><span class="hl-6">terser</span><span class="hl-1">()],</span><br/><span class="hl-1">  </span><span class="hl-2">external:</span><span class="hl-1"> [</span><span class="hl-3">&quot;@aws-sdk&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;@smithy&quot;</span><span class="hl-1">],</span><br/><span class="hl-1">};</span>
+</code><button type="button">Copy</button></pre>
+
+<a id="md:webpack" class="tsd-anchor"></a><h3 class="tsd-anchor-link">Webpack<a href="#md:webpack" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="javascript"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">TerserPlugin</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;terser-webpack-plugin&quot;</span><span class="hl-1">;</span><br/><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">nodeExternals</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;webpack-node-externals&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-0">default</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-2">entry:</span><span class="hl-1"> </span><span class="hl-3">&quot;./index.js&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">output:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">path:</span><span class="hl-1"> </span><span class="hl-3">&quot;dist&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">filename:</span><span class="hl-1"> </span><span class="hl-3">&quot;bundle.js&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">libraryTarget:</span><span class="hl-1"> </span><span class="hl-3">&quot;module&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-2">target:</span><span class="hl-1"> </span><span class="hl-3">&quot;web&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">mode:</span><span class="hl-1"> </span><span class="hl-3">&quot;production&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-2">resolve:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">extensions:</span><span class="hl-1"> [</span><span class="hl-3">&quot;.js&quot;</span><span class="hl-1">],</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  </span><span class="hl-2">externals:</span><span class="hl-1"> [</span><span class="hl-6">nodeExternals</span><span class="hl-1">(), </span><span class="hl-3">&quot;@aws-sdk&quot;</span><span class="hl-1">, </span><span class="hl-3">&quot;@smithy&quot;</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-2">optimization:</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-2">minimize:</span><span class="hl-1"> </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-2">minimizer:</span><span class="hl-1"> [</span><br/><span class="hl-1">      </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">TerserPlugin</span><span class="hl-1">({</span><br/><span class="hl-1">        </span><span class="hl-2">terserOptions:</span><span class="hl-1"> {</span><br/><span class="hl-1">          </span><span class="hl-2">ecma:</span><span class="hl-1"> </span><span class="hl-7">2023</span><span class="hl-1">,</span><br/><span class="hl-1">        },</span><br/><span class="hl-1">      }),</span><br/><span class="hl-1">    ],</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">};</span>
+</code><button type="button">Copy</button></pre>
+
+<a id="md:using-aws-sdk-v3-with-llrt" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Using AWS SDK (v3) with LLRT<a href="#md:using-aws-sdk-v3-with-llrt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>LLRT includes many AWS SDK clients and utils as part of the runtime, built into
+the executable. These SDK Clients have been specifically fine-tuned to offer
+best performance while not compromising on compatibility. LLRT replaces some
+JavaScript dependencies used by the AWS SDK by native ones such as Hash
+calculations and XML parsing. V3 SDK packages not included in the list below
+have to be bundled with your source code. For an example on how to use a
+non-included SDK, see
+<a href="media/build.mjs">this example build script (buildExternalSdkFunction)</a></p>
+<table>
+<thead>
+<tr>
+<th>Bundled AWS SDK packages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@aws-sdk/client-cloudwatch-events</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-cloudwatch-logs</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-cognito-identity</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-cognito-identity-provider</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-dynamodb</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-eventbridge</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-kms</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-lambda</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-s3</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-secrets-manager</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-ses</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-sfn</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-sns</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-sqs</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-ssm</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-sts</td>
+</tr>
+<tr>
+<td>@aws-sdk/client-xray</td>
+</tr>
+<tr>
+<td>@aws-sdk/credential-providers</td>
+</tr>
+<tr>
+<td>@aws-sdk/lib-dynamodb</td>
+</tr>
+<tr>
+<td>@aws-sdk/lib-storage</td>
+</tr>
+<tr>
+<td>@aws-sdk/s3-presigned-post</td>
+</tr>
+<tr>
+<td>@aws-sdk/s3-request-presigner</td>
+</tr>
+<tr>
+<td>@aws-sdk/util-dynamodb</td>
+</tr>
+<tr>
+<td>@aws-sdk/util-user-agent-browser</td>
+</tr>
+<tr>
+<td>@smithy</td>
+</tr>
+<tr>
+<td>@aws-crypto</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!IMPORTANT] LLRT currently does not support returning streams from SDK
+responses. Use <code>response.Body.transformToString();</code> or
+<code>response.Body.transformToByteArray();</code> as shown below.</p>
+<pre><code class="javascript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">response</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">client</span><span class="hl-1">.</span><span class="hl-6">send</span><span class="hl-1">(</span><span class="hl-2">command</span><span class="hl-1">);</span><br/><span class="hl-8">// or &#39;transformToByteArray()&#39;</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">str</span><span class="hl-1"> = </span><span class="hl-0">await</span><span class="hl-1"> </span><span class="hl-2">response</span><span class="hl-1">.</span><span class="hl-2">Body</span><span class="hl-1">.</span><span class="hl-6">transformToString</span><span class="hl-1">();</span>
+</code><button type="button">Copy</button></pre>
+
+</blockquote>
+<a id="md:running-typescript-with-llrt" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Running TypeScript with LLRT<a href="#md:running-typescript-with-llrt" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Same principle as dependencies applies when using TypeScript. TypeScript must be
+bundled and transpiled into ES2023 JavaScript.</p>
+<blockquote>
+<p>[!NOTE] LLRT will not support running TypeScript without transpilation. This
+is by design for performance reasons. Transpiling requires CPU and memory that
+adds latency and cost during execution. This can be avoided if done ahead of
+time during deployment.</p>
+</blockquote>
+<a id="md:rationale" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Rationale<a href="#md:rationale" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>What justifies the introduction of another JavaScript runtime in light of
+existing options such as <a href="https://nodejs.org/en">Node.js</a>, <a href="https://bun.sh">Bun</a>
+&amp; <a href="https://deno.com/">Deno</a>?</p>
+<p>Node.js, Bun, and Deno represent highly proficient JavaScript runtimes. However,
+they are designed with general-purpose applications in mind. These runtimes were
+not specifically tailored for the demands of a Serverless environment,
+characterized by short-lived runtime instances. They each depend on a
+(<a href="https://en.wikipedia.org/wiki/Just-in-time_compilation">Just-In-Time compiler (JIT)</a>
+for dynamic code compilation and optimization during execution. While JIT
+compilation offers substantial long-term performance advantages, it carries a
+computational and memory overhead.</p>
+<p>In contrast, LLRT distinguishes itself by not incorporating a JIT compiler, a
+strategic decision that yields two significant advantages:</p>
+<p>A) JIT compilation is a notably sophisticated technological component,
+introducing increased system complexity and contributing substantially to the
+runtime's overall size.</p>
+<p>B) Without the JIT overhead, LLRT conserves both CPU and memory resources that
+can be more efficiently allocated to code execution tasks, thereby reducing
+application startup times.</p>
+<a id="md:limitations" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Limitations<a href="#md:limitations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>There are many cases where LLRT shows notable performance drawbacks compared
+with JIT-powered runtimes, such as large data processing, Monte Carlo
+simulations or performing tasks with hundreds of thousands or millions of
+iterations. LLRT is most effective when applied to smaller Serverless functions
+dedicated to tasks such as data transformation, real time processing, AWS
+service integrations, authorization, validation etc. It is designed to
+complement existing components rather than serve as a comprehensive replacement
+for everything. Notably, given its supported APIs are based on Node.js
+specification, transitioning back to alternative solutions requires minimal code
+adjustments.</p>
+<a id="md:building-from-source" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Building from source<a href="#md:building-from-source" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Clone code and cd to directory</p>
+<pre><code>git clone git@github.com:awslabs/llrt.git --recursive
+cd llrt
+</code></pre>
+<p>Install git submodules if you've not cloned the repository with <code>--recursive</code></p>
+<pre><code>git submodule update --init
+</code></pre>
+<p>Install rust</p>
+<pre><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+source &quot;$HOME/.cargo/env&quot;
+</code></pre>
+<p>Install dependencies</p>
+<pre><code># MacOS
+brew install zig make cmake zstd node corepack
+
+# Ubuntu
+sudo apt -y install make zstd
+sudo snap install zig --classic --beta
+
+# Windows WSL2
+sudo apt -y install cmake g++ gcc make zip zstd
+sudo snap install zig --classic --beta
+
+# Windows WSL2 (If Node.js is not yet installed)
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+nvm install --lts
+</code></pre>
+<p>Install Node.js packages</p>
+<pre><code>corepack enable
+yarn
+</code></pre>
+<p>Install generate libs and setup rust targets &amp; toolchains</p>
+<pre><code>make stdlib &amp;&amp; make libs
+</code></pre>
+<blockquote>
+<p>[!NOTE] If these commands exit with an error that says <code>can't cd to zstd/lib</code>,
+you've not cloned this repository recursively. Run
+<code>git submodule update --init</code> to download the submodules and run the commands
+above again.</p>
+</blockquote>
+<p>Build release for Lambda</p>
+<pre><code>make release-arm64
+# or for x86-64, use
+make release-x64
+</code></pre>
+<p>Optionally build for your local machine (Mac or Linux)</p>
+<pre><code>make release
+</code></pre>
+<p>You should now have a <code>llrt-lambda-arm64.zip</code> or <code>llrt-lambda-x64.zip</code>. You can
+manually upload this as a Lambda layer or use it via your Infrastructure-as-code
+pipeline</p>
+<a id="md:running-lambda-emulator" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Running Lambda emulator<a href="#md:running-lambda-emulator" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Please note that in order to run the example you will need:</p>
+<ul>
+<li>Valid AWS credentials via a <code>~/.aws/credentials</code> or via environment
+variables.</li>
+</ul>
+<pre><code class="bash"><span class="hl-4">export</span><span class="hl-1"> </span><span class="hl-2">AWS_ACCESS_KEY_ID</span><span class="hl-1">=</span><span class="hl-2">XXX</span><br/><span class="hl-4">export</span><span class="hl-1"> </span><span class="hl-2">AWS_SECRET_ACCESS_KEY</span><span class="hl-1">=</span><span class="hl-2">YYY</span><br/><span class="hl-4">export</span><span class="hl-1"> </span><span class="hl-2">AWS_REGION</span><span class="hl-1">=</span><span class="hl-2">us-east-1</span>
+</code><button type="button">Copy</button></pre>
+
+<ul>
+<li>A DynamoDB table (with <code>id</code> as the partition key) on <code>us-east-1</code></li>
+<li>The <code>dynamodb:PutItem</code> IAM permission on this table. You can use this policy
+(don't forget to modify &lt;YOUR_ACCOUNT_ID&gt;):</li>
+</ul>
+<pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">	</span><span class="hl-9">&quot;Version&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;2012-10-17&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">	</span><span class="hl-9">&quot;Statement&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">		{</span><br/><span class="hl-1">			</span><span class="hl-9">&quot;Sid&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;putItem&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">			</span><span class="hl-9">&quot;Effect&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;Allow&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">			</span><span class="hl-9">&quot;Action&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;dynamodb:PutItem&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">			</span><span class="hl-9">&quot;Resource&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;arn:aws:dynamodb:us-east-1:&lt;YOUR_ACCOUNT_ID&gt;:table/quickjs-table&quot;</span><br/><span class="hl-1">		}</span><br/><span class="hl-1">	]</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Start the <code>lambda-server.js</code> in a separate terminal</p>
+<pre><code>node lambda-server.js
+</code></pre>
+<p>Then run llrt:</p>
+<pre><code>make run
+</code></pre>
+<a id="md:environment-variables" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Environment Variables<a href="#md:environment-variables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="md:llrt_extra_ca_certsfile" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_EXTRA_CA_CERTS=file</code><a href="#md:llrt_extra_ca_certsfile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Load extra certificate authorities from a PEM encoded file</p>
+<a id="md:llrt_gc_threshold_mbvalue" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_GC_THRESHOLD_MB=value</code><a href="#md:llrt_gc_threshold_mbvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Set a memory threshold in MB for garbage collection. Default threshold is 20MB</p>
+<a id="md:llrt_http_versionvalue" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_HTTP_VERSION=value</code><a href="#md:llrt_http_versionvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Restrict HTTP requests to use a specific version. By default HTTP 1.1 and 2 are
+enabled. Set this variable to <code>1.1</code> to only use HTTP 1.1</p>
+<a id="md:llrt_logtargetlevel" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_LOG=[target][=][level][,...]</code><a href="#md:llrt_logtargetlevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Filter the log output by target module, level, or both (using <code>=</code>). Log levels
+are case-insensitive and will also enable any higher priority logs.</p>
+<p>Log levels in descending priority order:</p>
+<ul>
+<li><code>Error</code></li>
+<li><code>Warn | Warning</code></li>
+<li><code>Info</code></li>
+<li><code>Debug</code></li>
+<li><code>Trace</code></li>
+</ul>
+<p>Example filters:</p>
+<ul>
+<li><code>warn</code> will enable all warning and error logs</li>
+<li><code>llrt_core::vm=trace</code> will enable all logs in the <code>llrt_core::vm</code> module</li>
+<li><code>warn,llrt_core::vm=trace</code> will enable all logs in the <code>llrt_core::vm</code>
+module and all warning and error logs in other modules</li>
+</ul>
+<a id="md:llrt_net_allowhost-" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_NET_ALLOW=&quot;host[ ...]&quot;</code><a href="#md:llrt_net_allowhost-" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Space-delimited list of hosts or socket paths which should be allowed for
+network connections. Network connections will be denied for any host or socket
+path missing from this list. Set an empty list to deny all connections</p>
+<a id="md:llrt_net_denyhost-" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_NET_DENY=&quot;host[ ...]&quot;</code><a href="#md:llrt_net_denyhost-" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Space-delimited list of hosts or socket paths which should be denied for network
+connections</p>
+<a id="md:llrt_net_pool_idle_timeoutvalue" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_NET_POOL_IDLE_TIMEOUT=value</code><a href="#md:llrt_net_pool_idle_timeoutvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Set a timeout in seconds for idle sockets being kept-alive. Default timeout is
+15 seconds</p>
+<a id="md:llrt_tls_versionvalue" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>LLRT_TLS_VERSION=value</code><a href="#md:llrt_tls_versionvalue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Set the TLS version to be used for network connections. By default only TLS 1.2
+is enabled. TLS 1.3 can also be enabled by setting this variable to <code>1.3</code></p>
+<a id="md:benchmark-methodology" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Benchmark Methodology<a href="#md:benchmark-methodology" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Although Init Duration
+<a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html">reported by Lambda</a>
+is commonly used to understand cold start impact on overall request latency,
+this metric does not include the time needed to copy code into the Lambda
+sandbox.</p>
+<p>The technical definition of Init Duration
+(<a href="https://docs.aws.amazon.com/lambda/latest/dg/nodejs-logging.html#node-logging-output">source</a>):</p>
+<blockquote>
+<p>For the first request served, the amount of time it took the runtime to load
+the function and run code outside of the handler method.</p>
+</blockquote>
+<p>Measuring round-trip request duration provides a more complete picture of user
+facing cold-start latency.</p>
+<p>Lambda invocation results (λ-labeled row) report the sum total of Init
+Duration + Function Duration.</p>
+<a id="md:security" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Security<a href="#md:security" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>See <a href="CONTRIBUTING.md#security-issue-notifications">CONTRIBUTING</a> for more
+information.</p>
+<a id="md:license" class="tsd-anchor"></a><h2 class="tsd-anchor-link">License<a href="#md:license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>This library is licensed under the Apache-2.0 License. See the
+<a href="media/LICENSE">LICENSE</a> file.</p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:configure-lambda-functions-to-use-llrt"><span>Configure <wbr/>Lambda functions to use LLRT</span></a><ul><li><a href="#md:option-1-custom-runtime-recommended"><span>Option 1: <wbr/>Custom runtime (recommended)</span></a></li><li><a href="#md:option-2-use-a-layer"><span>Option 2: <wbr/>Use a layer</span></a></li><li><a href="#md:option-3-package-llrt-in-a-container-image"><span>Option 3: <wbr/>Package LLRT in a container image</span></a></li><li><a href="#md:option-4-aws-sam"><span>Option 4: AWS SAM</span></a></li><li><a href="#md:option-5-aws-cdk"><span>Option 5: AWS CDK</span></a></li></ul><a href="#md:testing--ensuring-compatibility"><span>Testing &amp; ensuring compatibility</span></a><ul><li><a href="#md:test-runner"><span>Test runner</span></a></li></ul><a href="#md:compatibility-matrix"><span>Compatibility matrix</span></a><a href="#md:using-node_modules-dependencies-with-llrt"><span>Using node_<wbr/>modules (dependencies) with LLRT</span></a><ul><li><a href="#md:esbuild"><span>ESBuild</span></a></li><li><a href="#md:rollup"><span>Rollup</span></a></li><li><a href="#md:webpack"><span>Webpack</span></a></li></ul><a href="#md:using-aws-sdk-v3-with-llrt"><span>Using AWS SDK (v3) with LLRT</span></a><a href="#md:running-typescript-with-llrt"><span>Running <wbr/>Type<wbr/>Script with LLRT</span></a><a href="#md:rationale"><span>Rationale</span></a><a href="#md:limitations"><span>Limitations</span></a><a href="#md:building-from-source"><span>Building from source</span></a><a href="#md:running-lambda-emulator"><span>Running <wbr/>Lambda emulator</span></a><a href="#md:environment-variables"><span>Environment <wbr/>Variables</span></a><ul><li><a href="#md:llrt_extra_ca_certsfile"><span>LLRT_<wbr/>EXTRA_<wbr/>CA_<wbr/>CERTS=file</span></a></li><li><a href="#md:llrt_gc_threshold_mbvalue"><span>LLRT_<wbr/>GC_<wbr/>THRESHOLD_<wbr/>MB=value</span></a></li><li><a href="#md:llrt_http_versionvalue"><span>LLRT_<wbr/>HTTP_<wbr/>VERSION=value</span></a></li><li><a href="#md:llrt_logtargetlevel"><span>LLRT_<wbr/>LOG=[target][=][level][,...]</span></a></li><li><a href="#md:llrt_net_allowhost-"><span>LLRT_<wbr/>NET_<wbr/>ALLOW=&quot;host[ ...]&quot;</span></a></li><li><a href="#md:llrt_net_denyhost-"><span>LLRT_<wbr/>NET_<wbr/>DENY=&quot;host[ ...]&quot;</span></a></li><li><a href="#md:llrt_net_pool_idle_timeoutvalue"><span>LLRT_<wbr/>NET_<wbr/>POOL_<wbr/>IDLE_<wbr/>TIMEOUT=value</span></a></li><li><a href="#md:llrt_tls_versionvalue"><span>LLRT_<wbr/>TLS_<wbr/>VERSION=value</span></a></li></ul><a href="#md:benchmark-methodology"><span>Benchmark <wbr/>Methodology</span></a><a href="#md:security"><span>Security</span></a><a href="#md:license"><span>License</span></a></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>@codeeditorland/foundation - v0.0.1</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
