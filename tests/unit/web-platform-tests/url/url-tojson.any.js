@@ -1,11 +1,6 @@
-export default function({
-  assert_equals,
-  test,
-}) {
-
-test(() => {
-  const a = new URL("https://example.com/")
-  assert_equals(JSON.stringify(a), "\"https://example.com/\"")
-})
-
-};
+export default function ({ assert_equals, test }) {
+	test(() => {
+		const a = new URL("https://example.com/");
+		assert_equals(JSON.stringify(a), '"https://example.com/"');
+	});
+}

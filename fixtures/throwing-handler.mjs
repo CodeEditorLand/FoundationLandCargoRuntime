@@ -1,3 +1,3 @@
 export const handler = async () => {
-  throw new Error("kaboom");
+	throw new Error("kaboom");
 };

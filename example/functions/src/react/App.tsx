@@ -1,24 +1,24 @@
 import logo from "./logo.svg";
 import "./App.css";
-import TodoList, { Todo } from "./TodoList";
+import TodoList, { type Todo } from "./TodoList";
 
 type Props = {
-  todoItems?: Todo[];
-  releaseName?: string;
+	todoItems?: Todo[];
+	releaseName?: string;
 };
 
 function App({ todoItems = [], releaseName = "" }: Props) {
-  return (
-    <div className="app">
-      <header className="header">
-        <img src={logo} className="logo" alt="logo" />
-      </header>
-      <main className="main">
-        <h1>LLRT React TODO - {releaseName}</h1>
-        <TodoList items={todoItems} />
-      </main>
-    </div>
-  );
+	return (
+		<div class="app">
+			<header class="header">
+				<img src={logo} class="logo" alt="logo" />
+			</header>
+			<main class="main">
+				<h1>LLRT React TODO - {releaseName}</h1>
+				<TodoList items={todoItems} />
+			</main>
+		</div>
+	);
 }
 
 export default App;

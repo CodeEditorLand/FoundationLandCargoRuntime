@@ -1,7 +1,8 @@
 # API documentation
 
-> [!NOTE]
-> The long term goal for LLRT is to become [Winter CG compliant](https://github.com/wintercg/admin/blob/main/proposals.md). Not every API from Node.js will be supported.
+> [!NOTE] The long term goal for LLRT is to become
+> [Winter CG compliant](https://github.com/wintercg/admin/blob/main/proposals.md).
+> Not every API from Node.js will be supported.
 
 ## buffer
 
@@ -13,12 +14,13 @@
 
 [from](https://nodejs.org/api/buffer.html#static-method-bufferfromarray)
 
-Everything else inherited from [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+Everything else inherited from
+[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 ## child_process
 
-> [!WARNING]
-> `spawn` uses native streams that is not 100% compatible with the Node.js Streams API.
+> [!WARNING] > `spawn` uses native streams that is not 100% compatible with the
+> Node.js Streams API.
 
 [spawn](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options)
 
@@ -54,13 +56,17 @@ Available globally
 
 [fetch](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
 
-> [!IMPORTANT]
-> There are some differences with the [WHATWG standard](https://fetch.spec.whatwg.org). Mainly browser specific behavior is removed:
+> [!IMPORTANT] There are some differences with the
+> [WHATWG standard](https://fetch.spec.whatwg.org). Mainly browser specific
+> behavior is removed:
 >
-> - `keepalive` is always true
-> - `request.body` can only be `string`, `Array`, `ArrayBuffer` or `Uint8Array`
-> - `response.body` returns `null`. Use `response.text()`, `response.json()` etc
-> - `mode`, `credentials`, `referrerPolicy`, `priority`, `cache` is not available/applicable
+> -   `keepalive` is always true
+> -   `request.body` can only be `string`, `Array`, `ArrayBuffer` or
+>     `Uint8Array`
+> -   `response.body` returns `null`. Use `response.text()`, `response.json()`
+>     etc
+> -   `mode`, `credentials`, `referrerPolicy`, `priority`, `cache` is not
+>     available/applicable
 
 ## file
 
@@ -112,14 +118,16 @@ Available globally
 
 [createRequire](https://nodejs.org/api/module.html#modulecreaterequirefilename)
 
-> [!NOTE]
-> `require` is available from esm modules natively. This function is just for compatibility
+> [!NOTE] > `require` is available from esm modules natively. This function is
+> just for compatibility
 
 ## net
 
-> [!WARNING]
-> These APIs uses native streams that is not 100% compatible with the Node.js Streams API. Server APIs like `createSever` provides limited functionality useful for testing purposes. Serverless applications typically don't expose servers. Some server options are not supported:
-> `highWaterMark`, `pauseOnConnect`, `keepAlive`, `noDelay`, `keepAliveInitialDelay`
+> [!WARNING] These APIs uses native streams that is not 100% compatible with the
+> Node.js Streams API. Server APIs like `createSever` provides limited
+> functionality useful for testing purposes. Serverless applications typically
+> don't expose servers. Some server options are not supported: `highWaterMark`,
+> `pauseOnConnect`, `keepAlive`, `noDelay`, `keepAliveInitialDelay`
 
 [connect](https://nodejs.org/api/net.html#netconnect)
 
@@ -255,8 +263,8 @@ export class URLSearchParams {
 
 ## util
 
-> [!IMPORTANT]
-> Supported encodings: hex, base64, utf-8, utf-16le, windows-1252 and their aliases.
+> [!IMPORTANT] Supported encodings: hex, base64, utf-8, utf-16le, windows-1252
+> and their aliases.
 
 [TextDecoder](https://nodejs.org/api/util.html#class-utiltextdecoder)
 

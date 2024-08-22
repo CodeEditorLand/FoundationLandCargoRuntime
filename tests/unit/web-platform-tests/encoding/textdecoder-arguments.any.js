@@ -1,57 +1,55 @@
 // META: global=window,dedicatedworker,shadowrealm
 // META: title=Encoding API: TextDecoder decode() optional arguments
 
-export default function({
-  assert_equals,
-  test,
-}) {
+export default function ({ assert_equals, test }) {
+	test((t) => {
+		const decoder = new TextDecoder();
 
-test(t => {
-  const decoder = new TextDecoder();
+		// Just passing nothing.
+		assert_equals(
+			decoder.decode(undefined),
+			"",
+			"Undefined as first arg should decode to empty string",
+		);
 
-  // Just passing nothing.
-  assert_equals(
-    decoder.decode(undefined), '',
-    'Undefined as first arg should decode to empty string');
+		// Flushing an incomplete sequence.
+		// decoder.decode(new Uint8Array([0xc9]), {stream: true});
+		// assert_equals(
+		//   decoder.decode(undefined), '\uFFFD',
+		//   'Undefined as first arg should flush the stream');
+	}, "TextDecoder decode() with explicit undefined");
 
-  // Flushing an incomplete sequence.
-  // decoder.decode(new Uint8Array([0xc9]), {stream: true});
-  // assert_equals(
-  //   decoder.decode(undefined), '\uFFFD',
-  //   'Undefined as first arg should flush the stream');
+	test((t) => {
+		const decoder = new TextDecoder();
 
-}, 'TextDecoder decode() with explicit undefined');
+		// Just passing nothing.
+		assert_equals(
+			decoder.decode(undefined, undefined),
+			"",
+			"Undefined as first arg should decode to empty string",
+		);
 
-test(t => {
-  const decoder = new TextDecoder();
+		// Flushing an incomplete sequence.
+		// decoder.decode(new Uint8Array([0xc9]), {stream: true});
+		// assert_equals(
+		//   decoder.decode(undefined, undefined), '\uFFFD',
+		//   'Undefined as first arg should flush the stream');
+	}, "TextDecoder decode() with undefined and undefined");
 
-  // Just passing nothing.
-  assert_equals(
-    decoder.decode(undefined, undefined), '',
-    'Undefined as first arg should decode to empty string');
+	test((t) => {
+		const decoder = new TextDecoder();
 
-  // Flushing an incomplete sequence.
-  // decoder.decode(new Uint8Array([0xc9]), {stream: true});
-  // assert_equals(
-  //   decoder.decode(undefined, undefined), '\uFFFD',
-  //   'Undefined as first arg should flush the stream');
+		// Just passing nothing.
+		assert_equals(
+			decoder.decode(undefined, {}),
+			"",
+			"Undefined as first arg should decode to empty string",
+		);
 
-}, 'TextDecoder decode() with undefined and undefined');
-
-test(t => {
-  const decoder = new TextDecoder();
-
-  // Just passing nothing.
-  assert_equals(
-    decoder.decode(undefined, {}), '',
-    'Undefined as first arg should decode to empty string');
-
-  // Flushing an incomplete sequence.
-  // decoder.decode(new Uint8Array([0xc9]), {stream: true});
-  // assert_equals(
-  //   decoder.decode(undefined, {}), '\uFFFD',
-  //   'Undefined as first arg should flush the stream');
-
-}, 'TextDecoder decode() with undefined and options');
-
-};
+		// Flushing an incomplete sequence.
+		// decoder.decode(new Uint8Array([0xc9]), {stream: true});
+		// assert_equals(
+		//   decoder.decode(undefined, {}), '\uFFFD',
+		//   'Undefined as first arg should flush the stream');
+	}, "TextDecoder decode() with undefined and options");
+}

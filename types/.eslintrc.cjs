@@ -1,4 +1,4 @@
 module.exports = {
-  root: true,
-  extends: ["plugin:@definitelytyped/all"],
+	root: true,
+	extends: ["plugin:@definitelytyped/all"],
 };

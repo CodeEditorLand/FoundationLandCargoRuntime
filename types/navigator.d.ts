@@ -1,9 +1,9 @@
-export {};
+export type {};
 
 declare global {
-  interface Navigator {
-    readonly userAgent: string;
-  }
+	interface Navigator {
+		readonly userAgent: string;
+	}
 
-  var navigator: Navigator;
+	var navigator: Navigator;
 }

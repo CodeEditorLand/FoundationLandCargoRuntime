@@ -1,19 +1,27 @@
-[![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/awslabs/llrt/actions/workflows/ci.yml) [![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)](https://github.com/awslabs/llrt/actions/workflows/release.yml)
+[![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/awslabs/llrt/actions/workflows/ci.yml)
+[![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)](https://github.com/awslabs/llrt/actions/workflows/release.yml)
 
-LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime designed to address the growing demand for fast and efficient Serverless applications. LLRT offers up to over **10x** faster startup and up to **2x** overall lower cost compared to other JavaScript runtimes running on **AWS Lambda**
+LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime
+designed to address the growing demand for fast and efficient Serverless
+applications. LLRT offers up to over **10x** faster startup and up to **2x**
+overall lower cost compared to other JavaScript runtimes running on **AWS
+Lambda**
 
-It's built in Rust, utilizing QuickJS as JavaScript engine, ensuring efficient memory usage and swift startup.
+It's built in Rust, utilizing QuickJS as JavaScript engine, ensuring efficient
+memory usage and swift startup.
 
-> [!WARNING]
-> LLRT is an **experimental** package. It is subject to change and intended only for evaluation purposes.
+> [!WARNING] LLRT is an **experimental** package. It is subject to change and
+> intended only for evaluation purposes.
 
 <sub>LLRT - [DynamoDB Put, ARM, 128MB](example/functions/src/v3-lib.mjs):<sub>
 ![DynamoDB Put LLRT](./benchmarks/llrt-ddb-put.png "LLRT DynamoDB Put")
 
-<sub>Node.js 20 - [DynamoDB Put, ARM, 128MB](example/functions/src/v3-lib.mjs):<sub>
+<sub>Node.js 20 -
+[DynamoDB Put, ARM, 128MB](example/functions/src/v3-lib.mjs):<sub>
 ![DynamoDB Put Node20](./benchmarks/node20-ddb-put.png "Node20 DynamoDB Put")
 
-HTTP benchmarks measured in **round trip time** for a cold start ([why?](#benchmark-methodology))
+HTTP benchmarks measured in **round trip time** for a cold start
+([why?](#benchmark-methodology))
 
 ## Configure Lambda functions to use LLRT
 
@@ -21,11 +29,13 @@ Download the last LLRT release from <https://github.com/awslabs/llrt/releases>
 
 ### Option 1: Custom runtime (recommended)
 
-Choose `Custom Runtime on Amazon Linux 2023` and package the LLRT `bootstrap` binary together with your JS code.
+Choose `Custom Runtime on Amazon Linux 2023` and package the LLRT `bootstrap`
+binary together with your JS code.
 
 ### Option 2: Use a layer
 
-Choose `Custom Runtime on Amazon Linux 2023`, upload `llrt-lambda-arm64.zip` or `llrt-lambda-x64.zip` as a layer and add to your function
+Choose `Custom Runtime on Amazon Linux 2023`, upload `llrt-lambda-arm64.zip` or
+`llrt-lambda-x64.zip` as a layer and add to your function
 
 ### Option 3: Package LLRT in a container image
 
@@ -45,12 +55,14 @@ CMD [ "llrt" ]
 
 ### Option 4: AWS SAM
 
-The following [example project](example/llrt-sam/) sets up a lambda
-instrumented with a layer containing the llrt runtime.
+The following [example project](example/llrt-sam/) sets up a lambda instrumented
+with a layer containing the llrt runtime.
 
 ### Option 5: AWS CDK
 
-You can use [`cdk-lambda-llrt` construct library](https://github.com/tmokmss/cdk-lambda-llrt) to deploy LLRT Lambda functions with AWS CDK.
+You can use
+[`cdk-lambda-llrt` construct library](https://github.com/tmokmss/cdk-lambda-llrt)
+to deploy LLRT Lambda functions with AWS CDK.
 
 ```ts
 import { LlrtFunction } from "cdk-lambda-llrt";
@@ -60,43 +72,59 @@ const handler = new LlrtFunction(this, "Handler", {
 });
 ```
 
-See [Construct Hub](https://constructs.dev/packages/cdk-lambda-llrt/) and [its examples](https://github.com/tmokmss/cdk-lambda-llrt/tree/main/example) for more details.
+See [Construct Hub](https://constructs.dev/packages/cdk-lambda-llrt/) and
+[its examples](https://github.com/tmokmss/cdk-lambda-llrt/tree/main/example) for
+more details.
 
 That's it 🎉
 
-> [!IMPORTANT]
-> Even though LLRT supports [ES2023](https://262.ecma-international.org/14.0/) it's **NOT** a drop in replacement for Node.js. Consult [Compatibility matrix](#compatibility-matrix) and [API](API.md) for more details.
-> All dependencies should be bundled for a `browser` platform and mark included `@aws-sdk` packages as external.
+> [!IMPORTANT] Even though LLRT supports
+> [ES2023](https://262.ecma-international.org/14.0/) it's **NOT** a drop in
+> replacement for Node.js. Consult [Compatibility matrix](#compatibility-matrix)
+> and [API](API.md) for more details. All dependencies should be bundled for a
+> `browser` platform and mark included `@aws-sdk` packages as external.
 
 ## Testing & ensuring compatibility
 
-The best way to ensure your code is compatible with LLRT is to write tests and execute them using the built-in test runner. The test runner currently supports Jest/Chai assertions. There are two main types of tests you can create:
+The best way to ensure your code is compatible with LLRT is to write tests and
+execute them using the built-in test runner. The test runner currently supports
+Jest/Chai assertions. There are two main types of tests you can create:
 
 Unit Tests
 
-- Useful for validating specific modules and functions in isolation
-- Allow focused testing of individual components
+-   Useful for validating specific modules and functions in isolation
+-   Allow focused testing of individual components
 
 End-to-End (E2E) Tests
 
-- Validate overall compatibility with AWS SDK and WinterCG compliance
-- Test the integration between all components
-- Confirm expected behavior from end-user perspective
+-   Validate overall compatibility with AWS SDK and WinterCG compliance
+-   Test the integration between all components
+-   Confirm expected behavior from end-user perspective
 
-For more information about the E2E Tests and how to run them, see [here](tests/e2e/README.md).
+For more information about the E2E Tests and how to run them, see
+[here](tests/e2e/README.md).
 
 ### Test runner
 
-Test runner uses a lightweight Jest-like API and supports Jest/Chai assertions. For examples on how to implement tests for LLRT see the `/tests` folder of this repository.
+Test runner uses a lightweight Jest-like API and supports Jest/Chai assertions.
+For examples on how to implement tests for LLRT see the `/tests` folder of this
+repository.
 
-To run tests, execute the `llrt test` command. LLRT scans the current directory and sub-directories for files that ends with `*.test.js` or `*.test.mjs`. You can also provide a specific test directory to scan by using the `llrt test -d <directory>` option.
+To run tests, execute the `llrt test` command. LLRT scans the current directory
+and sub-directories for files that ends with `*.test.js` or `*.test.mjs`. You
+can also provide a specific test directory to scan by using the
+`llrt test -d <directory>` option.
 
-The test runner also has support for filters. Using filters is as simple as adding additional command line arguments, i.e: `llrt test crypto` will only run tests that match the filename containing `crypto`.
+The test runner also has support for filters. Using filters is as simple as
+adding additional command line arguments, i.e: `llrt test crypto` will only run
+tests that match the filename containing `crypto`.
 
 ## Compatibility matrix
 
-> [!NOTE]
-> LLRT only support a fraction of the Node.js APIs. It is **NOT** a drop in replacement for Node.js, nor will it ever be. Below is a high level overview of partially supported APIs and modules. For more details consult the [API](API.md) documentation
+> [!NOTE] LLRT only support a fraction of the Node.js APIs. It is **NOT** a drop
+> in replacement for Node.js, nor will it ever be. Below is a high level
+> overview of partially supported APIs and modules. For more details consult the
+> [API](API.md) documentation
 
 |               | Node.js | LLRT ⚠️ |
 | ------------- | ------- | ------- |
@@ -124,20 +152,21 @@ The test runner also has support for filters. Using filters is as simple as addi
 | async/await   | ✔︎     | ✔︎     |
 | Other modules | ✔︎     | ✘       |
 
-_⚠️ = partially supported in LLRT_
-_⏱ = planned partial support_
-_\* = Not native_
-_\*\* = Use fetch instead_
+_⚠️ = partially supported in LLRT_ _⏱ = planned partial support_ _\* = Not
+native_ _\*\* = Use fetch instead_
 
 ## Using node_modules (dependencies) with LLRT
 
-Since LLRT is meant for performance critical application it's not recommended to deploy `node_modules` without bundling, minification and tree-shaking.
+Since LLRT is meant for performance critical application it's not recommended to
+deploy `node_modules` without bundling, minification and tree-shaking.
 
-LLRT can work with any bundler of your choice. Below are some configurations for popular bundlers:
+LLRT can work with any bundler of your choice. Below are some configurations for
+popular bundlers:
 
-> [!WARNING]
-> LLRT implements native modules that are largely compatible with the following external packages.
-> By implementing the following conversions in the bundler's alias function, your application may be faster, but we recommend that you test thoroughly as they are not fully compatible.
+> [!WARNING] LLRT implements native modules that are largely compatible with the
+> following external packages. By implementing the following conversions in the
+> bundler's alias function, your application may be faster, but we recommend
+> that you test thoroughly as they are not fully compatible.
 
 | Node.js         | LLRT      |
 | --------------- | --------- |
@@ -204,8 +233,14 @@ export default {
 
 ## Using AWS SDK (v3) with LLRT
 
-LLRT includes many AWS SDK clients and utils as part of the runtime, built into the executable. These SDK Clients have been specifically fine-tuned to offer best performance while not compromising on compatibility. LLRT replaces some JavaScript dependencies used by the AWS SDK by native ones such as Hash calculations and XML parsing.
-V3 SDK packages not included in the list below have to be bundled with your source code. For an example on how to use a non-included SDK, see [this example build script (buildExternalSdkFunction)](example/functions/build.mjs)
+LLRT includes many AWS SDK clients and utils as part of the runtime, built into
+the executable. These SDK Clients have been specifically fine-tuned to offer
+best performance while not compromising on compatibility. LLRT replaces some
+JavaScript dependencies used by the AWS SDK by native ones such as Hash
+calculations and XML parsing. V3 SDK packages not included in the list below
+have to be bundled with your source code. For an example on how to use a
+non-included SDK, see
+[this example build script (buildExternalSdkFunction)](example/functions/build.mjs)
 
 | Bundled AWS SDK packages                  |
 | ----------------------------------------- |
@@ -236,8 +271,9 @@ V3 SDK packages not included in the list below have to be bundled with your sour
 | @smithy                                   |
 | @aws-crypto                               |
 
-> [!IMPORTANT]
-> LLRT currently does not support returning streams from SDK responses. Use `response.Body.transformToString();` or `response.Body.transformToByteArray();` as shown below.
+> [!IMPORTANT] LLRT currently does not support returning streams from SDK
+> responses. Use `response.Body.transformToString();` or
+> `response.Body.transformToByteArray();` as shown below.
 >
 > ```javascript
 > const response = await client.send(command);
@@ -247,26 +283,52 @@ V3 SDK packages not included in the list below have to be bundled with your sour
 
 ## Running TypeScript with LLRT
 
-Same principle as dependencies applies when using TypeScript. TypeScript must be bundled and transpiled into ES2023 JavaScript.
+Same principle as dependencies applies when using TypeScript. TypeScript must be
+bundled and transpiled into ES2023 JavaScript.
 
-> [!NOTE]
-> LLRT will not support running TypeScript without transpilation. This is by design for performance reasons. Transpiling requires CPU and memory that adds latency and cost during execution. This can be avoided if done ahead of time during deployment.
+> [!NOTE] LLRT will not support running TypeScript without transpilation. This
+> is by design for performance reasons. Transpiling requires CPU and memory that
+> adds latency and cost during execution. This can be avoided if done ahead of
+> time during deployment.
 
 ## Rationale
 
-What justifies the introduction of another JavaScript runtime in light of existing options such as [Node.js](https://nodejs.org/en), [Bun](https://bun.sh) & [Deno](https://deno.com/)?
+What justifies the introduction of another JavaScript runtime in light of
+existing options such as [Node.js](https://nodejs.org/en), [Bun](https://bun.sh)
+& [Deno](https://deno.com/)?
 
-Node.js, Bun, and Deno represent highly proficient JavaScript runtimes. However, they are designed with general-purpose applications in mind. These runtimes were not specifically tailored for the demands of a Serverless environment, characterized by short-lived runtime instances. They each depend on a ([Just-In-Time compiler (JIT)](https://en.wikipedia.org/wiki/Just-in-time_compilation) for dynamic code compilation and optimization during execution. While JIT compilation offers substantial long-term performance advantages, it carries a computational and memory overhead.
+Node.js, Bun, and Deno represent highly proficient JavaScript runtimes. However,
+they are designed with general-purpose applications in mind. These runtimes were
+not specifically tailored for the demands of a Serverless environment,
+characterized by short-lived runtime instances. They each depend on a
+([Just-In-Time compiler (JIT)](https://en.wikipedia.org/wiki/Just-in-time_compilation)
+for dynamic code compilation and optimization during execution. While JIT
+compilation offers substantial long-term performance advantages, it carries a
+computational and memory overhead.
 
-In contrast, LLRT distinguishes itself by not incorporating a JIT compiler, a strategic decision that yields two significant advantages:
+In contrast, LLRT distinguishes itself by not incorporating a JIT compiler, a
+strategic decision that yields two significant advantages:
 
-A) JIT compilation is a notably sophisticated technological component, introducing increased system complexity and contributing substantially to the runtime's overall size.
+A) JIT compilation is a notably sophisticated technological component,
+introducing increased system complexity and contributing substantially to the
+runtime's overall size.
 
-B) Without the JIT overhead, LLRT conserves both CPU and memory resources that can be more efficiently allocated to code execution tasks, thereby reducing application startup times.
+B) Without the JIT overhead, LLRT conserves both CPU and memory resources that
+can be more efficiently allocated to code execution tasks, thereby reducing
+application startup times.
 
 ## Limitations
 
-There are many cases where LLRT shows notable performance drawbacks compared with JIT-powered runtimes, such as large data processing, Monte Carlo simulations or performing tasks with hundreds of thousands or millions of iterations. LLRT is most effective when applied to smaller Serverless functions dedicated to tasks such as data transformation, real time processing, AWS service integrations, authorization, validation etc. It is designed to complement existing components rather than serve as a comprehensive replacement for everything. Notably, given its supported APIs are based on Node.js specification, transitioning back to alternative solutions requires minimal code adjustments.
+There are many cases where LLRT shows notable performance drawbacks compared
+with JIT-powered runtimes, such as large data processing, Monte Carlo
+simulations or performing tasks with hundreds of thousands or millions of
+iterations. LLRT is most effective when applied to smaller Serverless functions
+dedicated to tasks such as data transformation, real time processing, AWS
+service integrations, authorization, validation etc. It is designed to
+complement existing components rather than serve as a comprehensive replacement
+for everything. Notably, given its supported APIs are based on Node.js
+specification, transitioning back to alternative solutions requires minimal code
+adjustments.
 
 ## Building from source
 
@@ -310,9 +372,10 @@ Install generate libs and setup rust targets & toolchains
 
     make stdlib && make libs
 
-> [!NOTE]
-> If these commands exit with an error that says `can't cd to zstd/lib`,
-> you've not cloned this repository recursively. Run `git submodule update --init` to download the submodules and run the commands above again.
+> [!NOTE] If these commands exit with an error that says `can't cd to zstd/lib`,
+> you've not cloned this repository recursively. Run
+> `git submodule update --init` to download the submodules and run the commands
+> above again.
 
 Build release for Lambda
 
@@ -324,13 +387,16 @@ Optionally build for your local machine (Mac or Linux)
 
     make release
 
-You should now have a `llrt-lambda-arm64.zip` or `llrt-lambda-x64.zip`. You can manually upload this as a Lambda layer or use it via your Infrastructure-as-code pipeline
+You should now have a `llrt-lambda-arm64.zip` or `llrt-lambda-x64.zip`. You can
+manually upload this as a Lambda layer or use it via your Infrastructure-as-code
+pipeline
 
 ## Running Lambda emulator
 
 Please note that in order to run the example you will need:
 
-- Valid AWS credentials via a `~/.aws/credentials` or via environment variables.
+-   Valid AWS credentials via a `~/.aws/credentials` or via environment
+    variables.
 
 ```bash
 export AWS_ACCESS_KEY_ID=XXX
@@ -338,20 +404,21 @@ export AWS_SECRET_ACCESS_KEY=YYY
 export AWS_REGION=us-east-1
 ```
 
-- A DynamoDB table (with `id` as the partition key) on `us-east-1`
-- The `dynamodb:PutItem` IAM permission on this table. You can use this policy (don't forget to modify <YOUR_ACCOUNT_ID>):
+-   A DynamoDB table (with `id` as the partition key) on `us-east-1`
+-   The `dynamodb:PutItem` IAM permission on this table. You can use this policy
+    (don't forget to modify <YOUR_ACCOUNT_ID>):
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "putItem",
-      "Effect": "Allow",
-      "Action": "dynamodb:PutItem",
-      "Resource": "arn:aws:dynamodb:us-east-1:<YOUR_ACCOUNT_ID>:table/quickjs-table"
-    }
-  ]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "putItem",
+			"Effect": "Allow",
+			"Action": "dynamodb:PutItem",
+			"Resource": "arn:aws:dynamodb:us-east-1:<YOUR_ACCOUNT_ID>:table/quickjs-table"
+		}
+	]
 }
 ```
 
@@ -375,58 +442,76 @@ Set a memory threshold in MB for garbage collection. Default threshold is 20MB
 
 ### `LLRT_HTTP_VERSION=value`
 
-Restrict HTTP requests to use a specific version. By default HTTP 1.1 and 2 are enabled. Set this variable to `1.1` to only use HTTP 1.1
+Restrict HTTP requests to use a specific version. By default HTTP 1.1 and 2 are
+enabled. Set this variable to `1.1` to only use HTTP 1.1
 
 ### `LLRT_LOG=[target][=][level][,...]`
 
-Filter the log output by target module, level, or both (using `=`). Log levels are case-insensitive and will also enable any higher priority logs.
+Filter the log output by target module, level, or both (using `=`). Log levels
+are case-insensitive and will also enable any higher priority logs.
 
 Log levels in descending priority order:
 
-- `Error`
-- `Warn | Warning`
-- `Info`
-- `Debug`
-- `Trace`
+-   `Error`
+-   `Warn | Warning`
+-   `Info`
+-   `Debug`
+-   `Trace`
 
 Example filters:
 
-- `warn` will enable all warning and error logs
-- `llrt_core::vm=trace` will enable all logs in the `llrt_core::vm` module
-- `warn,llrt_core::vm=trace` will enable all logs in the `llrt_core::vm` module and all warning and error logs in other modules
+-   `warn` will enable all warning and error logs
+-   `llrt_core::vm=trace` will enable all logs in the `llrt_core::vm` module
+-   `warn,llrt_core::vm=trace` will enable all logs in the `llrt_core::vm`
+    module and all warning and error logs in other modules
 
 ### `LLRT_NET_ALLOW="host[ ...]"`
 
-Space-delimited list of hosts or socket paths which should be allowed for network connections. Network connections will be denied for any host or socket path missing from this list. Set an empty list to deny all connections
+Space-delimited list of hosts or socket paths which should be allowed for
+network connections. Network connections will be denied for any host or socket
+path missing from this list. Set an empty list to deny all connections
 
 ### `LLRT_NET_DENY="host[ ...]"`
 
-Space-delimited list of hosts or socket paths which should be denied for network connections
+Space-delimited list of hosts or socket paths which should be denied for network
+connections
 
 ### `LLRT_NET_POOL_IDLE_TIMEOUT=value`
 
-Set a timeout in seconds for idle sockets being kept-alive. Default timeout is 15 seconds
+Set a timeout in seconds for idle sockets being kept-alive. Default timeout is
+15 seconds
 
 ### `LLRT_TLS_VERSION=value`
 
-Set the TLS version to be used for network connections. By default only TLS 1.2 is enabled. TLS 1.3 can also be enabled by setting this variable to `1.3`
+Set the TLS version to be used for network connections. By default only TLS 1.2
+is enabled. TLS 1.3 can also be enabled by setting this variable to `1.3`
 
 ## Benchmark Methodology
 
-Although Init Duration [reported by Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html) is commonly used to understand cold start impact on overall request latency, this metric does not include the time needed to copy code into the Lambda sandbox.
+Although Init Duration
+[reported by Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
+is commonly used to understand cold start impact on overall request latency,
+this metric does not include the time needed to copy code into the Lambda
+sandbox.
 
-The technical definition of Init Duration ([source](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-logging.html#node-logging-output)):
+The technical definition of Init Duration
+([source](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-logging.html#node-logging-output)):
 
-> For the first request served, the amount of time it took the runtime to load the function and run code outside of the handler method.
+> For the first request served, the amount of time it took the runtime to load
+> the function and run code outside of the handler method.
 
-Measuring round-trip request duration provides a more complete picture of user facing cold-start latency.
+Measuring round-trip request duration provides a more complete picture of user
+facing cold-start latency.
 
-Lambda invocation results (λ-labeled row) report the sum total of Init Duration + Function Duration.
+Lambda invocation results (λ-labeled row) report the sum total of Init
+Duration + Function Duration.
 
 ## Security
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more
+information.
 
 ## License
 
-This library is licensed under the Apache-2.0 License. See the [LICENSE](LICENSE) file.
+This library is licensed under the Apache-2.0 License. See the
+[LICENSE](LICENSE) file.
