@@ -1,2 +1,2 @@
-#!/bin/sh
+#!/bin/bash
 $(dirname $(realpath "$0"))/cxx aarch64-linux-gnu "$@"
