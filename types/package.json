@@ -15,8 +15,8 @@
   ],
   "devDependencies": {
     "@definitelytyped/dtslint": "0.2.23",
-    "@definitelytyped/eslint-plugin": "0.1,17",
-    "typescript": "5.7.0-dev.20240824"
+    "@definitelytyped/eslint-plugin": "0.1.18",
+    "typescript": "5.5.4"
   },
   "scripts": {
     "test": "tsc"

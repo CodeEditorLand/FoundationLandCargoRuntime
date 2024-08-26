@@ -12,8 +12,8 @@
     "@aws-sdk/client-s3": "3.637.0",
     "aws-sdk": "2.1682.0",
     "esbuild-css-modules-plugin": "3.1.2",
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
-    "react-dom": "19.0.0-rc-fb9a90fa48-20240614"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@types/react": "18.3.4",
