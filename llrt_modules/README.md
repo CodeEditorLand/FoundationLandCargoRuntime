@@ -4,7 +4,7 @@ LLRT Modules is a library of [rquickjs](https://github.com/DelSkayn/rquickjs) mo
 
 LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime designed to address the growing demand for fast and efficient Serverless applications.
 
-## Usage
+## 🛠️ Usage
 
 Each module has a feature flag, they are all enabled by default but if you prefer to can decide which one you need.
 Check the [Compability matrix](#compatibility-matrix) for the full list.
