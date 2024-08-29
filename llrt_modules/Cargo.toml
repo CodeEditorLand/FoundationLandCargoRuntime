@@ -4,7 +4,7 @@ description = "LLRT Modules for rquickjs"
 version = "0.2.0-beta"
 edition = "2021"
 license = "Apache-2.0"
-repository = "https://github.com/awslabs/llrt"
+repository = "HTTPS://GitHub.Com/awslabs/llrt"
 readme = "README.md"
 
 [features]
