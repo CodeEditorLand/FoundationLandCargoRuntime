@@ -8,15 +8,15 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.637.0",
-    "@aws-sdk/client-ec2": "3.637.0",
+    "@aws-sdk/client-ec2": "3.641.0",
     "@aws-sdk/client-s3": "3.637.0",
-    "aws-sdk": "2.1682.0",
+    "aws-sdk": "2.1686.0",
     "esbuild-css-modules-plugin": "3.1.2",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@types/react": "18.3.4",
+    "@types/react": "18.3.5",
     "@types/react-dom": "18.3.0",
     "esbuild": "0.23.1"
   }
