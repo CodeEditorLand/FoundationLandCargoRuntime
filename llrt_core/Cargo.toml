@@ -47,7 +47,7 @@ tracing-core = "0.1.32"
 webpki = "0.22.4"
 async-trait = "0.1.81"
 zstd = { version = "0.13.2", default-features = false, features = [] }
-libc = "0.2.157"
+libc = "0.2.158"
 bytes = "1.7.1"
 uuid-simd = "0.8.0"
 simd-json = { version = "0.13.10", default-features = false, features = [
@@ -70,10 +70,10 @@ rustls = { version = "0.23.12", default-features = false, features = [
     "tls12",
     "ring",
 ] }
-webpki-roots = "0.26.3"
+webpki-roots = "0.26.5"
 ring = "0.17.8"
 rand = "0.8.5"
-flate2 = { version = "1.0.31", features = [
+flate2 = { version = "1.0.33", features = [
     "zlib-ng",
 ], default-features = false }
 brotlic = "0.8.2"
