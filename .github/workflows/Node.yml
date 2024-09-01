@@ -87,7 +87,7 @@ jobs:
             - run: pnpm run build
               working-directory: .
 
-            - uses: actions/upload-artifact@v4.3.6
+            - uses: actions/upload-artifact@v4.4.0
               with:
                   name: .-example-functions-Node-${{ matrix.node-version }}-Target
                   path: ./example/functions/Target
