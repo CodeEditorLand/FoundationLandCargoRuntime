@@ -356,7 +356,6 @@ type XmlParserOptions = {
 export class XMLParser(options?: XmlParserOptions){
     parse(xml:string):object
 }
-
 ```
 
 ## Misc Global objects
