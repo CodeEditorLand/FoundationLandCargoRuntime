@@ -4,7 +4,7 @@ description = "LLRT utilities"
 version = "0.2.0-beta"
 edition = "2021"
 license = "Apache-2.0"
-repository = "HTTPS://GitHub.Com/awslabs/llrt"
+repository = "https://github.com/awslabs/llrt"
 
 [features]
 default = ["all"]
