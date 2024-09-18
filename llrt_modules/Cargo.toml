@@ -10,18 +10,18 @@ readme = "README.md"
 [features]
 default = ["all"]
 all = [
-  "buffer",
-  "child-process",
-  "events",
-  "exceptions",
-  "fs",
-  "navigator",
-  "net",
-  "os",
-  "path",
-  "perf-hooks",
-  "process",
-  "zlib",
+	"buffer",
+	"child-process",
+	"events",
+	"exceptions",
+	"fs",
+	"navigator",
+	"net",
+	"os",
+	"path",
+	"perf-hooks",
+	"process",
+	"zlib",
 ]
 
 buffer = ["llrt_utils/encoding"]
@@ -32,11 +32,11 @@ fs = ["tokio/fs", "llrt_utils/fs", "ring", "buffer", "path"]
 navigator = []
 net = ["events", "__stream"]
 os = [
-  "libc",
-  "windows-result",
-  "windows-registry",
-  "windows-version",
-  "once_cell",
+	"libc",
+	"windows-result",
+	"windows-registry",
+	"windows-version",
+	"once_cell",
 ]
 path = []
 process = []
@@ -51,19 +51,19 @@ either = "1"
 itoa = { version = "1", optional = true }
 once_cell = { version = "1", optional = true }
 llrt_utils = { version = "0.2.0-beta", path = "../llrt_utils", default-features = false, features = [
-  "ctx",
+	"ctx",
 ] }
 rquickjs = { version = "0.6", features = [
-  "array-buffer",
-  "either",
-  "macro",
-  "futures",
+	"array-buffer",
+	"either",
+	"macro",
+	"futures",
 ], default-features = false }
 ring = { version = "0.17", optional = true }
 tokio = { version = "1", features = ["rt", "io-util"] }
 tracing = "0.1"
 flate2 = { version = "1.0.33", features = [
-  "zlib-ng",
+	"zlib-ng",
 ], default-features = false, optional = true }
 brotlic = { version = "0.8.2", optional = true }
 
