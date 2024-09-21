@@ -5,9 +5,7 @@
 .tmp-llrt-aws-sdk
 
 /lib
-/target
-/llrt_core/target
-/llrt_core/src/bytecode_cache.rs
+/llrt_core/llrt_core/src/bytecode_cache.rs
 /example/functions/build
 /slask
 /VERSION
