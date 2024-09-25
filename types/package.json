@@ -1,28 +1,28 @@
 {
-  "name": "llrt-types",
-  "license": "Apache-2.0",
-  "version": "0.0.1",
-  "main": "",
-  "types": "index.d.ts",
-  "description": "Type definitions for LLRT, Low Latency Runtime",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/awslabs/llrt",
-    "directory": "types"
-  },
-  "files": [
-    "*.d.ts"
-  ],
-  "devDependencies": {
-    "@definitelytyped/dtslint": "0.2.23",
-    "@definitelytyped/eslint-plugin": "0.1.18",
-    "typescript": "5.6.2"
-  },
-  "scripts": {
-    "test": "tsc"
-  },
-  "keywords": [
-    "llrt",
-    "types"
-  ]
+	"name": "llrt-types",
+	"version": "0.0.1",
+	"description": "Type definitions for LLRT, Low Latency Runtime",
+	"keywords": [
+		"llrt",
+		"types"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/awslabs/llrt",
+		"directory": "types"
+	},
+	"license": "Apache-2.0",
+	"main": "",
+	"types": "index.d.ts",
+	"files": [
+		"*.d.ts"
+	],
+	"scripts": {
+		"test": "tsc"
+	},
+	"devDependencies": {
+		"@definitelytyped/dtslint": "0.2.23",
+		"@definitelytyped/eslint-plugin": "0.1.18",
+		"typescript": "5.6.2"
+	}
 }
