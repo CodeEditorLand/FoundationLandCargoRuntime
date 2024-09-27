@@ -22,7 +22,7 @@ rquickjs-core = { path = "target/patch/rquickjs-core-0.6.2" }
 llrt_modules = { path = "../llrt_modules", features = ["all"] }
 llrt_utils = { path = "../llrt_utils", features = ["all"] }
 chrono = { version = "0.4.38", default-features = false, features = ["std"] }
-quick-xml = "0.36.1"
+quick-xml = "0.36.2"
 crc32c = { version = "0.6.8" }
 crc32fast = "1.4.2"
 phf = "0.11.2"
@@ -45,12 +45,12 @@ uuid = { version = "1.10.0", default-features = false, features = [
 once_cell = "1.19.0"
 tracing-core = "0.1.32"
 webpki = "0.22.4"
-async-trait = "0.1.82"
+async-trait = "0.1.83"
 zstd = { version = "0.13.2", default-features = false, features = [] }
-libc = "0.2.158"
-bytes = "1.7.1"
+libc = "0.2.159"
+bytes = "1.7.2"
 uuid-simd = "0.8.0"
-simd-json = { version = "0.13.10", default-features = false, features = [
+simd-json = { version = "0.14.0", default-features = false, features = [
 	"big-int-as-float",
 ] }
 itoa = "1.0.11"
@@ -64,16 +64,16 @@ hyper-rustls = { version = "0.27.3", default-features = false, features = [
 	"webpki-tokio",
 	"ring",
 ] }
-hyper-util = "0.1.7"
+hyper-util = "0.1.9"
 http-body-util = "0.1.2"
-rustls = { version = "0.23.12", default-features = false, features = [
+rustls = { version = "0.23.13", default-features = false, features = [
 	"tls12",
 	"ring",
 ] }
-webpki-roots = "0.26.5"
+webpki-roots = "0.26.6"
 ring = "0.17.8"
 rand = "0.8.5"
-flate2 = { version = "1.0.33", features = [
+flate2 = { version = "1.0.34", features = [
 	"zlib-ng",
 ], default-features = false }
 brotlic = "0.8.2"
@@ -97,7 +97,7 @@ nanoid = "0.4.0"
 cargo-patch = "0.3.2"
 
 [dev-dependencies]
-wiremock = "0.6.1"
+wiremock = "0.6.2"
 criterion = "0.5.1"
 
 [[bench]]
