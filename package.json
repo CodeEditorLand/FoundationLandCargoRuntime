@@ -24,7 +24,7 @@
 		"@aws-sdk/client-eventbridge": "3.662.0",
 		"@aws-sdk/client-kms": "3.662.0",
 		"@aws-sdk/client-lambda": "3.662.0",
-		"@aws-sdk/client-s3": "3.662.0",
+		"@aws-sdk/client-s3": "3.663.0",
 		"@aws-sdk/client-secrets-manager": "3.662.0",
 		"@aws-sdk/client-ses": "3.662.0",
 		"@aws-sdk/client-sfn": "3.662.0",
@@ -35,9 +35,9 @@
 		"@aws-sdk/client-xray": "3.662.0",
 		"@aws-sdk/credential-providers": "3.662.0",
 		"@aws-sdk/lib-dynamodb": "3.662.0",
-		"@aws-sdk/lib-storage": "3.662.0",
-		"@aws-sdk/s3-presigned-post": "3.662.0",
-		"@aws-sdk/s3-request-presigner": "3.662.0",
+		"@aws-sdk/lib-storage": "3.663.0",
+		"@aws-sdk/s3-presigned-post": "3.663.0",
+		"@aws-sdk/s3-request-presigner": "3.663.0",
 		"@jest/types": "29.6.3",
 		"@types/chai": "5.0.0",
 		"@types/readable-stream": "4.0.15",
@@ -53,7 +53,7 @@
 		"stream-browserify": "3.0.0",
 		"ts-node": "10.9.2",
 		"typescript": "5.6.2",
-		"vitest": "2.1.1"
+		"vitest": "2.1.2"
 	},
 	"packageManager": "yarn@1.22.22",
 	"side-effects": false
