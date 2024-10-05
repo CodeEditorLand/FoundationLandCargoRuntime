@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #![allow(clippy::new_without_default)]
 #![allow(clippy::inherent_to_string)]
-pub use self::module_info::ModuleInfo;
-pub use self::modules::*;
+pub use self::{module_info::ModuleInfo, modules::*};
 
 mod module_info;
 mod modules;
@@ -15,4 +14,4 @@ mod test;
 pub mod time;
 mod utils;
 
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const VERSION:&str = env!("CARGO_PKG_VERSION");

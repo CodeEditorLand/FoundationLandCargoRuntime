@@ -1,3 +1,0 @@
-edition = "2021"
-fn_params_layout = "Tall"
-match_block_trailing_comma = true
