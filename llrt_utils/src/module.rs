@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 use rquickjs::{module::Exports, Ctx, Object, Result, Value};
 
-pub fn export_default<'js, F>(
-	ctx:&Ctx<'js>,
-	exports:&Exports<'js>,
-	f:F,
-) -> Result<()>
+pub fn export_default<'js, F>(ctx:&Ctx<'js>, exports:&Exports<'js>, f:F) -> Result<()>
 where
 	F: FnOnce(&Object<'js>) -> Result<()>, {
 	let default = Object::new(ctx.clone())?;

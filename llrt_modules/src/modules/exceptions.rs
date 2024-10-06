@@ -20,23 +20,14 @@ pub struct DOMException {
 #[rquickjs::methods]
 impl DOMException {
 	#[qjs(constructor)]
-	pub fn new(
-		ctx:Ctx<'_>,
-		message:Opt<String>,
-		name:Opt<String>,
-	) -> Result<Self> {
-		let error_ctor:Constructor =
-			ctx.globals().get(PredefinedAtom::Error)?;
+	pub fn new(ctx:Ctx<'_>, message:Opt<String>, name:Opt<String>) -> Result<Self> {
+		let error_ctor:Constructor = ctx.globals().get(PredefinedAtom::Error)?;
 		let new:Object = error_ctor.construct((message.clone(),))?;
 
 		let message = message.0.unwrap_or(String::from(""));
 		let name = name.0.unwrap_or(String::from("Error"));
 
-		Ok(Self {
-			message,
-			name,
-			stack:new.get::<_, String>(PredefinedAtom::Stack)?,
-		})
+		Ok(Self { message, name, stack:new.get::<_, String>(PredefinedAtom::Stack)? })
 	}
 
 	#[qjs(get)]

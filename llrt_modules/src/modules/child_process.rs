@@ -17,12 +17,7 @@ use std::{
 	sync::{Arc, RwLock},
 };
 
-use llrt_utils::{
-	ctx::CtxExtension,
-	module::export_default,
-	object::ObjectExt,
-	result::ResultExt,
-};
+use llrt_utils::{ctx::CtxExtension, module::export_default, object::ObjectExt, result::ResultExt};
 use rquickjs::{
 	class::{Trace, Tracer},
 	convert::Coerced,
@@ -199,8 +194,7 @@ impl<'js> ChildProcess<'js> {
 		args:Option<Vec<String>>,
 		child:IoResult<Child>,
 	) -> Result<Class<'js, Self>> {
-		let (kill_signal_tx, kill_signal_rx) =
-			broadcast_channel::<Option<i32>>(1);
+		let (kill_signal_tx, kill_signal_rx) = broadcast_channel::<Option<i32>>(1);
 
 		let instance = Self {
 			emitter:EventEmitter::new(),
@@ -228,24 +222,14 @@ impl<'js> ChildProcess<'js> {
 				instance2.borrow_mut().pid = child.id();
 
 				if let Some(child_stdin) = child.stdin.take() {
-					DefaultWritableStream::process(
-						stdin_instance.clone(),
-						&ctx,
-						child_stdin,
-					)?;
+					DefaultWritableStream::process(stdin_instance.clone(), &ctx, child_stdin)?;
 				};
 
-				let stdout_join_receiver = create_output(
-					&ctx,
-					child.stdout.take(),
-					stdout_instance.clone(),
-				)?;
+				let stdout_join_receiver =
+					create_output(&ctx, child.stdout.take(), stdout_instance.clone())?;
 
-				let stderr_join_receiver = create_output(
-					&ctx,
-					child.stderr.take(),
-					stderr_instance.clone(),
-				)?;
+				let stderr_join_receiver =
+					create_output(&ctx, child.stderr.take(), stderr_instance.clone())?;
 
 				let ctx2 = ctx.clone();
 				let ctx3 = ctx.clone();
@@ -264,17 +248,14 @@ impl<'js> ChildProcess<'js> {
 						)
 						.await?;
 
-						let code =
-							exit_code.unwrap_or_default().into_js(&ctx3)?;
+						let code = exit_code.unwrap_or_default().into_js(&ctx3)?;
 						let signal;
 						#[cfg(unix)]
 						{
 							if let Some(s) = exit_signal {
-								signal =
-									signal_str_from_i32(s).into_js(&ctx3)?;
+								signal = signal_str_from_i32(s).into_js(&ctx3)?;
 							} else {
-								signal = rquickjs::Undefined
-									.into_value(ctx3.clone());
+								signal = rquickjs::Undefined.into_value(ctx3.clone());
 							}
 						}
 						#[cfg(not(unix))]
@@ -290,13 +271,11 @@ impl<'js> ChildProcess<'js> {
 							false,
 						)?;
 
-						if let Some(stderr_join_receiver) = stderr_join_receiver
-						{
+						if let Some(stderr_join_receiver) = stderr_join_receiver {
 							// ok if sender drops
 							let _ = stderr_join_receiver.await;
 						}
-						if let Some(stdout_join_receiver) = stdout_join_receiver
-						{
+						if let Some(stdout_join_receiver) = stdout_join_receiver {
 							// ok if sender drops
 							let _ = stdout_join_receiver.await;
 						}
@@ -325,21 +304,14 @@ impl<'js> ChildProcess<'js> {
 			Err(err) => {
 				let ctx3 = ctx.clone();
 
-				let err_message = format!(
-					"Child process failed to spawn \"{}\". {}",
-					command, err
-				);
+				let err_message = format!("Child process failed to spawn \"{}\". {}", command, err);
 
 				ctx.spawn_exit(async move {
 					if !instance3.borrow().emitter.has_listener_str("error") {
-						return Err(Exception::throw_message(
-							&ctx3,
-							&err_message,
-						));
+						return Err(Exception::throw_message(&ctx3, &err_message));
 					}
 
-					let ex =
-						Exception::from_message(ctx3.clone(), &err_message)?;
+					let ex = Exception::from_message(ctx3.clone(), &err_message)?;
 					ChildProcess::emit_str(
 						This(instance3),
 						&ctx3,
@@ -408,9 +380,7 @@ async fn wait_for_process<'js>(
 }
 
 impl<'js> Emitter<'js> for ChildProcess<'js> {
-	fn get_event_list(&self) -> Arc<RwLock<EventList<'js>>> {
-		self.emitter.get_event_list()
-	}
+	fn get_event_list(&self) -> Arc<RwLock<EventList<'js>>> { self.emitter.get_event_list() }
 }
 
 fn spawn<'js>(
@@ -433,9 +403,7 @@ fn spawn<'js>(
 			let mut args_vec = Vec::with_capacity(args.len());
 			for arg in args.iter() {
 				let arg:Value = arg?;
-				let arg = arg
-					.as_string()
-					.or_throw_msg(&ctx, "argument is not a string")?;
+				let arg = arg.as_string().or_throw_msg(&ctx, "argument is not a string")?;
 				let arg = arg.to_string()?;
 				args_vec.push(arg);
 			}
@@ -451,8 +419,7 @@ fn spawn<'js>(
 	};
 
 	let mut windows_verbatim_arguments = if let Some(opts) = &opts {
-		opts.get_optional::<&str, bool>("windowsVerbatimArguments")?
-			.unwrap_or_default()
+		opts.get_optional::<&str, bool>("windowsVerbatimArguments")?.unwrap_or_default()
 	} else {
 		false
 	};
@@ -470,9 +437,7 @@ fn spawn<'js>(
 				command_args,
 			));
 			shell
-		} else if let Some(shell) =
-			opts.get_optional::<&str, String>("shell")?
-		{
+		} else if let Some(shell) = opts.get_optional::<&str, String>("shell")? {
 			command_args = Some(prepare_shell_args(
 				&shell,
 				&mut windows_verbatim_arguments,
@@ -517,13 +482,9 @@ fn spawn<'js>(
 			command.current_dir(&cwd);
 		}
 
-		if let Some(env) =
-			opts.get_optional::<_, HashMap<String, Coerced<String>>>("env")?
-		{
-			let env:HashMap<String, String> = env
-				.iter()
-				.map(|(k, v)| (k.to_string(), v.to_string()))
-				.collect();
+		if let Some(env) = opts.get_optional::<_, HashMap<String, Coerced<String>>>("env")? {
+			let env:HashMap<String, String> =
+				env.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
 			command.envs(env);
 		}
 
@@ -581,11 +542,7 @@ fn str_to_stdio(ctx:&Ctx<'_>, input:&str) -> Result<StdioEnum> {
 		_ => {
 			Err(Exception::throw_type(
 				ctx,
-				&format!(
-					"Invalid stdio \"{}\". Expected one of: pipe, ignore, \
-					 inherit",
-					input
-				),
+				&format!("Invalid stdio \"{}\". Expected one of: pipe, ignore, inherit", input),
 			))
 		},
 	}
@@ -599,11 +556,7 @@ fn create_output<'js, T>(
 where
 	T: AsyncRead + Unpin + Send + 'static, {
 	if let Some(output) = output {
-		let receiver = DefaultReadableStream::process(
-			native_readable_stream,
-			ctx,
-			output,
-		)?;
+		let receiver = DefaultReadableStream::process(native_readable_stream, ctx, output)?;
 		return Ok(Some(receiver));
 	}
 
@@ -640,9 +593,7 @@ impl ModuleDef for ChildProcessModule {
 }
 
 impl From<ChildProcessModule> for ModuleInfo<ChildProcessModule> {
-	fn from(val:ChildProcessModule) -> Self {
-		ModuleInfo { name:"child_process", module:val }
-	}
+	fn from(val:ChildProcessModule) -> Self { ModuleInfo { name:"child_process", module:val } }
 }
 
 #[cfg(test)]
@@ -657,16 +608,13 @@ mod tests {
 
 	async fn given_test_utils(ctx:Ctx<'_>) {
 		buffer::init(&ctx).unwrap();
-		ModuleEvaluator::eval_rust::<ChildProcessModule>(
-			ctx.clone(),
-			"child_process",
-		)
-		.await
-		.unwrap();
+		ModuleEvaluator::eval_rust::<ChildProcessModule>(ctx.clone(), "child_process")
+			.await
+			.unwrap();
 		ModuleEvaluator::eval_js(
-            ctx,
-            "test_utils",
-            r#"
+			ctx,
+			"test_utils",
+			r#"
                 export async function driveChild(child) {
                     let output = '';
                     child.stdout.on('data', (data) => {
@@ -689,9 +637,9 @@ mod tests {
                     return output;
                 }
             "#,
-        )
-        .await
-        .unwrap();
+		)
+		.await
+		.unwrap();
 	}
 
 	#[tokio::test]
@@ -729,13 +677,13 @@ mod tests {
 	#[tokio::test]
 	async fn test_spawn_shell() {
 		test_async_with(|ctx| {
-            Box::pin(async move {
-                given_test_utils(ctx.clone()).await;
+			Box::pin(async move {
+				given_test_utils(ctx.clone()).await;
 
-                let module = ModuleEvaluator::eval_js(
-                    ctx.clone(),
-                    "test",
-                    r#"
+				let module = ModuleEvaluator::eval_js(
+					ctx.clone(),
+					"test",
+					r#"
                         import { spawn } from "child_process";
                         import { driveChild } from "test_utils";
 
@@ -745,16 +693,16 @@ mod tests {
                             return result;
                         }
                     "#,
-                )
-                .await
-                .catch(&ctx)
-                .unwrap();
+				)
+				.await
+				.catch(&ctx)
+				.unwrap();
 
-                let result = call_test::<String, _>(&ctx, &module, ()).await;
+				let result = call_test::<String, _>(&ctx, &module, ()).await;
 
-                assert!(result == "Hello, world! \r\n" || result == "Hello, world!\n");
-            })
-        })
-        .await;
+				assert!(result == "Hello, world! \r\n" || result == "Hello, world!\n");
+			})
+		})
+		.await;
 	}
 }

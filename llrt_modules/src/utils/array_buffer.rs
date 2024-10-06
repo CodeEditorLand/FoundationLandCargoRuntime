@@ -2,17 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::ptr::NonNull;
 
-use rquickjs::{
-	ArrayBuffer,
-	Ctx,
-	Error,
-	FromJs,
-	IntoJs,
-	Object,
-	Result,
-	TypedArray,
-	Value,
-};
+use rquickjs::{ArrayBuffer, Ctx, Error, FromJs, IntoJs, Object, Result, TypedArray, Value};
 
 #[cfg(feature = "buffer")]
 use crate::buffer::Buffer;
@@ -42,86 +32,62 @@ impl<'js> FromJs<'js> for ArrayBufferView<'js> {
 			.map_err(|_| Error::new_from_js(ty_name, "ArrayBufferView"))?;
 
 		if let Some(array_buffer) = ArrayBuffer::from_object(obj.clone()) {
-			let buffer = array_buffer
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = array_buffer.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i8>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u8>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i16>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u16>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i32>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u32>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<f32>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<f64>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i64>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u64>::from_object(obj.clone()) {
-			let buffer = typed_array
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(array_buffer) = obj.get::<_, ArrayBuffer>("buffer") {
-			let buffer = array_buffer
-				.as_raw()
-				.map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+			let buffer = array_buffer.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
@@ -136,17 +102,15 @@ impl<'js> ArrayBufferView<'js> {
 		Self::from_js(ctx, value)
 	}
 
-	pub fn len(&self) -> usize {
-		self.buffer.as_ref().map(|b| b.len).unwrap_or(0)
-	}
+	pub fn len(&self) -> usize { self.buffer.as_ref().map(|b| b.len).unwrap_or(0) }
 
 	#[allow(dead_code)]
 	pub fn is_empty(&self) -> bool { self.len() == 0 }
 
 	pub fn as_bytes(&self) -> Option<&[u8]> {
-		self.buffer.as_ref().map(|b| unsafe {
-			std::slice::from_raw_parts(b.ptr.as_ptr(), b.len)
-		})
+		self.buffer
+			.as_ref()
+			.map(|b| unsafe { std::slice::from_raw_parts(b.ptr.as_ptr(), b.len) })
 	}
 
 	/// Mutable buffer for the view.
@@ -155,8 +119,8 @@ impl<'js> ArrayBufferView<'js> {
 	/// This is only safe if you have a lock on the runtime.
 	/// Do not pass it directly to other threads.
 	pub fn as_bytes_mut(&self) -> Option<&mut [u8]> {
-		self.buffer.as_ref().map(|b| unsafe {
-			std::slice::from_raw_parts_mut(b.ptr.as_ptr(), b.len)
-		})
+		self.buffer
+			.as_ref()
+			.map(|b| unsafe { std::slice::from_raw_parts_mut(b.ptr.as_ptr(), b.len) })
 	}
 }

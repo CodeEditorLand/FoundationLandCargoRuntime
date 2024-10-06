@@ -13,14 +13,10 @@ use crate::environment::{ENV_LLRT_NET_ALLOW, ENV_LLRT_NET_DENY};
 
 // Create global Lazy variables for allowlist and denylist
 pub static HTTP_ALLOW_LIST:Lazy<Option<StdResult<Vec<Uri>, InvalidUri>>> =
-	Lazy::new(|| {
-		build_http_access_list(llrt_modules::net::get_allow_list().cloned())
-	});
+	Lazy::new(|| build_http_access_list(llrt_modules::net::get_allow_list().cloned()));
 
 pub static HTTP_DENY_LIST:Lazy<Option<StdResult<Vec<Uri>, InvalidUri>>> =
-	Lazy::new(|| {
-		build_http_access_list(llrt_modules::net::get_deny_list().cloned())
-	});
+	Lazy::new(|| build_http_access_list(llrt_modules::net::get_deny_list().cloned()));
 
 pub fn init() {
 	let allow_list = build_access_list(env::var(ENV_LLRT_NET_ALLOW));
@@ -34,9 +30,7 @@ pub fn init() {
 	}
 }
 
-fn build_http_access_list(
-	list:Option<Vec<String>>,
-) -> Option<StdResult<Vec<Uri>, InvalidUri>> {
+fn build_http_access_list(list:Option<Vec<String>>) -> Option<StdResult<Vec<Uri>, InvalidUri>> {
 	list.map(|list| {
 		list.iter()
 			.flat_map(|entry| {
@@ -49,9 +43,7 @@ fn build_http_access_list(
 	})
 }
 
-fn build_access_list(
-	env_value:StdResult<String, VarError>,
-) -> Option<Vec<String>> {
+fn build_access_list(env_value:StdResult<String, VarError>) -> Option<Vec<String>> {
 	env_value.ok().map(|env_value| {
 		env_value
 			.split_whitespace()
@@ -103,7 +95,6 @@ fn url_match(list:&[Uri], uri:&Uri) -> bool {
 	let host = uri.host().unwrap_or_default();
 	let port = uri.port_u16().unwrap_or(80);
 	list.iter().any(|entry| {
-		host.ends_with(entry.host().unwrap_or_default())
-			&& entry.port_u16().unwrap_or(80) == port
+		host.ends_with(entry.host().unwrap_or_default()) && entry.port_u16().unwrap_or(80) == port
 	})
 }

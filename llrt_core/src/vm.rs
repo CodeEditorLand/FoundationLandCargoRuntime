@@ -46,12 +46,7 @@ use zstd::{bulk::Decompressor, dict::DecoderDictionary};
 include!("./bytecode_cache.rs");
 
 use crate::{
-	bytecode::{
-		BYTECODE_COMPRESSED,
-		BYTECODE_UNCOMPRESSED,
-		BYTECODE_VERSION,
-		SIGNATURE_LENGTH,
-	},
+	bytecode::{BYTECODE_COMPRESSED, BYTECODE_UNCOMPRESSED, BYTECODE_VERSION, SIGNATURE_LENGTH},
 	environment,
 	json::{parse::json_parse, stringify::json_stringify_replacer_space},
 	modules::{
@@ -71,15 +66,13 @@ use crate::{
 #[inline]
 pub fn uncompressed_size(input:&[u8]) -> StdResult<(usize, &[u8]), io::Error> {
 	let size = input.get(..4).ok_or(io::ErrorKind::InvalidInput)?;
-	let size:&[u8; 4] =
-		size.try_into().map_err(|_| io::ErrorKind::InvalidInput)?;
+	let size:&[u8; 4] = size.try_into().map_err(|_| io::ErrorKind::InvalidInput)?;
 	let uncompressed_size = u32::from_le_bytes(*size) as usize;
 	let rest = &input[4..];
 	Ok((uncompressed_size, rest))
 }
 
-pub(crate) static COMPRESSION_DICT:&[u8] =
-	include_bytes!("../../bundle/lrt/compression.dict");
+pub(crate) static COMPRESSION_DICT:&[u8] = include_bytes!("../../bundle/lrt/compression.dict");
 
 static DECOMPRESSOR_DICT:Lazy<DecoderDictionary> =
 	Lazy::new(|| DecoderDictionary::copy(COMPRESSION_DICT));
@@ -106,8 +99,7 @@ impl BinaryResolver {
 	pub fn get_bin_path(path:&Path) -> PathBuf { path.with_extension("lrt") }
 
 	pub fn normalize<P:AsRef<Path>>(path:P) -> PathBuf {
-		let ends_with_slash =
-			path.as_ref().to_str().map_or(false, |s| s.ends_with('/'));
+		let ends_with_slash = path.as_ref().to_str().map_or(false, |s| s.ends_with('/'));
 		let mut normalized = PathBuf::new();
 		for component in path.as_ref().components() {
 			match &component {
@@ -216,10 +208,7 @@ where
 	T: Loader + 'static,
 {
 	fn new(loader:T) -> Self {
-		Self {
-			loader,
-			cwd:std::env::current_dir().unwrap().to_string_lossy().to_string(),
-		}
+		Self { loader, cwd:std::env::current_dir().unwrap().to_string_lossy().to_string() }
 	}
 }
 
@@ -227,15 +216,10 @@ impl<T> Loader for LoaderContainer<T>
 where
 	T: Loader + 'static,
 {
-	fn load<'js>(
-		&mut self,
-		ctx:&Ctx<'js>,
-		name:&str,
-	) -> Result<Module<'js, Declared>> {
+	fn load<'js>(&mut self, ctx:&Ctx<'js>, name:&str) -> Result<Module<'js, Declared>> {
 		let res = self.loader.load(ctx, name)?;
 
-		let name =
-			if let Some(name) = name.strip_prefix("./") { name } else { name };
+		let name = if let Some(name) = name.strip_prefix("./") { name } else { name };
 
 		if name.starts_with('/') {
 			set_import_meta(&res, name)?;
@@ -248,11 +232,7 @@ where
 }
 
 impl Loader for BinaryLoader {
-	fn load<'js>(
-		&mut self,
-		ctx:&Ctx<'js>,
-		name:&str,
-	) -> Result<Module<'js, Declared>> {
+	fn load<'js>(&mut self, ctx:&Ctx<'js>, name:&str) -> Result<Module<'js, Declared>> {
 		trace!("Loading module: {}", name);
 		let ctx = ctx.clone();
 		if let Some(bytes) = BYTECODE_CACHE.get(name) {
@@ -289,8 +269,7 @@ fn get_module_bytecode(input:&[u8]) -> Result<Vec<u8>> {
 	if compressed {
 		let (size, input) = uncompressed_size(input)?;
 		let mut buf = Vec::with_capacity(size);
-		let mut decompressor =
-			Decompressor::with_prepared_dictionary(&DECOMPRESSOR_DICT)?;
+		let mut decompressor = Decompressor::with_prepared_dictionary(&DECOMPRESSOR_DICT)?;
 		decompressor.decompress_to_buffer(input, &mut buf)?;
 		return Ok(buf);
 	}
@@ -298,14 +277,11 @@ fn get_module_bytecode(input:&[u8]) -> Result<Vec<u8>> {
 	Ok(input.to_vec())
 }
 
-fn get_bytecode_signature(
-	input:&[u8],
-) -> StdResult<(&[u8], bool, &[u8]), io::Error> {
-	let raw_signature =
-		input.get(..SIGNATURE_LENGTH).ok_or(io::Error::new::<String>(
-			io::ErrorKind::InvalidInput,
-			"Invalid bytecode signature length".into(),
-		))?;
+fn get_bytecode_signature(input:&[u8]) -> StdResult<(&[u8], bool, &[u8]), io::Error> {
+	let raw_signature = input.get(..SIGNATURE_LENGTH).ok_or(io::Error::new::<String>(
+		io::ErrorKind::InvalidInput,
+		"Invalid bytecode signature length".into(),
+	))?;
 
 	let (last, signature) = raw_signature.split_last().unwrap();
 
@@ -356,12 +332,9 @@ impl Default for VmOptions {
 			gc_threshold_mb:{
 				const DEFAULT_GC_THRESHOLD_MB:usize = 20;
 
-				let gc_threshold_mb:usize =
-					env::var(environment::ENV_LLRT_GC_THRESHOLD_MB)
-						.map(|threshold| {
-							threshold.parse().unwrap_or(DEFAULT_GC_THRESHOLD_MB)
-						})
-						.unwrap_or(DEFAULT_GC_THRESHOLD_MB);
+				let gc_threshold_mb:usize = env::var(environment::ENV_LLRT_GC_THRESHOLD_MB)
+					.map(|threshold| threshold.parse().unwrap_or(DEFAULT_GC_THRESHOLD_MB))
+					.unwrap_or(DEFAULT_GC_THRESHOLD_MB);
 
 				gc_threshold_mb * 1024 * 1024
 			},
@@ -378,9 +351,7 @@ impl Vm {
 		llrt_modules::time::init();
 		security::init();
 
-		SYSTEM_RANDOM
-			.fill(&mut [0; 8])
-			.expect("Failed to initialize SystemRandom");
+		SYSTEM_RANDOM.fill(&mut [0; 8]).expect("Failed to initialize SystemRandom");
 
 		let mut file_resolver = FileResolver::default();
 		let mut binary_resolver = BinaryResolver::default();
@@ -388,8 +359,7 @@ impl Vm {
 
 		paths.push(".");
 
-		let task_root = env::var(Self::ENV_LAMBDA_TASK_ROOT)
-			.unwrap_or_else(|_| String::from(""));
+		let task_root = env::var(Self::ENV_LAMBDA_TASK_ROOT).unwrap_or_else(|_| String::from(""));
 		let task_root = task_root.as_str();
 		if cfg!(debug_assertions) {
 			paths.push("bundle");
@@ -442,8 +412,7 @@ impl Vm {
 		Ok(Vm { runtime, ctx })
 	}
 
-	pub async fn new()
-	-> StdResult<Self, Box<dyn std::error::Error + Send + Sync>> {
+	pub async fn new() -> StdResult<Self, Box<dyn std::error::Error + Send + Sync>> {
 		let vm = Self::from_options(VmOptions::default()).await?;
 		Ok(vm)
 	}
@@ -489,12 +458,8 @@ impl Vm {
 		let mut error_str = String::new();
 		write!(error_str, "Error: {:?}", err).unwrap();
 		if let Ok(error) = err.into_value(ctx) {
-			if console::log_std_err(
-				ctx,
-				Rest(vec![error.clone()]),
-				console::LogLevel::Fatal,
-			)
-			.is_err()
+			if console::log_std_err(ctx, Rest(vec![error.clone()]), console::LogLevel::Fatal)
+				.is_err()
 			{
 				eprintln!("{}", error_str);
 			};
@@ -505,14 +470,10 @@ impl Vm {
 		};
 	}
 
-	pub async fn idle(
-		self,
-	) -> StdResult<(), Box<dyn std::error::Error + Sync + Send>> {
+	pub async fn idle(self) -> StdResult<(), Box<dyn std::error::Error + Sync + Send>> {
 		let rt = self
 			.ctx
-			.with(|ctx| unsafe {
-				qjs::JS_GetRuntime(ctx.as_raw().as_ptr()) as usize
-			})
+			.with(|ctx| unsafe { qjs::JS_GetRuntime(ctx.as_raw().as_ptr()) as usize })
 			.await;
 
 		let rt = rt as *mut qjs::JSRuntime;
@@ -537,10 +498,7 @@ impl Vm {
 	}
 }
 
-fn json_parse_string<'js>(
-	ctx:Ctx<'js>,
-	value:Value<'js>,
-) -> Result<Value<'js>> {
+fn json_parse_string<'js>(ctx:Ctx<'js>, value:Value<'js>) -> Result<Value<'js>> {
 	let bytes = get_bytes(&ctx, value)?;
 	json_parse(&ctx, bytes)
 }
@@ -564,9 +522,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 	globals.set("print", Func::from(print))?;
 	globals.set(
 		"structuredClone",
-		Func::from(|ctx, value, options| {
-			structured_clone(&ctx, value, options)
-		}),
+		Func::from(|ctx, value, options| structured_clone(&ctx, value, options)),
 	)?;
 
 	let json_module:Object = globals.get(PredefinedAtom::JSON)?;
@@ -574,12 +530,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 	json_module.set(
 		"stringify",
 		Func::from(|ctx, value, replacer, space| {
-			struct StringifyArgs<'js>(
-				Ctx<'js>,
-				Value<'js>,
-				Opt<Value<'js>>,
-				Opt<Value<'js>>,
-			);
+			struct StringifyArgs<'js>(Ctx<'js>, Value<'js>, Opt<Value<'js>>, Opt<Value<'js>>);
 			let StringifyArgs(ctx, value, replacer, space) =
 				StringifyArgs(ctx, value, replacer, space);
 
@@ -595,27 +546,20 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 					}
 					if let Some(number) = space.as_int() {
 						if number > 0 {
-							space_value =
-								Some(" ".repeat(min(10, number as usize)));
+							space_value = Some(" ".repeat(min(10, number as usize)));
 						}
 					}
 				}
 				replacer_value = Some(replacer);
 			}
 
-			json_stringify_replacer_space(
-				&ctx,
-				value,
-				replacer_value,
-				space_value,
-			)
-			.map(|v| v.into_js(&ctx))?
+			json_stringify_replacer_space(&ctx, value, replacer_value, space_value)
+				.map(|v| v.into_js(&ctx))?
 		}),
 	)?;
 
 	#[allow(clippy::arc_with_non_send_sync)]
-	let require_in_progress:Arc<Mutex<HashMap<String, Object>>> =
-		Arc::new(Mutex::new(HashMap::new()));
+	let require_in_progress:Arc<Mutex<HashMap<String, Object>>> = Arc::new(Mutex::new(HashMap::new()));
 
 	#[allow(clippy::arc_with_non_send_sync)]
 	let require_exports:Arc<Mutex<Option<Value>>> = Arc::new(Mutex::new(None));
@@ -626,8 +570,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 	js_bootstrap.set(
 		"moduleExport",
 		Func::from(move |ctx, obj, prop, value| {
-			let ExportArgs(_ctx, _, _, value) =
-				ExportArgs(ctx, obj, prop, value);
+			let ExportArgs(_ctx, _, _, value) = ExportArgs(ctx, obj, prop, value);
 			let mut exports = require_exports.lock().unwrap();
 			exports.replace(value);
 			Result::Ok(true)
@@ -636,8 +579,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 	js_bootstrap.set(
 		"exports",
 		Func::from(move |ctx, obj, prop, value| {
-			let ExportArgs(ctx, _, prop, value) =
-				ExportArgs(ctx, obj, prop, value);
+			let ExportArgs(ctx, _, prop, value) = ExportArgs(ctx, obj, prop, value);
 			let mut exports = require_exports_ref.lock().unwrap();
 			let exports = if exports.is_some() {
 				exports.as_ref().unwrap()
@@ -656,9 +598,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 		Func::from(move |ctx, specifier:String| -> Result<Value> {
 			struct Args<'js>(Ctx<'js>);
 			let Args(ctx) = Args(ctx);
-			let specifier = if let Some(striped_specifier) =
-				&specifier.strip_prefix("node:")
-			{
+			let specifier = if let Some(striped_specifier) = &specifier.strip_prefix("node:") {
 				striped_specifier.to_string()
 			} else {
 				specifier
@@ -699,8 +639,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 
 			require_in_progress.lock().unwrap().remove(&import_name);
 
-			if let Some(exports) = require_exports_ref_2.lock().unwrap().take()
-			{
+			if let Some(exports) = require_exports_ref_2.lock().unwrap().take() {
 				if let Some(exports) = exports.as_object() {
 					for prop in exports.props::<Value, Value>() {
 						let (key, value) = prop?;
@@ -725,11 +664,7 @@ fn init(ctx:&Ctx<'_>, module_names:HashSet<&'static str>) -> Result<()> {
 	Ok(())
 }
 
-fn load<'js>(
-	ctx:Ctx<'js>,
-	filename:String,
-	options:Opt<Object<'js>>,
-) -> Result<Value<'js>> {
+fn load<'js>(ctx:Ctx<'js>, filename:String, options:Opt<Object<'js>>) -> Result<Value<'js>> {
 	let mut eval_options = EvalOptions::default();
 	eval_options.strict = false;
 	eval_options.promise = true;

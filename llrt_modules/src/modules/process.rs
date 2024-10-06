@@ -24,9 +24,9 @@ pub use crate::sysinfo::{get_arch, get_platform};
 use crate::{time, ModuleInfo, VERSION};
 
 fn cwd(ctx:Ctx<'_>) -> Result<rquickjs::String<'_>> {
-	env::current_dir().or_throw(&ctx).and_then(|path| {
-		rquickjs::String::from_str(ctx, path.to_string_lossy().as_ref())
-	})
+	env::current_dir()
+		.or_throw(&ctx)
+		.and_then(|path| rquickjs::String::from_str(ctx, path.to_string_lossy().as_ref()))
 }
 
 fn hr_time_big_int(ctx:Ctx<'_>) -> Result<BigInt> {
@@ -92,8 +92,7 @@ pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 	let env_obj = env_map.into_js(ctx)?;
 	let env_proxy_cfg = Object::new(ctx.clone())?;
 	env_proxy_cfg.set(PredefinedAtom::Setter, Func::from(env_proxy_setter))?;
-	let env_proxy =
-		proxy_ctor.construct::<_, Value>((env_obj, env_proxy_cfg))?;
+	let env_proxy = proxy_ctor.construct::<_, Value>((env_obj, env_proxy_cfg))?;
 
 	process.set("env", env_proxy)?;
 	process.set("cwd", Func::from(cwd))?;
@@ -153,9 +152,7 @@ impl ModuleDef for ProcessModule {
 }
 
 impl From<ProcessModule> for ModuleInfo<ProcessModule> {
-	fn from(val:ProcessModule) -> Self {
-		ModuleInfo { name:"process", module:val }
-	}
+	fn from(val:ProcessModule) -> Self { ModuleInfo { name:"process", module:val } }
 }
 
 #[cfg(test)]
@@ -169,12 +166,9 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
-				ModuleEvaluator::eval_rust::<ProcessModule>(
-					ctx.clone(),
-					"process",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<ProcessModule>(ctx.clone(), "process")
+					.await
+					.unwrap();
 
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
@@ -207,12 +201,9 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
-				ModuleEvaluator::eval_rust::<ProcessModule>(
-					ctx.clone(),
-					"process",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<ProcessModule>(ctx.clone(), "process")
+					.await
+					.unwrap();
 
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
@@ -230,8 +221,7 @@ mod tests {
 				)
 				.await
 				.unwrap();
-				let result =
-					call_test::<Coerced<i64>, _>(&ctx, &module, ()).await;
+				let result = call_test::<Coerced<i64>, _>(&ctx, &module, ()).await;
 				assert!(result.0 > 0);
 			})
 		})

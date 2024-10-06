@@ -18,8 +18,7 @@ fn compress_module(bytes:&[u8]) -> io::Result<Vec<u8>> {
 	let compressed_bytes = compressor.compress(bytes)?;
 	let uncompressed_len = bytes.len() as u32;
 
-	let compressed =
-		add_bytecode_header(compressed_bytes, Some(uncompressed_len));
+	let compressed = add_bytecode_header(compressed_bytes, Some(uncompressed_len));
 	Ok(compressed)
 }
 
@@ -42,13 +41,11 @@ pub async fn compile_file(
 		(|| {
 			let source = fs::read_to_string(input_filename).or_throw_msg(
 				&ctx,
-				&["Unable to load: ", &input_filename.to_string_lossy()]
-					.concat(),
+				&["Unable to load: ", &input_filename.to_string_lossy()].concat(),
 			)?;
 			js_bytes = source.len();
 
-			let module_name =
-				input_filename.with_extension("").to_string_lossy().to_string();
+			let module_name = input_filename.with_extension("").to_string_lossy().to_string();
 
 			trace!("Compiling module: {}", module_name);
 

@@ -16,9 +16,7 @@ pub struct StringVisitor<'a> {
 	string:&'a mut String,
 }
 impl<'a> StringVisitor<'a> {
-	pub(crate) fn new(string:&'a mut String) -> Self {
-		StringVisitor { string }
-	}
+	pub(crate) fn new(string:&'a mut String) -> Self { StringVisitor { string } }
 }
 
 impl<'a> Visit for StringVisitor<'a> {
@@ -53,8 +51,7 @@ fn string_to_level(string:&str) -> Option<Level> {
 }
 
 impl MinimalTracer {
-	pub fn register() -> Result<(), tracing::subscriber::SetGlobalDefaultError>
-	{
+	pub fn register() -> Result<(), tracing::subscriber::SetGlobalDefaultError> {
 		let mut enabled = false;
 		let mut filters:Vec<LogFilter> = Vec::with_capacity(10);
 		if let Ok(env_value) = env::var(environment::ENV_LLRT_LOG) {
@@ -74,17 +71,11 @@ impl MinimalTracer {
 					target = None;
 				}
 
-				filters.push(LogFilter {
-					target:target.map(|v| v.to_string()),
-					level,
-				});
+				filters.push(LogFilter { target:target.map(|v| v.to_string()), level });
 			}
 		}
 
-		tracing::subscriber::set_global_default(MinimalTracer {
-			enabled,
-			filters,
-		})
+		tracing::subscriber::set_global_default(MinimalTracer { enabled, filters })
 	}
 }
 

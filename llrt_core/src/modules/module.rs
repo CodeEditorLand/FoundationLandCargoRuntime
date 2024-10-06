@@ -13,9 +13,7 @@ use crate::module_builder::ModuleInfo;
 
 pub struct ModuleModule;
 
-fn create_require(ctx:Ctx<'_>) -> Result<Value<'_>> {
-	ctx.globals().get("require")
-}
+fn create_require(ctx:Ctx<'_>) -> Result<Value<'_>> { ctx.globals().get("require") }
 
 impl ModuleDef for ModuleModule {
 	fn declare(declare:&Declarations) -> Result<()> {
@@ -37,7 +35,5 @@ impl ModuleDef for ModuleModule {
 }
 
 impl From<ModuleModule> for ModuleInfo<ModuleModule> {
-	fn from(val:ModuleModule) -> Self {
-		ModuleInfo { name:"module", module:val }
-	}
+	fn from(val:ModuleModule) -> Self { ModuleInfo { name:"module", module:val } }
 }

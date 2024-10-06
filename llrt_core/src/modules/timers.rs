@@ -22,11 +22,7 @@ use rquickjs::{
 	Value,
 };
 
-use crate::{
-	module_builder::ModuleInfo,
-	modules::module::export_default,
-	vm::Vm,
-};
+use crate::{module_builder::ModuleInfo, modules::module::export_default, vm::Vm};
 
 static TIMER_ID:AtomicUsize = AtomicUsize::new(0);
 
@@ -36,9 +32,7 @@ pub(crate) struct RuntimeTimerState {
 	rt:*mut qjs::JSRuntime,
 }
 impl RuntimeTimerState {
-	fn new(rt:*mut qjs::JSRuntime) -> Self {
-		Self { timers:Vec::new(), rt, last_time:0 }
-	}
+	fn new(rt:*mut qjs::JSRuntime) -> Self { Self { timers:Vec::new(), rt, last_time:0 } }
 }
 
 unsafe impl Send for RuntimeTimerState {}
@@ -90,14 +84,8 @@ pub fn set_timeout_interval<'js>(
 	let rt = unsafe { qjs::JS_GetRuntime(ctx.as_raw().as_ptr()) };
 	let mut rt_timers = RUNTIME_TIMERS.lock().unwrap();
 
-	let timeout_ref = TimeoutRef {
-		expires,
-		callback:Some(callback),
-		ctx:ctx.as_raw(),
-		id,
-		repeating,
-		delay,
-	};
+	let timeout_ref =
+		TimeoutRef { expires, callback:Some(callback), ctx:ctx.as_raw(), id, repeating, delay };
 
 	if let Some(entry) = rt_timers.iter_mut().find(|state| state.rt == rt) {
 		entry.timers.push(timeout_ref);
@@ -143,8 +131,7 @@ impl ModuleDef for TimersModule {
 		let globals = ctx.globals();
 
 		export_default(ctx, exports, |default| {
-			let functions =
-				["setTimeout", "clearTimeout", "setInterval", "clearInterval"];
+			let functions = ["setTimeout", "clearTimeout", "setInterval", "clearInterval"];
 			for func_name in functions {
 				let function:Function = globals.get(func_name)?;
 				default.set(func_name, function)?;
@@ -157,9 +144,7 @@ impl ModuleDef for TimersModule {
 }
 
 impl From<TimersModule> for ModuleInfo<TimersModule> {
-	fn from(val:TimersModule) -> Self {
-		ModuleInfo { name:"timers", module:val }
-	}
+	fn from(val:TimersModule) -> Self { ModuleInfo { name:"timers", module:val } }
 }
 
 pub fn init(_ctx:&Ctx<'_>) -> Result<()> {
@@ -240,13 +225,11 @@ pub fn poll_timers(rt:*mut qjs::JSRuntime) -> bool {
 					let ctx = timeout.ctx;
 					if let Some(cb) = timeout.callback.take() {
 						if !timeout.repeating {
-							executing_timers
-								.push(Some(ExecutingTimer(ctx, cb)));
+							executing_timers.push(Some(ExecutingTimer(ctx, cb)));
 							return false;
 						}
 						timeout.expires = current_time + timeout.delay;
-						executing_timers
-							.push(Some(ExecutingTimer(ctx, cb.clone())));
+						executing_timers.push(Some(ExecutingTimer(ctx, cb.clone())));
 						timeout.callback.replace(cb);
 					} else {
 						return false;

@@ -64,13 +64,9 @@ pub fn structured_clone<'js>(
 	let mut transfer_set = None;
 
 	if let Some(options) = options.0 {
-		if let Some(transfer_array) =
-			options.get_optional::<_, Array>("transfer")?
-		{
-			let mut set = FxHashSet::with_capacity_and_hasher(
-				transfer_array.len(),
-				FxBuildHasher::default(),
-			);
+		if let Some(transfer_array) = options.get_optional::<_, Array>("transfer")? {
+			let mut set =
+				FxHashSet::with_capacity_and_hasher(transfer_array.len(), FxBuildHasher::default());
 
 			for item in transfer_array.iter::<Value>() {
 				set.insert(item?);
@@ -91,13 +87,7 @@ pub fn structured_clone<'js>(
 			StackItem::Value(parent, value, mut object_key, array_index) => {
 				if let Some(set) = &transfer_set {
 					if let Some(value) = set.get(&value) {
-						append_transfer_value(
-							&mut tape,
-							value,
-							parent,
-							object_key,
-							array_index,
-						)?;
+						append_transfer_value(&mut tape, value, parent, object_key, array_index)?;
 						index += 1;
 						continue;
 					}
@@ -145,8 +135,7 @@ pub fn structured_clone<'js>(
 							continue;
 						}
 
-						let is_collection = if object.is_instance_of(&set_ctor)
-						{
+						let is_collection = if object.is_instance_of(&set_ctor) {
 							Some(ObjectType::Set)
 						} else if object.is_instance_of(&map_ctor) {
 							Some(ObjectType::Map)
@@ -172,23 +161,16 @@ pub fn structured_clone<'js>(
 						}
 
 						if is_view_fn.call::<_, bool>((value.clone(),))? {
-							append_buffer(
-								&mut tape,
-								object,
-								parent,
-								object_key,
-								array_index,
-							)?;
+							append_buffer(&mut tape, object, parent, object_key, array_index)?;
 							index += 1;
 							continue;
 						}
 
-						let new:Object<'_> =
-							if object.is_instance_of(&error_ctor) {
-								error_ctor.construct(("",))
-							} else {
-								Object::new(ctx.clone())
-							}?;
+						let new:Object<'_> = if object.is_instance_of(&error_ctor) {
+							error_ctor.construct(("",))
+						} else {
+							Object::new(ctx.clone())
+						}?;
 
 						tape.push(TapeItem {
 							parent,
@@ -201,12 +183,7 @@ pub fn structured_clone<'js>(
 						for key in object.keys::<String>() {
 							let key = key?;
 							let value = object.get(&key)?;
-							stack.push(StackItem::Value(
-								index,
-								value,
-								Some(key),
-								None,
-							));
+							stack.push(StackItem::Value(index, value, Some(key), None));
 						}
 					},
 					Type::Array => {
@@ -310,12 +287,7 @@ fn append_buffer<'js>(
 	let slice:Function = object.get("slice")?;
 	let clone:Value = slice.call((This(object.clone()),))?;
 	let new = ctor.construct((clone,))?;
-	tape.push(TapeItem {
-		parent,
-		object_key,
-		array_index,
-		value:TapeValue::Value(new),
-	});
+	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(new) });
 	Ok(())
 }
 
@@ -373,12 +345,7 @@ fn append_transfer_value<'js>(
 	object_key:Option<String>,
 	array_index:Option<usize>,
 ) -> Result<()> {
-	tape.push(TapeItem {
-		parent,
-		object_key,
-		array_index,
-		value:TapeValue::Value(value.clone()),
-	});
+	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(value.clone()) });
 	Ok(())
 }
 
@@ -400,12 +367,7 @@ fn append_circular(
 
 	let object_key = object_key.take();
 
-	tape.push(TapeItem {
-		parent,
-		object_key,
-		array_index,
-		value:TapeValue::Value(value),
-	});
+	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(value) });
 }
 
 #[inline(always)]
@@ -419,12 +381,7 @@ fn append_ctor_value<'js>(
 	array_index:Option<usize>,
 ) -> Result<()> {
 	let clone:Value = ctor.construct((object.clone(),))?;
-	tape.push(TapeItem {
-		parent,
-		object_key,
-		array_index,
-		value:TapeValue::Value(clone),
-	});
+	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(clone) });
 	Ok(())
 }
 
@@ -433,10 +390,7 @@ mod tests {
 
 	use rquickjs::{function::Opt, Object, Value};
 
-	use crate::{
-		test_utils::utils::with_js_runtime,
-		utils::clone::structured_clone,
-	};
+	use crate::{test_utils::utils::with_js_runtime, utils::clone::structured_clone};
 
 	#[tokio::test]
 	async fn clone() {
@@ -457,29 +411,17 @@ a
 "#,
 			)?;
 
-			let cloned =
-				structured_clone(&ctx, value.clone().into_value(), Opt(None))?
-					.into_object()
-					.unwrap();
+			let cloned = structured_clone(&ctx, value.clone().into_value(), Opt(None))?
+				.into_object()
+				.unwrap();
 
-			let json = ctx
-				.json_stringify(value.clone())?
-				.unwrap()
-				.to_string()?
-				.to_string();
+			let json = ctx.json_stringify(value.clone())?.unwrap().to_string()?.to_string();
 
-			let clone_json = ctx
-				.json_stringify(cloned.clone())?
-				.unwrap()
-				.to_string()?
-				.to_string();
+			let clone_json = ctx.json_stringify(cloned.clone())?.unwrap().to_string()?.to_string();
 
 			assert_eq!(json, clone_json);
 
-			assert_ne!(
-				value.get::<_, Value>("foo")?,
-				cloned.get::<_, Value>("foo")?
-			);
+			assert_ne!(value.get::<_, Value>("foo")?, cloned.get::<_, Value>("foo")?);
 
 			Ok(())
 		})

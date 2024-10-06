@@ -61,8 +61,7 @@ impl BytearrayBuffer {
 			let available = max_capacity - len;
 
 			if available > 0 {
-				let end_index =
-					min(item.len() - 1, slice_index + available - 1);
+				let end_index = min(item.len() - 1, slice_index + available - 1);
 				let sub_slice = &item[slice_index..=end_index];
 				let slice_length = sub_slice.len();
 				slice_index += slice_length;

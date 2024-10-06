@@ -54,10 +54,7 @@ pub struct Receiver<T:Clone> {
 
 impl<T:Clone> Receiver<T> {
 	pub fn recv(&self) -> ReceiverWaiter<T> {
-		ReceiverWaiter {
-			is_sent:self.is_sent.clone(),
-			value:self.value.clone(),
-		}
+		ReceiverWaiter { is_sent:self.is_sent.clone(), value:self.value.clone() }
 	}
 }
 

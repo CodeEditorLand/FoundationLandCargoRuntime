@@ -18,17 +18,10 @@ where
 	T: Fn(&str) -> bool,
 {
 	pub fn new(root:PathBuf, filter:T) -> Self {
-		Self {
-			stack:vec![(root, None)],
-			filter,
-			recursive:false,
-			eat_root:true,
-		}
+		Self { stack:vec![(root, None)], filter, recursive:false, eat_root:true }
 	}
 
-	pub fn set_recursive(&mut self, recursive:bool) {
-		self.recursive = recursive;
-	}
+	pub fn set_recursive(&mut self, recursive:bool) { self.recursive = recursive; }
 
 	pub async fn walk(&mut self) -> io::Result<Option<(PathBuf, Metadata)>> {
 		if self.eat_root {

@@ -75,9 +75,7 @@ impl<T> ResultExt<T> for Option<T> {
 	}
 
 	fn or_throw(self, ctx:&Ctx) -> Result<T> {
-		self.ok_or_else(|| {
-			Exception::throw_message(ctx, "Value is not present")
-		})
+		self.ok_or_else(|| Exception::throw_message(ctx, "Value is not present"))
 	}
 }
 

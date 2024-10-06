@@ -67,9 +67,7 @@ impl ModuleDef for PerfHooksModule {
 }
 
 impl From<PerfHooksModule> for ModuleInfo<PerfHooksModule> {
-	fn from(val:PerfHooksModule) -> Self {
-		ModuleInfo { name:"perf_hooks", module:val }
-	}
+	fn from(val:PerfHooksModule) -> Self { ModuleInfo { name:"perf_hooks", module:val } }
 }
 
 pub fn init(ctx:&Ctx<'_>) -> Result<()> {
@@ -87,12 +85,9 @@ mod tests {
 		time::init();
 		test_async_with(|ctx| {
 			Box::pin(async move {
-				ModuleEvaluator::eval_rust::<PerfHooksModule>(
-					ctx.clone(),
-					"perf_hooks",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<PerfHooksModule>(ctx.clone(), "perf_hooks")
+					.await
+					.unwrap();
 
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
@@ -123,12 +118,9 @@ mod tests {
 		time::init();
 		test_async_with(|ctx| {
 			Box::pin(async move {
-				ModuleEvaluator::eval_rust::<PerfHooksModule>(
-					ctx.clone(),
-					"perf_hooks",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<PerfHooksModule>(ctx.clone(), "perf_hooks")
+					.await
+					.unwrap();
 
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
@@ -155,12 +147,9 @@ mod tests {
 		time::init();
 		test_async_with(|ctx| {
 			Box::pin(async move {
-				ModuleEvaluator::eval_rust::<PerfHooksModule>(
-					ctx.clone(),
-					"perf_hooks",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<PerfHooksModule>(ctx.clone(), "perf_hooks")
+					.await
+					.unwrap();
 
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),

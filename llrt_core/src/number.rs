@@ -16,9 +16,7 @@ const BIN_MAX_DIGITS:usize = 64;
 const OCT_MAX_DIGITS:usize = 21;
 
 #[inline(always)]
-pub fn to_dec(number:i64) -> String {
-	itoa::Buffer::new().format(number).into()
-}
+pub fn to_dec(number:i64) -> String { itoa::Buffer::new().format(number).into() }
 
 #[inline(always)]
 pub fn to_base_less_than_10(buf:&mut [u8], num:i64, base:i64) -> String {
@@ -74,9 +72,7 @@ pub fn i64_to_base_n(number:i64, radix:u8) -> String {
 
 	let index = internal_i64_to_base_n(&mut buf, abs_number, radix);
 
-	string.push_str(unsafe {
-		std::str::from_utf8_unchecked(&buf[index..BUF_SIZE])
-	});
+	string.push_str(unsafe { std::str::from_utf8_unchecked(&buf[index..BUF_SIZE]) });
 	string
 }
 
@@ -117,14 +113,8 @@ fn next_up(num:f64) -> f64 {
 }
 
 #[inline(always)]
-fn fractional_to_base(
-	buf:&mut [u8],
-	mut index:usize,
-	mut number:f64,
-	radix:u8,
-) -> usize {
-	let mut is_odd =
-		number <= 0x1FFFFFFFFFFFFFi64 as f64 && (number as i64) & 1 != 0;
+fn fractional_to_base(buf:&mut [u8], mut index:usize, mut number:f64, radix:u8) -> usize {
+	let mut is_odd = number <= 0x1FFFFFFFFFFFFFi64 as f64 && (number as i64) & 1 != 0;
 	let mut digit;
 
 	// let mut needs_rounding_up = false;
@@ -145,9 +135,7 @@ fn fractional_to_base(
 		number = ntmp - digit as f64;
 		delta_next_double = rtmp - ritmp as f64;
 
-		if number > 0.5f64
-			|| number == 0.5f64
-				&& if radix & 1 > 0 { is_odd } else { digit & 1 > 0 }
+		if number > 0.5f64 || number == 0.5f64 && if radix & 1 > 0 { is_odd } else { digit & 1 > 0 }
 		{
 			if number + delta_next_double > 1.0 {
 				// TODO impl round up
@@ -191,9 +179,7 @@ fn f64_to_base_n(number:f64, radix:u8) -> String {
 	let integer_part = abs_num as i64;
 
 	let mut index = internal_i64_to_base_n(&mut buf, integer_part, radix);
-	string.push_str(unsafe {
-		std::str::from_utf8_unchecked(&buf[index..BUF_SIZE])
-	});
+	string.push_str(unsafe { std::str::from_utf8_unchecked(&buf[index..BUF_SIZE]) });
 
 	index = BUF_SIZE - index;
 
@@ -214,9 +200,7 @@ pub fn float_to_string(buffer:&mut ryu::Buffer, float:f64) -> &str {
 	};
 	let len = str.len();
 	if unsafe { str.get_unchecked(len - 2..) } == ".0" {
-		return unsafe {
-			std::str::from_utf8_unchecked(&str.as_bytes()[..len - 2])
-		};
+		return unsafe { std::str::from_utf8_unchecked(&str.as_bytes()[..len - 2]) };
 	}
 	str
 }
@@ -254,19 +238,12 @@ fn get_nonfinite<'a>(bits:u64) -> &'a str {
 #[cold]
 fn check_radix(ctx:&Ctx, radix:u8) -> Result<()> {
 	if !(2..=36).contains(&radix) {
-		return Err(Exception::throw_type(
-			ctx,
-			"radix must be between 2 and 36",
-		));
+		return Err(Exception::throw_type(ctx, "radix must be between 2 and 36"));
 	}
 	Ok(())
 }
 
-pub fn number_to_string(
-	ctx:Ctx,
-	this:This<Value>,
-	radix:Opt<u8>,
-) -> Result<String> {
+pub fn number_to_string(ctx:Ctx, this:This<Value>, radix:Opt<u8>) -> Result<String> {
 	if let Some(int) = this.as_int() {
 		if let Some(radix) = radix.0 {
 			check_radix(&ctx, radix)?;

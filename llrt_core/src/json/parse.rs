@@ -3,10 +3,7 @@ use simd_json::{Node, StaticNode};
 
 use crate::utils::result::ResultExt;
 
-pub fn json_parse<'js, T:Into<Vec<u8>>>(
-	ctx:&Ctx<'js>,
-	json:T,
-) -> Result<Value<'js>> {
+pub fn json_parse<'js, T:Into<Vec<u8>>>(ctx:&Ctx<'js>, json:T) -> Result<Value<'js>> {
 	let mut json:Vec<u8> = json.into();
 	let tape = simd_json::to_tape(&mut json).or_throw(ctx)?;
 	let tape = tape.0;
@@ -23,10 +20,7 @@ pub fn json_parse<'js, T:Into<Vec<u8>>>(
 }
 
 #[inline(always)]
-fn static_node_to_value<'js>(
-	ctx:&Ctx<'js>,
-	node:StaticNode,
-) -> Result<Value<'js>> {
+fn static_node_to_value<'js>(ctx:&Ctx<'js>, node:StaticNode) -> Result<Value<'js>> {
 	match node {
 		StaticNode::I64(value) => value.into_js(ctx),
 		StaticNode::U64(value) => value.into_js(ctx),
@@ -36,11 +30,7 @@ fn static_node_to_value<'js>(
 	}
 }
 
-fn parse_node<'js>(
-	ctx:&Ctx<'js>,
-	tape:&[Node],
-	index:usize,
-) -> Result<(Value<'js>, usize)> {
+fn parse_node<'js>(ctx:&Ctx<'js>, tape:&[Node], index:usize) -> Result<(Value<'js>, usize)> {
 	match tape[index] {
 		Node::String(value) => Ok((value.into_js(ctx)?, index + 1)),
 		Node::Static(node) => Ok((static_node_to_value(ctx, node)?, index + 1)),
@@ -51,8 +41,7 @@ fn parse_node<'js>(
 			for _ in 0..len {
 				if let Node::String(key) = tape[current_index] {
 					current_index += 1;
-					let (value, new_index) =
-						parse_node(ctx, tape, current_index)?;
+					let (value, new_index) = parse_node(ctx, tape, current_index)?;
 					current_index = new_index;
 					js_object.set(key, value)?;
 				}

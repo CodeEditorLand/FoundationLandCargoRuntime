@@ -25,18 +25,8 @@ const DEFAULT_BUFFER_SIZE:usize = 1024 * 16;
 pub trait SteamEvents<'js>
 where
 	Self: Emitter<'js>, {
-	fn emit_close(
-		this:Class<'js, Self>,
-		ctx:&Ctx<'js>,
-		had_error:bool,
-	) -> Result<()> {
-		Self::emit_str(
-			This(this),
-			ctx,
-			"close",
-			vec![had_error.into_js(ctx)?],
-			false,
-		)
+	fn emit_close(this:Class<'js, Self>, ctx:&Ctx<'js>, had_error:bool) -> Result<()> {
+		Self::emit_str(This(this), ctx, "close", vec![had_error.into_js(ctx)?], false)
 	}
 
 	#[allow(dead_code)]

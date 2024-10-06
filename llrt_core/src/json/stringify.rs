@@ -35,10 +35,7 @@ struct StringifyContext<'a, 'js> {
 }
 
 #[allow(dead_code)]
-pub fn json_stringify<'js>(
-	ctx:&Ctx<'js>,
-	value:Value<'js>,
-) -> Result<Option<String>> {
+pub fn json_stringify<'js>(ctx:&Ctx<'js>, value:Value<'js>) -> Result<Option<String>> {
 	json_stringify_replacer_space(ctx, value, None, None)
 }
 
@@ -125,11 +122,7 @@ pub fn json_stringify_replacer_space<'js>(
 
 #[inline(always)]
 #[cold]
-fn write_indentation(
-	result:&mut String,
-	indentation:Option<&str>,
-	depth:usize,
-) {
+fn write_indentation(result:&mut String, indentation:Option<&str>, depth:usize) {
 	if let Some(indentation) = indentation {
 		result.push('\n');
 		result.push_str(&indentation.repeat(depth - 1));
@@ -138,10 +131,7 @@ fn write_indentation(
 
 #[inline(always)]
 #[cold]
-fn run_to_json<'js>(
-	context:&mut StringifyContext<'_, 'js>,
-	js_object:&Object<'js>,
-) -> Result<()> {
+fn run_to_json<'js>(context:&mut StringifyContext<'_, 'js>, js_object:&Object<'js>) -> Result<()> {
 	let to_json = js_object.get::<_, Function>(PredefinedAtom::ToJSON)?;
 	let val = to_json.call((This(js_object.clone()),))?;
 	append_value(
@@ -216,10 +206,7 @@ fn run_replacer<'js>(
 	)
 }
 
-fn write_primitive(
-	context:&mut StringifyContext,
-	add_comma:bool,
-) -> Result<PrimitiveStatus> {
+fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<PrimitiveStatus> {
 	if let Some(replacer_fn) = context.replacer_fn {
 		return run_replacer(context, replacer_fn, add_comma);
 	}
@@ -233,9 +220,7 @@ fn write_primitive(
 
 	let type_of = value.type_of();
 
-	if matches!(type_of, Type::Symbol | Type::Undefined)
-		&& context.index.is_none()
-	{
+	if matches!(type_of, Type::Symbol | Type::Undefined) && context.index.is_none() {
 		return Ok(PrimitiveStatus::Ignored);
 	}
 
@@ -247,13 +232,7 @@ fn write_primitive(
 	};
 
 	if let Some(indentation) = indentation {
-		write_indented_separator(
-			context.result,
-			key,
-			add_comma,
-			indentation,
-			depth,
-		);
+		write_indented_separator(context.result, key, add_comma, indentation, depth);
 	} else {
 		write_sep(context.result, add_comma, false);
 		if let Some(key) = key {
@@ -265,15 +244,9 @@ fn write_primitive(
 		Type::Null | Type::Undefined => context.result.push_str("null"),
 		Type::Bool => {
 			const BOOL_STRINGS:[&str; 2] = ["false", "true"];
-			context
-				.result
-				.push_str(BOOL_STRINGS[value.as_bool().unwrap() as usize]);
+			context.result.push_str(BOOL_STRINGS[value.as_bool().unwrap() as usize]);
 		},
-		Type::Int => {
-			context
-				.result
-				.push_str(context.itoa_buffer.format(value.as_int().unwrap()))
-		},
+		Type::Int => context.result.push_str(context.itoa_buffer.format(value.as_int().unwrap())),
 		Type::Float => {
 			let float_value = value.as_float().unwrap();
 			const EXP_MASK:u64 = 0x7FF0000000000000;
@@ -281,8 +254,7 @@ fn write_primitive(
 			if bits & EXP_MASK == EXP_MASK {
 				context.result.push_str("null");
 			} else {
-				let str =
-					context.ryu_buffer.format_finite(value.as_float().unwrap());
+				let str = context.ryu_buffer.format_finite(value.as_float().unwrap());
 
 				let bytes = str.as_bytes();
 				let len = bytes.len();
@@ -295,12 +267,7 @@ fn write_primitive(
 				}
 			}
 		},
-		Type::String => {
-			write_string(
-				context.result,
-				&value.as_string().unwrap().to_string()?,
-			)
-		},
+		Type::String => write_string(context.result, &value.as_string().unwrap().to_string()?),
 		_ => return Ok(PrimitiveStatus::Iterate),
 	}
 	Ok(PrimitiveStatus::Written)
@@ -371,9 +338,7 @@ fn detect_circular_reference(
 	ancestors.push((
 		current_ptr,
 		key.map(|k| k.into()).unwrap_or_else(|| {
-			["[", itoa_buffer.format(index.unwrap_or_default()), "]"]
-				.concat()
-				.into()
+			["[", itoa_buffer.format(index.unwrap_or_default()), "]"].concat().into()
 		}),
 	));
 
@@ -381,10 +346,7 @@ fn detect_circular_reference(
 }
 
 #[inline(always)]
-fn append_value(
-	context:&mut StringifyContext<'_, '_>,
-	add_comma:bool,
-) -> Result<bool> {
+fn append_value(context:&mut StringifyContext<'_, '_>, add_comma:bool) -> Result<bool> {
 	match write_primitive(context, add_comma)? {
 		PrimitiveStatus::Written => Ok(true),
 		PrimitiveStatus::Ignored => Ok(false),

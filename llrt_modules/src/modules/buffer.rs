@@ -51,10 +51,7 @@ impl<'js> Buffer {
 			.or_throw(ctx)
 	}
 
-	fn from_array_buffer(
-		ctx:&Ctx<'js>,
-		buffer:ArrayBuffer<'js>,
-	) -> Result<Value<'js>> {
+	fn from_array_buffer(ctx:&Ctx<'js>, buffer:ArrayBuffer<'js>) -> Result<Value<'js>> {
 		let constructor:Constructor = ctx.globals().get(stringify!(Buffer))?;
 		constructor.construct((buffer,))
 	}
@@ -82,11 +79,7 @@ impl<'js> Buffer {
 	}
 }
 
-fn byte_length<'js>(
-	ctx:Ctx<'js>,
-	value:Value<'js>,
-	encoding:Opt<String>,
-) -> Result<usize> {
+fn byte_length<'js>(ctx:Ctx<'js>, value:Value<'js>, encoding:Opt<String>) -> Result<usize> {
 	// slow path
 	if let Some(encoding) = encoding.0 {
 		let encoder = Encoder::from_str(&encoding).or_throw(&ctx)?;
@@ -116,16 +109,11 @@ fn byte_length<'js>(
 
 	Err(Exception::throw_message(
 		&ctx,
-		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or \
-		 string",
+		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or string",
 	))
 }
 
-fn to_string(
-	this:This<Object<'_>>,
-	ctx:Ctx,
-	encoding:Opt<String>,
-) -> Result<String> {
+fn to_string(this:This<Object<'_>>, ctx:Ctx, encoding:Opt<String>) -> Result<String> {
 	let typed_array = TypedArray::<u8>::from_object(this.0)?;
 	let bytes:&[u8] = typed_array.as_ref();
 	let encoding = encoding.0.unwrap_or_else(|| String::from("utf-8"));
@@ -145,8 +133,7 @@ fn alloc<'js>(
 
 			if let Some(encoding) = encoding.0 {
 				let encoder = Encoder::from_str(&encoding).or_throw(&ctx)?;
-				let bytes =
-					encoder.decode_from_string(string).or_throw(&ctx)?;
+				let bytes = encoder.decode_from_string(string).or_throw(&ctx)?;
 				return alloc_byte_ref(&ctx, &bytes, length);
 			}
 
@@ -159,15 +146,9 @@ fn alloc<'js>(
 			return Buffer(bytes).into_js(&ctx);
 		}
 		if let Some(obj) = value.as_object() {
-			if let Some((array_buffer, source_length, offset)) =
-				obj_to_array_buffer(obj)?
-			{
+			if let Some((array_buffer, source_length, offset)) = obj_to_array_buffer(obj)? {
 				let bytes:&[u8] = array_buffer.as_ref();
-				return alloc_byte_ref(
-					&ctx,
-					&bytes[offset..offset + source_length],
-					length,
-				);
+				return alloc_byte_ref(&ctx, &bytes[offset..offset + source_length], length);
 			}
 		}
 	}
@@ -175,11 +156,7 @@ fn alloc<'js>(
 	Buffer(vec![0; length]).into_js(&ctx)
 }
 
-fn alloc_byte_ref<'js>(
-	ctx:&Ctx<'js>,
-	byte_ref:&[u8],
-	length:usize,
-) -> Result<Value<'js>> {
+fn alloc_byte_ref<'js>(ctx:&Ctx<'js>, byte_ref:&[u8], length:usize) -> Result<Value<'js>> {
 	let mut bytes = vec![0; length];
 	let byte_ref_length = byte_ref.len();
 	for i in 0..length {
@@ -188,11 +165,7 @@ fn alloc_byte_ref<'js>(
 	Buffer(bytes).into_js(ctx)
 }
 
-fn concat<'js>(
-	ctx:Ctx<'js>,
-	list:Array<'js>,
-	max_length:Opt<usize>,
-) -> Result<Value<'js>> {
+fn concat<'js>(ctx:Ctx<'js>, list:Array<'js>, max_length:Opt<usize>) -> Result<Value<'js>> {
 	let mut bytes = Vec::new();
 	let mut total_length = 0;
 	let mut length;
@@ -245,11 +218,8 @@ fn from<'js>(
 	}
 
 	if let Some(obj) = value.as_object() {
-		if let Some((array_buffer, source_length, source_offset)) =
-			obj_to_array_buffer(obj)?
-		{
-			let (start, end) =
-				get_start_end_indexes(source_length, length.0, offset);
+		if let Some((array_buffer, source_length, source_offset)) = obj_to_array_buffer(obj)? {
+			let (start, end) = get_start_end_indexes(source_length, length.0, offset);
 
 			// buffers from buffer should be copied
 			if obj.get::<_, Option<String>>(PredefinedAtom::Meta)?.as_deref()
@@ -261,8 +231,7 @@ fn from<'js>(
 					start + source_offset,
 					end - source_offset,
 				);
-				return Buffer::from_encoding(&ctx, bytes, encoding)?
-					.into_js(&ctx);
+				return Buffer::from_encoding(&ctx, bytes, encoding)?.into_js(&ctx);
 			} else {
 				return Buffer::from_array_buffer_offset_length(
 					&ctx,
@@ -280,8 +249,7 @@ fn from<'js>(
 
 	Err(Exception::throw_message(
 		&ctx,
-		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or \
-		 interpretable as string",
+		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or interpretable as string",
 	))
 }
 
@@ -301,19 +269,14 @@ fn set_prototype<'js>(ctx:&Ctx<'js>, constructor:Object<'js>) -> Result<()> {
 	Ok(())
 }
 
-pub fn atob(
-	ctx:Ctx<'_>,
-	encoded_value:Coerced<String>,
-) -> Result<rquickjs::String<'_>> {
+pub fn atob(ctx:Ctx<'_>, encoded_value:Coerced<String>) -> Result<rquickjs::String<'_>> {
 	let vec = bytes_from_b64(encoded_value.as_bytes()).or_throw(&ctx)?;
 	// SAFETY: QuickJS will replace invalid characters with U+FFFD
 	let str = unsafe { String::from_utf8_unchecked(vec) };
 	rquickjs::String::from_str(ctx, &str)
 }
 
-pub fn btoa(value:Coerced<String>) -> String {
-	bytes_to_b64_string(value.as_bytes())
-}
+pub fn btoa(value:Coerced<String>) -> String { bytes_to_b64_string(value.as_bytes()) }
 
 pub fn init<'js>(ctx:&Ctx<'js>) -> Result<()> {
 	// Buffer
@@ -361,9 +324,7 @@ impl ModuleDef for BufferModule {
 }
 
 impl From<BufferModule> for ModuleInfo<BufferModule> {
-	fn from(val:BufferModule) -> Self {
-		ModuleInfo { name:"buffer", module:val }
-	}
+	fn from(val:BufferModule) -> Self { ModuleInfo { name:"buffer", module:val } }
 }
 
 #[cfg(test)]
@@ -376,12 +337,7 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
-				ModuleEvaluator::eval_rust::<BufferModule>(
-					ctx.clone(),
-					"buffer",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "aGVsbG8gd29ybGQ=".to_string();
 				let module = ModuleEvaluator::eval_js(
@@ -397,8 +353,7 @@ mod tests {
 				)
 				.await
 				.unwrap();
-				let result =
-					call_test::<String, _>(&ctx, &module, (data,)).await;
+				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
 				assert_eq!(result, "hello world");
 			})
 		})
@@ -410,12 +365,7 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
-				ModuleEvaluator::eval_rust::<BufferModule>(
-					ctx.clone(),
-					"buffer",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "aGVsbG/Ad29ybGQ=".to_string();
 				let module = ModuleEvaluator::eval_js(
@@ -431,8 +381,7 @@ mod tests {
 				)
 				.await
 				.unwrap();
-				let result =
-					call_test::<String, _>(&ctx, &module, (data,)).await;
+				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
 				assert_eq!(result, "hello�world");
 			})
 		})
@@ -444,12 +393,7 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
-				ModuleEvaluator::eval_rust::<BufferModule>(
-					ctx.clone(),
-					"buffer",
-				)
-				.await
-				.unwrap();
+				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "hello world".to_string();
 				let module = ModuleEvaluator::eval_js(
@@ -465,8 +409,7 @@ mod tests {
 				)
 				.await
 				.unwrap();
-				let result =
-					call_test::<String, _>(&ctx, &module, (data,)).await;
+				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
 				assert_eq!(result, "aGVsbG8gd29ybGQ=");
 			})
 		})

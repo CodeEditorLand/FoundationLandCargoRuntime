@@ -25,11 +25,8 @@ pub async fn given_file(content:&str) -> PathBuf {
 
 pub async fn test_async_with<F>(func:F)
 where
-	F: for<'js> FnOnce(
-			Ctx<'js>,
-		) -> std::pin::Pin<
-			Box<dyn std::future::Future<Output = ()> + 'js>,
-		> + Send, {
+	F: for<'js> FnOnce(Ctx<'js>) -> std::pin::Pin<Box<dyn std::future::Future<Output = ()> + 'js>>
+		+ Send, {
 	let rt = AsyncRuntime::new().unwrap();
 	let ctx = AsyncContext::full(&rt).await.unwrap();
 
@@ -39,11 +36,7 @@ where
 	.await;
 }
 
-pub async fn call_test<'js, T, A>(
-	ctx:&Ctx<'js>,
-	module:&Module<'js, Evaluated>,
-	args:A,
-) -> T
+pub async fn call_test<'js, T, A>(ctx:&Ctx<'js>, module:&Module<'js, Evaluated>, args:A) -> T
 where
 	T: FromJs<'js>,
 	A: IntoArgs<'js>, {
@@ -76,16 +69,12 @@ impl ModuleEvaluator {
 		name:&str,
 		source:&str,
 	) -> Result<Module<'js, Evaluated>> {
-		let (module, module_eval) =
-			Module::declare(ctx, name, source)?.eval()?;
+		let (module, module_eval) = Module::declare(ctx, name, source)?.eval()?;
 		module_eval.into_future::<()>().await?;
 		Ok(module)
 	}
 
-	pub async fn eval_rust<'js, M>(
-		ctx:Ctx<'js>,
-		name:&str,
-	) -> Result<Module<'js, Evaluated>>
+	pub async fn eval_rust<'js, M>(ctx:Ctx<'js>, name:&str) -> Result<Module<'js, Evaluated>>
 	where
 		M: ModuleDef, {
 		let (module, module_eval) = Module::evaluate_def::<M, _>(ctx, name)?;

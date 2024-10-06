@@ -118,8 +118,7 @@ fn parse(ctx:Ctx, path_str:String) -> Result<Object> {
 	let obj = Object::new(ctx)?;
 	let path = Path::new(&path_str);
 	let parent = path.parent().map(|p| p.to_str().unwrap()).unwrap_or_default();
-	let filename =
-		path.file_name().map(|n| n.to_str().unwrap()).unwrap_or_default();
+	let filename = path.file_name().map(|n| n.to_str().unwrap()).unwrap_or_default();
 
 	let (name, extension) = name_extname(filename);
 

@@ -7,15 +7,7 @@ pub mod stringify;
 #[cfg(test)]
 mod tests {
 
-	use rquickjs::{
-		Array,
-		CatchResultExt,
-		IntoJs,
-		Null,
-		Object,
-		Undefined,
-		Value,
-	};
+	use rquickjs::{Array, CatchResultExt, IntoJs, Null, Object, Undefined, Value};
 
 	use crate::{
 		json::{
@@ -81,11 +73,9 @@ mod tests {
 	#[tokio::test]
 	async fn json_stringify_objects() {
 		with_js_runtime(|ctx| {
-			let date:Value =
-				ctx.eval("let obj = { date: new Date(0) };obj;")?;
+			let date:Value = ctx.eval("let obj = { date: new Date(0) };obj;")?;
 			let stringified = json_stringify(&ctx, date.clone())?.unwrap();
-			let stringified_2 =
-				ctx.json_stringify(date)?.unwrap().to_string()?;
+			let stringified_2 = ctx.json_stringify(date)?.unwrap().to_string()?;
 			assert_eq!(stringified, stringified_2);
 			Ok(())
 		})
@@ -129,8 +119,7 @@ mod tests {
 			let value = obj1.clone().into_value();
 
 			let stringified = json_stringify(&ctx, value.clone())?.unwrap();
-			let stringified_2 =
-				ctx.json_stringify(value.clone())?.unwrap().to_string()?;
+			let stringified_2 = ctx.json_stringify(value.clone())?.unwrap().to_string()?;
 			assert_eq!(stringified, stringified_2);
 
 			obj4.set("recursive", obj1.clone())?;
@@ -140,8 +129,7 @@ mod tests {
 			if let Err(error_message) = stringified.catch(&ctx) {
 				let error_str = error_message.to_string();
 				assert_eq!(
-					"Error: Circular reference detected at: \
-					 \"...root1.sub1.sub2.recursive\"\n",
+					"Error: Circular reference detected at: \"...root1.sub1.sub2.recursive\"\n",
 					error_str
 				)
 			} else {
@@ -166,8 +154,7 @@ mod tests {
 			if let Err(error_message) = stringified.catch(&ctx) {
 				let error_str = error_message.to_string();
 				assert_eq!(
-					"Error: Circular reference detected at: \
-					 \"...recursiveArray[0][1][2].key\"\n",
+					"Error: Circular reference detected at: \"...recursiveArray[0][1][2].key\"\n",
 					error_str
 				)
 			} else {

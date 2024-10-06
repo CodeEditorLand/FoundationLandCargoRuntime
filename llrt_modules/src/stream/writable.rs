@@ -2,12 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::sync::{Arc, RwLock};
 
-use llrt_utils::{
-	bytes::get_bytes,
-	ctx::CtxExtension,
-	error::ErrorExtensions,
-	result::ResultExt,
-};
+use llrt_utils::{bytes::get_bytes, ctx::CtxExtension, error::ErrorExtensions, result::ResultExt};
 use rquickjs::{
 	class::{Trace, Tracer},
 	prelude::{Func, Opt, This},
@@ -84,14 +79,8 @@ pub struct DefaultWritableStream<'js> {
 }
 
 impl<'js> DefaultWritableStream<'js> {
-	fn with_emitter(
-		ctx:Ctx<'js>,
-		emitter:EventEmitter<'js>,
-	) -> Result<Class<'js, Self>> {
-		Class::instance(
-			ctx,
-			Self { inner:WritableStreamInner::new(emitter, true) },
-		)
+	fn with_emitter(ctx:Ctx<'js>, emitter:EventEmitter<'js>) -> Result<Class<'js, Self>> {
+		Class::instance(ctx, Self { inner:WritableStreamInner::new(emitter, true) })
 	}
 
 	pub fn new(ctx:Ctx<'js>) -> Result<Class<'js, Self>> {
@@ -101,9 +90,7 @@ impl<'js> DefaultWritableStream<'js> {
 
 impl_stream_events!(DefaultWritableStream);
 impl<'js> Emitter<'js> for DefaultWritableStream<'js> {
-	fn get_event_list(&self) -> Arc<RwLock<EventList<'js>>> {
-		self.inner.emitter.get_event_list()
-	}
+	fn get_event_list(&self) -> Arc<RwLock<EventList<'js>>> { self.inner.emitter.get_event_list() }
 }
 
 impl<'js> WritableStream<'js> for DefaultWritableStream<'js> {
@@ -120,10 +107,8 @@ where
 	fn inner(&self) -> &WritableStreamInner<'js>;
 
 	fn add_writable_stream_prototype(ctx:&Ctx<'js>) -> Result<()> {
-		let proto = Class::<Self>::prototype(ctx.clone()).or_throw_msg(
-			ctx,
-			&["Prototype for ", Self::NAME, " not found"].concat(),
-		)?;
+		let proto = Class::<Self>::prototype(ctx.clone())
+			.or_throw_msg(ctx, &["Prototype for ", Self::NAME, " not found"].concat())?;
 
 		proto.set("write", Func::from(Self::write))?;
 
@@ -167,12 +152,7 @@ where
 
 	#[allow(dead_code)]
 	fn flush(this:Class<'js, Self>, ctx:&Ctx<'js>) -> Result<()> {
-		let _ = this
-			.borrow()
-			.inner()
-			.command_tx
-			.send(WriteCommand::Flush)
-			.or_throw(ctx);
+		let _ = this.borrow().inner().command_tx.send(WriteCommand::Flush).or_throw(ctx);
 		Ok(())
 	}
 
@@ -213,11 +193,8 @@ where
 			.is_err()
 		{
 			if let Some(cb) = callback {
-				let err = Exception::throw_message(
-					&ctx,
-					"This stream has been ended",
-				)
-				.into_value(&ctx)?;
+				let err = Exception::throw_message(&ctx, "This stream has been ended")
+					.into_value(&ctx)?;
 
 				() = cb.call((err,))?;
 			}
@@ -236,10 +213,8 @@ where
 		let is_ended = inner.is_finished;
 		let mut is_destroyed = inner.is_destroyed;
 		let emit_close = inner.emit_close;
-		let mut command_rx = inner
-			.command_rx
-			.take()
-			.expect("rx from writable process already taken!");
+		let mut command_rx =
+			inner.command_rx.take().expect("rx from writable process already taken!");
 		let mut destroy_rx = inner.destroy_tx.subscribe();
 		let mut error_value = None;
 
@@ -301,13 +276,7 @@ where
 				drop(writer);
 
 				if !is_destroyed {
-					Self::emit_str(
-						This(this2),
-						&ctx3,
-						"finish",
-						vec![],
-						false,
-					)?;
+					Self::emit_str(This(this2), &ctx3, "finish", vec![], false)?;
 				}
 
 				if let Some(error_value) = error_value {

@@ -15,9 +15,8 @@ use tokio::sync::oneshot::{self, Receiver};
 use tracing::trace;
 
 #[allow(clippy::type_complexity)]
-static ERROR_HANDLER:OnceLock<
-	Box<dyn for<'js> Fn(&Ctx<'js>, CaughtError<'js>) + Sync + Send>,
-> = OnceLock::new();
+static ERROR_HANDLER:OnceLock<Box<dyn for<'js> Fn(&Ctx<'js>, CaughtError<'js>) + Sync + Send>> =
+	OnceLock::new();
 
 pub trait CtxExtension<'js> {
 	/// Despite naming, this will not necessarily exit the parent process.
@@ -35,8 +34,7 @@ impl<'js> CtxExtension<'js> for Ctx<'js> {
 		R: 'js, {
 		let ctx = self.clone();
 
-		let type_error_ctor:Constructor =
-			ctx.globals().get(PredefinedAtom::TypeError)?;
+		let type_error_ctor:Constructor = ctx.globals().get(PredefinedAtom::TypeError)?;
 		let type_error:Object = type_error_ctor.construct(())?;
 		let stack:Option<String> = type_error.get(PredefinedAtom::Stack).ok();
 

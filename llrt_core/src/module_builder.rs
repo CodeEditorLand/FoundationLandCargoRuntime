@@ -42,12 +42,7 @@ impl ModuleResolver {
 }
 
 impl Resolver for ModuleResolver {
-	fn resolve(
-		&mut self,
-		ctx:&Ctx<'_>,
-		base:&str,
-		name:&str,
-	) -> Result<String> {
+	fn resolve(&mut self, ctx:&Ctx<'_>, base:&str, name:&str) -> Result<String> {
 		// Strip node prefix so that we support both with and without
 		let name = name.strip_prefix("node:").unwrap_or(name);
 
@@ -116,36 +111,22 @@ impl ModuleBuilder {
 		}
 	}
 
-	pub fn with_module<M:ModuleDef, I:Into<ModuleInfo<M>>>(
-		mut self,
-		module:I,
-	) -> Self {
+	pub fn with_module<M:ModuleDef, I:Into<ModuleInfo<M>>>(mut self, module:I) -> Self {
 		let module_info:ModuleInfo<M> = module.into();
 
-		self.builtin_resolver =
-			self.builtin_resolver.with_module(module_info.name);
-		self.module_loader = self
-			.module_loader
-			.with_module(module_info.name, module_info.module);
+		self.builtin_resolver = self.builtin_resolver.with_module(module_info.name);
+		self.module_loader = self.module_loader.with_module(module_info.name, module_info.module);
 		self.module_names.insert(module_info.name);
 
 		self
 	}
 
-	pub fn with_global(
-		mut self,
-		init_global:fn(&Ctx<'_>) -> Result<()>,
-	) -> Self {
+	pub fn with_global(mut self, init_global:fn(&Ctx<'_>) -> Result<()>) -> Self {
 		self.init_global.push(init_global);
 		self
 	}
 
 	pub fn build(self) -> Modules {
-		(
-			self.builtin_resolver,
-			self.module_loader,
-			self.module_names,
-			self.init_global,
-		)
+		(self.builtin_resolver, self.module_loader, self.module_names, self.init_global)
 	}
 }

@@ -35,15 +35,13 @@ where
 }
 
 pub fn get_class_name(value:&Value) -> Result<Option<String>> {
-	value.get_optional::<_, Object>(PredefinedAtom::Constructor)?.and_then_ok(
-		|ctor| ctor.get_optional::<_, String>(PredefinedAtom::Name),
-	)
+	value
+		.get_optional::<_, Object>(PredefinedAtom::Constructor)?
+		.and_then_ok(|ctor| ctor.get_optional::<_, String>(PredefinedAtom::Name))
 }
 
 #[inline(always)]
-pub fn get_class<'js, C>(
-	provided:&Value<'js>,
-) -> Result<Option<Class<'js, C>>>
+pub fn get_class<'js, C>(provided:&Value<'js>) -> Result<Option<Class<'js, C>>>
 where
 	C: JsClass<'js>, {
 	if provided.as_object().map(|p| p.instance_of::<C>()).unwrap_or_default() {
@@ -68,16 +66,12 @@ where
 {
 	fn define_with_custom_inspect(globals:&Object<'js>) -> Result<()> {
 		Self::define(globals)?;
-		let custom_inspect_symbol = Symbol::for_description(
-			globals,
-			CUSTOM_INSPECT_SYMBOL_DESCRIPTION,
-		)?;
+		let custom_inspect_symbol =
+			Symbol::for_description(globals, CUSTOM_INSPECT_SYMBOL_DESCRIPTION)?;
 		if let Some(proto) = Class::<C>::prototype(globals.ctx().clone()) {
 			proto.prop(
 				custom_inspect_symbol,
-				Accessor::from(|this:This<Class<'js, C>>, ctx| {
-					this.borrow().custom_inspect(ctx)
-				}),
+				Accessor::from(|this:This<Class<'js, C>>, ctx| this.borrow().custom_inspect(ctx)),
 			)?;
 		}
 		Ok(())

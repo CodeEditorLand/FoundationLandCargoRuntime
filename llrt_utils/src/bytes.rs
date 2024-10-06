@@ -1,16 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-use rquickjs::{
-	ArrayBuffer,
-	Coerced,
-	Ctx,
-	Exception,
-	IntoJs,
-	Object,
-	Result,
-	TypedArray,
-	Value,
-};
+use rquickjs::{ArrayBuffer, Coerced, Ctx, Exception, IntoJs, Object, Result, TypedArray, Value};
 
 use super::result::ResultExt;
 
@@ -49,15 +39,10 @@ pub fn get_bytes_offset_length<'js>(
 	}
 
 	if let Some(obj) = value.as_object() {
-		if let Some((array_buffer, source_length, source_offset)) =
-			obj_to_array_buffer(obj)?
-		{
-			let (start, end) =
-				get_start_end_indexes(source_length, length, offset);
+		if let Some((array_buffer, source_length, source_offset)) = obj_to_array_buffer(obj)? {
+			let (start, end) = get_start_end_indexes(source_length, length, offset);
 			let bytes:&[u8] = array_buffer.as_ref();
-			return Ok(
-				bytes[(start + source_offset)..(end + source_offset)].to_vec()
-			);
+			return Ok(bytes[(start + source_offset)..(end + source_offset)].to_vec());
 		}
 	}
 
@@ -67,8 +52,7 @@ pub fn get_bytes_offset_length<'js>(
 
 	Err(Exception::throw_message(
 		ctx,
-		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or \
-		 interpretable as string",
+		"value must be typed DataView, Buffer, ArrayBuffer, Uint8Array or interpretable as string",
 	))
 }
 
@@ -119,11 +103,7 @@ pub fn get_string_bytes(
 	Ok(None)
 }
 
-fn bytes_from_js_string(
-	string:String,
-	offset:usize,
-	length:Option<usize>,
-) -> Vec<u8> {
+fn bytes_from_js_string(string:String, offset:usize, length:Option<usize>) -> Vec<u8> {
 	let (start, end) = get_start_end_indexes(string.len(), length, offset);
 	string.as_bytes()[start..end].to_vec()
 }
@@ -205,11 +185,7 @@ pub fn obj_to_array_buffer<'js>(
 	Ok(None)
 }
 
-pub fn get_array_buffer_bytes(
-	array_buffer:ArrayBuffer<'_>,
-	start:usize,
-	end_end:usize,
-) -> Vec<u8> {
+pub fn get_array_buffer_bytes(array_buffer:ArrayBuffer<'_>, start:usize, end_end:usize) -> Vec<u8> {
 	let bytes:&[u8] = array_buffer.as_ref();
 	bytes[start..end_end].to_vec()
 }
@@ -218,9 +194,6 @@ pub fn get_bytes<'js>(ctx:&Ctx<'js>, value:Value<'js>) -> Result<Vec<u8>> {
 	get_bytes_offset_length(ctx, value, 0, None)
 }
 
-pub fn bytes_to_typed_array<'js>(
-	ctx:Ctx<'js>,
-	bytes:&[u8],
-) -> Result<Value<'js>> {
+pub fn bytes_to_typed_array<'js>(ctx:Ctx<'js>, bytes:&[u8]) -> Result<Value<'js>> {
 	TypedArray::<u8>::new(ctx.clone(), bytes).into_js(&ctx)
 }

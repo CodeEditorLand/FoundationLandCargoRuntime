@@ -2,19 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::io::Read;
 
-use brotlic::{
-	CompressorReader as BrotliEncoder,
-	DecompressorReader as BrotliDecoder,
-};
+use brotlic::{CompressorReader as BrotliEncoder, DecompressorReader as BrotliDecoder};
 use flate2::{
-	read::{
-		DeflateDecoder,
-		DeflateEncoder,
-		GzDecoder,
-		GzEncoder,
-		ZlibDecoder,
-		ZlibEncoder,
-	},
+	read::{DeflateDecoder, DeflateEncoder, GzDecoder, GzEncoder, ZlibDecoder, ZlibEncoder},
 	Compression,
 };
 use llrt_utils::{
@@ -55,11 +45,7 @@ macro_rules! define_sync_function {
 
 macro_rules! define_cb_function {
 	($fn_name:ident, $converter:expr, $command:expr) => {
-		pub fn $fn_name<'js>(
-			ctx:Ctx<'js>,
-			value:Value<'js>,
-			args:Rest<Value<'js>>,
-		) -> Result<()> {
+		pub fn $fn_name<'js>(ctx:Ctx<'js>, value:Value<'js>, args:Rest<Value<'js>>) -> Result<()> {
 			let mut args_iter = args.0.into_iter().rev();
 			let cb:Function = args_iter
 				.next()
@@ -77,10 +63,7 @@ macro_rules! define_cb_function {
 						Ok::<_, Error>(())
 					},
 					Err(err) => {
-						() = cb.call((Exception::from_message(
-							ctx,
-							&err.to_string(),
-						),))?;
+						() = cb.call((Exception::from_message(ctx, &err.to_string()),))?;
 						Ok(())
 					},
 				}
@@ -117,24 +100,12 @@ fn zlib_converter<'js>(
 	let mut dst:Vec<u8> = Vec::with_capacity(src.len());
 
 	let _ = match command {
-		ZlibCommand::Deflate => {
-			ZlibEncoder::new(&src[..], level).read_to_end(&mut dst)?
-		},
-		ZlibCommand::DeflateRaw => {
-			DeflateEncoder::new(&src[..], level).read_to_end(&mut dst)?
-		},
-		ZlibCommand::Gzip => {
-			GzEncoder::new(&src[..], level).read_to_end(&mut dst)?
-		},
-		ZlibCommand::Inflate => {
-			ZlibDecoder::new(&src[..]).read_to_end(&mut dst)?
-		},
-		ZlibCommand::InflateRaw => {
-			DeflateDecoder::new(&src[..]).read_to_end(&mut dst)?
-		},
-		ZlibCommand::Gunzip => {
-			GzDecoder::new(&src[..]).read_to_end(&mut dst)?
-		},
+		ZlibCommand::Deflate => ZlibEncoder::new(&src[..], level).read_to_end(&mut dst)?,
+		ZlibCommand::DeflateRaw => DeflateEncoder::new(&src[..], level).read_to_end(&mut dst)?,
+		ZlibCommand::Gzip => GzEncoder::new(&src[..], level).read_to_end(&mut dst)?,
+		ZlibCommand::Inflate => ZlibDecoder::new(&src[..]).read_to_end(&mut dst)?,
+		ZlibCommand::InflateRaw => DeflateDecoder::new(&src[..]).read_to_end(&mut dst)?,
+		ZlibCommand::Gunzip => GzDecoder::new(&src[..]).read_to_end(&mut dst)?,
 	};
 
 	Buffer(dst).into_js(&ctx)
@@ -144,11 +115,7 @@ define_cb_function!(deflate, zlib_converter, ZlibCommand::Deflate);
 define_sync_function!(deflate_sync, zlib_converter, ZlibCommand::Deflate);
 
 define_cb_function!(deflate_raw, zlib_converter, ZlibCommand::DeflateRaw);
-define_sync_function!(
-	deflate_raw_sync,
-	zlib_converter,
-	ZlibCommand::DeflateRaw
-);
+define_sync_function!(deflate_raw_sync, zlib_converter, ZlibCommand::DeflateRaw);
 
 define_cb_function!(gzip, zlib_converter, ZlibCommand::Gzip);
 define_sync_function!(gzip_sync, zlib_converter, ZlibCommand::Gzip);
@@ -157,11 +124,7 @@ define_cb_function!(inflate, zlib_converter, ZlibCommand::Inflate);
 define_sync_function!(inflate_sync, zlib_converter, ZlibCommand::Inflate);
 
 define_cb_function!(inflate_raw, zlib_converter, ZlibCommand::InflateRaw);
-define_sync_function!(
-	inflate_raw_sync,
-	zlib_converter,
-	ZlibCommand::InflateRaw
-);
+define_sync_function!(inflate_raw_sync, zlib_converter, ZlibCommand::InflateRaw);
 
 define_cb_function!(gunzip, zlib_converter, ZlibCommand::Gunzip);
 define_sync_function!(gunzip_sync, zlib_converter, ZlibCommand::Gunzip);
@@ -182,12 +145,8 @@ fn brotli_converter<'js>(
 	let mut dst:Vec<u8> = Vec::with_capacity(src.len());
 
 	let _ = match command {
-		BrotliCommand::Compress => {
-			BrotliEncoder::new(&src[..]).read_to_end(&mut dst)?
-		},
-		BrotliCommand::Decompress => {
-			BrotliDecoder::new(&src[..]).read_to_end(&mut dst)?
-		},
+		BrotliCommand::Compress => BrotliEncoder::new(&src[..]).read_to_end(&mut dst)?,
+		BrotliCommand::Decompress => BrotliDecoder::new(&src[..]).read_to_end(&mut dst)?,
 	};
 
 	Buffer(dst).into_js(&ctx)
@@ -197,11 +156,7 @@ define_cb_function!(br_comp, brotli_converter, BrotliCommand::Compress);
 define_sync_function!(br_comp_sync, brotli_converter, BrotliCommand::Compress);
 
 define_cb_function!(br_decomp, brotli_converter, BrotliCommand::Decompress);
-define_sync_function!(
-	br_decomp_sync,
-	brotli_converter,
-	BrotliCommand::Decompress
-);
+define_sync_function!(br_decomp_sync, brotli_converter, BrotliCommand::Decompress);
 
 pub struct ZlibModule;
 

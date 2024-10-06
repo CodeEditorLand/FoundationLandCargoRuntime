@@ -30,11 +30,7 @@ impl rquickjs::loader::Resolver for DummyResolver {
 pub fn human_file_size(size:usize) -> String {
 	const UNITS:[&str; 6] = ["B", "kB", "MB", "GB", "TB", "PB"];
 	let fsize = size as f64;
-	let i = if size == 0 {
-		0
-	} else {
-		(fsize.log2() / 1024f64.log2()).floor() as i32
-	};
+	let i = if size == 0 { 0 } else { (fsize.log2() / 1024f64.log2()).floor() as i32 };
 	let size = fsize / 1024f64.powi(i);
 
 	let mut result = String::with_capacity(16);

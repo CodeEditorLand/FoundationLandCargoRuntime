@@ -21,12 +21,7 @@ use llrt_core::{
 		process::{get_arch, get_platform},
 	},
 	runtime_client,
-	utils::io::{
-		get_basename_ext_name,
-		get_js_path,
-		DirectoryWalker,
-		JS_EXTENSIONS,
-	},
+	utils::io::{get_basename_ext_name, get_js_path, DirectoryWalker, JS_EXTENSIONS},
 	vm::Vm,
 	CatchResultExt,
 	VERSION,
@@ -52,20 +47,15 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 	let vm = Vm::new().await?;
 	trace!("Initialized VM in {}ms", now.elapsed().as_millis());
 
-	if env::var("AWS_LAMBDA_RUNTIME_API").is_ok()
-		&& env::var("_HANDLER").is_ok()
-	{
+	if env::var("AWS_LAMBDA_RUNTIME_API").is_ok() && env::var("_HANDLER").is_ok() {
 		let aws_lambda_json_log_format =
 			env::var("AWS_LAMBDA_LOG_FORMAT") == Ok("JSON".to_string());
-		let aws_lambda_log_level =
-			env::var("AWS_LAMBDA_LOG_LEVEL").unwrap_or_default();
+		let aws_lambda_log_level = env::var("AWS_LAMBDA_LOG_LEVEL").unwrap_or_default();
 		let log_level = LogLevel::from_str(&aws_lambda_log_level);
 
-		console::AWS_LAMBDA_JSON_LOG_LEVEL
-			.store(log_level as usize, Ordering::Relaxed);
+		console::AWS_LAMBDA_JSON_LOG_LEVEL.store(log_level as usize, Ordering::Relaxed);
 		console::AWS_LAMBDA_MODE.store(true, Ordering::Relaxed);
-		console::AWS_LAMBDA_JSON_LOG_FORMAT
-			.store(aws_lambda_json_log_format, Ordering::Relaxed);
+		console::AWS_LAMBDA_JSON_LOG_FORMAT.store(aws_lambda_json_log_format, Ordering::Relaxed);
 
 		start_runtime(&vm).await
 	} else {
@@ -140,8 +130,7 @@ async fn start_cli(vm:&Vm) {
 						return;
 					},
 					"test" => {
-						if let Err(error) = run_tests(vm, &args[i + 1..]).await
-						{
+						if let Err(error) = run_tests(vm, &args[i + 1..]).await {
 							eprintln!("{error}");
 							exit(1);
 						}
@@ -151,30 +140,23 @@ async fn start_cli(vm:&Vm) {
 						#[cfg(not(feature = "lambda"))]
 						{
 							if let Some(filename) = args.get(i + 1) {
-								let output_filename =
-									if let Some(arg) = args.get(i + 2) {
-										arg.to_string()
-									} else {
-										let mut buf = PathBuf::from(filename);
-										buf.set_extension("lrt");
-										buf.to_string_lossy().to_string()
-									};
+								let output_filename = if let Some(arg) = args.get(i + 2) {
+									arg.to_string()
+								} else {
+									let mut buf = PathBuf::from(filename);
+									buf.set_extension("lrt");
+									buf.to_string_lossy().to_string()
+								};
 
 								let filename = Path::new(filename);
-								let output_filename =
-									Path::new(&output_filename);
-								if let Err(error) =
-									compile_file(filename, output_filename)
-										.await
-								{
+								let output_filename = Path::new(&output_filename);
+								if let Err(error) = compile_file(filename, output_filename).await {
 									eprintln!("{error}");
 									exit(1);
 								}
 								return;
 							} else {
-								eprintln!(
-									"compile: input filename is required."
-								);
+								eprintln!("compile: input filename is required.");
 								exit(1);
 							}
 						}
@@ -227,9 +209,7 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 		if arg == "-d" {
 			if let Some(dir) = args.get(i + 1) {
 				if !Path::new(dir).exists() {
-					return Err(
-						["\"", dir.as_str(), "\" does not exist"].concat()
-					);
+					return Err(["\"", dir.as_str(), "\" does not exist"].concat());
 				}
 				root = dir;
 				skip_next = true;
@@ -250,25 +230,21 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 
 	trace!("Scanning directory \"{}\"", root);
 
-	let mut directory_walker =
-		DirectoryWalker::new(PathBuf::from(root), |name| {
-			name != "node_modules" && !name.starts_with('.')
-		});
+	let mut directory_walker = DirectoryWalker::new(PathBuf::from(root), |name| {
+		name != "node_modules" && !name.starts_with('.')
+	});
 	directory_walker.set_recursive(true);
 
 	let test_js_extensions:Vec<String> =
 		JS_EXTENSIONS.iter().map(|ext| [".test", ext].concat()).collect();
 
-	while let Some((entry, _)) =
-		directory_walker.walk().await.map_err(|e| e.to_string())?
-	{
+	while let Some((entry, _)) = directory_walker.walk().await.map_err(|e| e.to_string())? {
 		if let Some(name) = entry.file_name() {
 			let name = name.to_string_lossy();
 			let name = name.as_ref();
 			for ext_name in &test_js_extensions {
 				if name.ends_with(ext_name)
-					&& (!has_filters
-						|| filters.iter().any(|&f| name.contains(f)))
+					&& (!has_filters || filters.iter().any(|&f| name.contains(f)))
 				{
 					entries.push(entry.to_string_lossy().to_string());
 				}

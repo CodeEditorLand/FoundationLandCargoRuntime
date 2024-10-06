@@ -37,8 +37,7 @@ use crate::{
 
 pub static AWS_LAMBDA_MODE:AtomicBool = AtomicBool::new(false);
 pub static AWS_LAMBDA_JSON_LOG_FORMAT:AtomicBool = AtomicBool::new(false);
-pub static AWS_LAMBDA_JSON_LOG_LEVEL:AtomicUsize =
-	AtomicUsize::new(LogLevel::Info as usize);
+pub static AWS_LAMBDA_JSON_LOG_LEVEL:AtomicUsize = AtomicUsize::new(LogLevel::Info as usize);
 
 pub static CUSTOM_INSPECT_SYMBOL_DESCRIPTION:&str = "llrt.inspect.custom";
 
@@ -150,9 +149,7 @@ impl ModuleDef for ConsoleModule {
 }
 
 impl From<ConsoleModule> for ModuleInfo<ConsoleModule> {
-	fn from(val:ConsoleModule) -> Self {
-		ModuleInfo { name:"console", module:val }
-	}
+	fn from(val:ConsoleModule) -> Self { ModuleInfo { name:"console", module:val } }
 }
 
 pub fn init(ctx:&Ctx<'_>) -> Result<()> {
@@ -176,24 +173,14 @@ pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 }
 
 #[inline(always)]
-fn write_sep(
-	result:&mut String,
-	add_comma:bool,
-	has_indentation:bool,
-	newline:bool,
-) {
-	const SEPARATOR_TABLE:[&str; 8] =
-		["", ",", "\r", ",\r", " ", ", ", "\n", ",\n"];
-	let index = (add_comma as usize)
-		| (has_indentation as usize) << 1
-		| (newline as usize) << 2;
+fn write_sep(result:&mut String, add_comma:bool, has_indentation:bool, newline:bool) {
+	const SEPARATOR_TABLE:[&str; 8] = ["", ",", "\r", ",\r", " ", ", ", "\n", ",\n"];
+	let index = (add_comma as usize) | (has_indentation as usize) << 1 | (newline as usize) << 2;
 	result.push_str(SEPARATOR_TABLE[index]);
 }
 
 #[inline(always)]
-fn push_indentation(result:&mut String, depth:usize) {
-	result.push_str(INDENTATION_LOOKUP[depth]);
-}
+fn push_indentation(result:&mut String, depth:usize) { result.push_str(INDENTATION_LOOKUP[depth]); }
 
 impl Color {
 	#[inline(always)]
@@ -223,11 +210,7 @@ fn log_trace<'js>(ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
 	log_std_out(&ctx, args, LogLevel::Trace)
 }
 
-fn log_assert<'js>(
-	ctx:Ctx<'js>,
-	expression:bool,
-	args:Rest<Value<'js>>,
-) -> Result<()> {
+fn log_assert<'js>(ctx:Ctx<'js>, expression:bool, args:Rest<Value<'js>>) -> Result<()> {
 	if !expression {
 		log_error(ctx, args)?;
 	}
@@ -241,10 +224,7 @@ fn log<'js>(ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
 
 fn clear() { let _ = stdout().write_all(b"\x1b[1;1H\x1b[0J"); }
 
-pub fn format_plain<'js>(
-	ctx:Ctx<'js>,
-	args:Rest<Value<'js>>,
-) -> Result<String> {
+pub fn format_plain<'js>(ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<String> {
 	format_values(&ctx, args, false)
 }
 
@@ -304,10 +284,7 @@ fn format_raw_inner<'js>(
 		Type::Float => {
 			Color::YELLOW.push(result, color_enabled_mask);
 			let mut buffer = ryu::Buffer::new();
-			result.push_str(float_to_string(
-				&mut buffer,
-				value.as_float().unwrap(),
-			));
+			result.push_str(float_to_string(&mut buffer, value.as_float().unwrap()));
 		},
 		Type::String => {
 			Color::GREEN.push(result, not_root_mask & color_enabled_mask);
@@ -327,18 +304,15 @@ fn format_raw_inner<'js>(
 			let obj = value.as_object().unwrap();
 
 			const ANONYMOUS:&str = "(anonymous)";
-			let mut name:String = obj
-				.get(PredefinedAtom::Name)
-				.unwrap_or(String::with_capacity(ANONYMOUS.len()));
+			let mut name:String =
+				obj.get(PredefinedAtom::Name).unwrap_or(String::with_capacity(ANONYMOUS.len()));
 			if name.is_empty() {
 				name.push_str(ANONYMOUS);
 			}
 
 			let mut is_class = false;
 			if obj.contains_key(PredefinedAtom::Prototype)? {
-				let desc:Object = options
-					.get_own_property_desc_fn
-					.call((value, "prototype"))?;
+				let desc:Object = options.get_own_property_desc_fn.call((value, "prototype"))?;
 				let writable:bool = desc.get(PredefinedAtom::Writable)?;
 				is_class = !writable;
 			}
@@ -371,9 +345,7 @@ fn format_raw_inner<'js>(
 				Color::BLACK.push(result, color_enabled_mask);
 				if let Ok(stack) = stack {
 					for line in stack.trim().split('\n') {
-						result.push_str(
-							LINE_BREAK_LOOKUP[1 + (options.newline as usize)],
-						);
+						result.push_str(LINE_BREAK_LOOKUP[1 + (options.newline as usize)]);
 						push_indentation(result, depth + 1);
 						result.push_str(line);
 					}
@@ -390,11 +362,8 @@ fn format_raw_inner<'js>(
 				match class_name.as_deref() {
 					Some("Date") => {
 						Color::MAGENTA.push(result, color_enabled_mask);
-						let iso_fn:Function = value
-							.as_object()
-							.unwrap()
-							.get("toISOString")
-							.unwrap();
+						let iso_fn:Function =
+							value.as_object().unwrap().get("toISOString").unwrap();
 						let str:String = iso_fn.call((This(value),))?;
 						result.push_str(&str);
 						Color::reset(result, color_enabled_mask);
@@ -437,9 +406,7 @@ fn format_raw_inner<'js>(
 				}
 
 				let obj = value.as_object().unwrap();
-				if let Ok(obj) = &obj
-					.get::<_, Object>(options.custom_inspect_symbol.as_atom())
-				{
+				if let Ok(obj) = &obj.get::<_, Object>(options.custom_inspect_symbol.as_atom()) {
 					let is_array = is_typed_array || obj.is_array();
 					return write_object(
 						result,
@@ -454,15 +421,7 @@ fn format_raw_inner<'js>(
 
 				let is_array = is_typed_array || obj.is_array();
 
-				write_object(
-					result,
-					obj,
-					options,
-					visited,
-					depth,
-					color_enabled_mask,
-					is_array,
-				)?;
+				write_object(result, obj, options, visited, depth, color_enabled_mask, is_array)?;
 			} else {
 				Color::CYAN.push(result, color_enabled_mask);
 				result.push_str(OBJECT_ARRAY_LOOKUP[is_object as usize]);
@@ -507,12 +466,7 @@ fn write_object<'js>(
 		let value:Value = obj.get::<&String, _>(&key)?;
 		if !(value.is_function() && filter_functions) {
 			numeric_key = if key.parse::<f64>().is_ok() { !0 } else { 0 };
-			write_sep(
-				result,
-				first > 0,
-				apply_indentation > 0,
-				options.newline,
-			);
+			write_sep(result, first > 0, apply_indentation > 0, options.newline);
 			push_indentation(result, apply_indentation & (depth + 1));
 			if depth > MAX_INDENTATION_LEVEL - 1 {
 				result.push(SPACING);
@@ -538,10 +492,8 @@ fn write_object<'js>(
 			}
 		}
 	}
-	result.push_str(
-		LINE_BREAK_LOOKUP
-			[first & apply_indentation & (1 + (options.newline as usize))],
-	);
+	result
+		.push_str(LINE_BREAK_LOOKUP[first & apply_indentation & (1 + (options.newline as usize))]);
 	result.push_str(SPACING_LOOKUP[first & !apply_indentation & 1]);
 	push_indentation(result, first & apply_indentation & depth);
 	result.push(OBJECT_ARRAY_END[(!is_array) as usize]);
@@ -582,36 +534,17 @@ fn format_values_internal<'js>(
 
 							let value = match next_byte {
 								b's' => {
-									let str = iter
-										.next()
-										.unwrap()
-										.1
-										.get::<Coerced<String>>()?;
+									let str = iter.next().unwrap().1.get::<Coerced<String>>()?;
 									result.push_str(str.as_str());
 									continue;
 								},
-								b'd' => {
-									options
-										.number_function
-										.call((iter.next().unwrap().1,))?
-								},
-								b'i' => {
-									options
-										.parse_int
-										.call((iter.next().unwrap().1,))?
-								},
-								b'f' => {
-									options
-										.parse_float
-										.call((iter.next().unwrap().1,))?
-								},
+								b'd' => options.number_function.call((iter.next().unwrap().1,))?,
+								b'i' => options.parse_int.call((iter.next().unwrap().1,))?,
+								b'f' => options.parse_float.call((iter.next().unwrap().1,))?,
 								b'j' => {
 									result.push_str(
-										&json_stringify(
-											ctx,
-											iter.next().unwrap().1,
-										)?
-										.unwrap_or("undefined".into()),
+										&json_stringify(ctx, iter.next().unwrap().1)?
+											.unwrap_or("undefined".into()),
 									);
 									continue;
 								},
@@ -674,12 +607,9 @@ impl<'js> FormatOptions<'js> {
 	fn new(ctx:&Ctx<'js>, color:bool, newline:bool) -> Result<Self> {
 		let globals = ctx.globals();
 		let default_obj = Object::new(ctx.clone())?;
-		let object_ctor:Object =
-			default_obj.get(PredefinedAtom::Constructor)?;
-		let object_prototype = default_obj
-			.get_prototype()
-			.ok_or("Can't get prototype")
-			.or_throw(ctx)?;
+		let object_ctor:Object = default_obj.get(PredefinedAtom::Constructor)?;
+		let object_prototype =
+			default_obj.get_prototype().ok_or("Can't get prototype").or_throw(ctx)?;
 		let get_own_property_desc_fn:Function =
 			object_ctor.get(PredefinedAtom::GetOwnPropertyDescriptor)?;
 
@@ -688,10 +618,8 @@ impl<'js> FormatOptions<'js> {
 		let parse_int = globals.get("parseInt")?;
 
 		let object_filter = Filter::new().private().string().symbol();
-		let custom_inspect_symbol = Symbol::for_description(
-			&globals,
-			CUSTOM_INSPECT_SYMBOL_DESCRIPTION,
-		)?;
+		let custom_inspect_symbol =
+			Symbol::for_description(&globals, CUSTOM_INSPECT_SYMBOL_DESCRIPTION)?;
 
 		let options = FormatOptions {
 			color,
@@ -708,31 +636,18 @@ impl<'js> FormatOptions<'js> {
 	}
 }
 
-pub fn format_values<'js>(
-	ctx:&Ctx<'js>,
-	args:Rest<Value<'js>>,
-	tty:bool,
-) -> Result<String> {
+pub fn format_values<'js>(ctx:&Ctx<'js>, args:Rest<Value<'js>>, tty:bool) -> Result<String> {
 	let mut result = String::with_capacity(64);
-	let mut options =
-		FormatOptions::new(ctx, tty, !AWS_LAMBDA_MODE.load(Ordering::Relaxed))?;
+	let mut options = FormatOptions::new(ctx, tty, !AWS_LAMBDA_MODE.load(Ordering::Relaxed))?;
 	format_values_internal(&mut result, ctx, args, &mut options)?;
 	Ok(result)
 }
 
-fn log_std_out<'js>(
-	ctx:&Ctx<'js>,
-	args:Rest<Value<'js>>,
-	level:LogLevel,
-) -> Result<()> {
+fn log_std_out<'js>(ctx:&Ctx<'js>, args:Rest<Value<'js>>, level:LogLevel) -> Result<()> {
 	write_log(stdout(), ctx, args, level)
 }
 
-pub(crate) fn log_std_err<'js>(
-	ctx:&Ctx<'js>,
-	args:Rest<Value<'js>>,
-	level:LogLevel,
-) -> Result<()> {
+pub(crate) fn log_std_err<'js>(ctx:&Ctx<'js>, args:Rest<Value<'js>>, level:LogLevel) -> Result<()> {
 	write_log(stderr(), ctx, args, level)
 }
 
@@ -754,8 +669,7 @@ where
 	}
 
 	if is_lambda_mode {
-		let is_json_log_format =
-			AWS_LAMBDA_JSON_LOG_FORMAT.load(Ordering::Relaxed);
+		let is_json_log_format = AWS_LAMBDA_JSON_LOG_FORMAT.load(Ordering::Relaxed);
 		let max_log_level = AWS_LAMBDA_JSON_LOG_LEVEL.load(Ordering::Relaxed);
 		if !write_lambda_log(
 			ctx,
@@ -888,22 +802,15 @@ fn write_lambda_log<'js>(
 				}
 			}
 
-			format_values_internal(
-				&mut values_string,
-				ctx,
-				args,
-				&mut options,
-			)?;
+			format_values_internal(&mut values_string, ctx, args, &mut options)?;
 
 			result.push_str(&escape_json(values_string.as_bytes()));
 			result.push('\"');
 			if let Some(exception) = exception {
 				// error type
 				result.push_str(",\"errorType\":\"");
-				result.push_str(
-					&get_class_name(exception.as_value())?
-						.unwrap_or("Exception".into()),
-				);
+				result
+					.push_str(&get_class_name(exception.as_value())?.unwrap_or("Exception".into()));
 				result.push_str("\",");
 
 				// error message
@@ -936,8 +843,7 @@ fn write_lambda_log<'js>(
 
 		result.push('}');
 	} else {
-		let mut options =
-			FormatOptions::new(ctx, is_tty && !is_json_log_format, is_newline)?;
+		let mut options = FormatOptions::new(ctx, is_tty && !is_json_log_format, is_newline)?;
 		format_values_internal(result, ctx, args, &mut options)?;
 
 		replace_newline_with_carriage_return(result);
@@ -970,37 +876,21 @@ impl Console {
 		Self {}
 	}
 
-	pub fn log<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
-		log(ctx, args)
-	}
+	pub fn log<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> { log(ctx, args) }
 
 	pub fn clear(&self) { clear() }
 
-	pub fn debug<'js>(
-		&self,
-		ctx:Ctx<'js>,
-		args:Rest<Value<'js>>,
-	) -> Result<()> {
+	pub fn debug<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
 		log_debug(ctx, args)
 	}
 
-	pub fn info<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
-		log(ctx, args)
-	}
+	pub fn info<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> { log(ctx, args) }
 
-	pub fn trace<'js>(
-		&self,
-		ctx:Ctx<'js>,
-		args:Rest<Value<'js>>,
-	) -> Result<()> {
+	pub fn trace<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
 		log_trace(ctx, args)
 	}
 
-	pub fn error<'js>(
-		&self,
-		ctx:Ctx<'js>,
-		args:Rest<Value<'js>>,
-	) -> Result<()> {
+	pub fn error<'js>(&self, ctx:Ctx<'js>, args:Rest<Value<'js>>) -> Result<()> {
 		log_error(ctx, args)
 	}
 
@@ -1008,12 +898,7 @@ impl Console {
 		log_warn(ctx, args)
 	}
 
-	pub fn assert<'js>(
-		&self,
-		ctx:Ctx<'js>,
-		expression:bool,
-		args:Rest<Value<'js>>,
-	) -> Result<()> {
+	pub fn assert<'js>(&self, ctx:Ctx<'js>, expression:bool, args:Rest<Value<'js>>) -> Result<()> {
 		log_assert(ctx, expression, args)
 	}
 }
@@ -1021,15 +906,7 @@ impl Console {
 #[cfg(test)]
 mod tests {
 
-	use rquickjs::{
-		function::Rest,
-		Error,
-		IntoJs,
-		Null,
-		Object,
-		Undefined,
-		Value,
-	};
+	use rquickjs::{function::Rest, Error, IntoJs, Null, Object, Undefined, Value};
 
 	use crate::{
 		json::stringify::json_stringify_replacer_space,
@@ -1140,27 +1017,15 @@ mod tests {
 				Ok::<_, Error>(result)
 			};
 
-			assert_eq!(
-				write_log(["Hello".into_js(&ctx)?].into())?,
-				"\tn/a\tINFO\tHello"
-			);
+			assert_eq!(write_log(["Hello".into_js(&ctx)?].into())?, "\tn/a\tINFO\tHello");
 
 			assert_eq!(write_log([1.into_js(&ctx)?].into())?, "\tn/a\tINFO\t1");
 
-			assert_eq!(
-				write_log([true.into_js(&ctx)?].into())?,
-				"\tn/a\tINFO\ttrue"
-			);
+			assert_eq!(write_log([true.into_js(&ctx)?].into())?, "\tn/a\tINFO\ttrue");
 
-			assert_eq!(
-				write_log([Undefined.into_js(&ctx)?].into())?,
-				"\tn/a\tINFO\tundefined"
-			);
+			assert_eq!(write_log([Undefined.into_js(&ctx)?].into())?, "\tn/a\tINFO\tundefined");
 
-			assert_eq!(
-				write_log([Null.into_js(&ctx)?].into())?,
-				"\tn/a\tINFO\tnull"
-			);
+			assert_eq!(write_log([Null.into_js(&ctx)?].into())?, "\tn/a\tINFO\tnull");
 
 			let obj = Object::new(ctx.clone())?;
 			obj.set("a", 1)?;
@@ -1173,29 +1038,23 @@ mod tests {
 
 			// validate second argument passed
 			assert_eq!(
-				write_log(
-					[obj.clone().into_value(), true.into_js(&ctx)?].into()
-				)?,
+				write_log([obj.clone().into_value(), true.into_js(&ctx)?].into())?,
 				"\tn/a\tINFO\t{\r  a: 1,\r  b: 'Hello'\r} true"
 			);
 
 			// single error
-			let e1:Value =
-				ctx.eval(r#"new ReferenceError("some reference error")"#)?;
+			let e1:Value = ctx.eval(r#"new ReferenceError("some reference error")"#)?;
 			assert_eq!(
 				write_log([e1.clone()].into())?,
-				"\tn/a\tINFO\tReferenceError: some reference error\r  at \
-				 <eval> (eval_script:1:1)"
+				"\tn/a\tINFO\tReferenceError: some reference error\r  at <eval> (eval_script:1:1)"
 			);
 
 			// validate many args with additional errors
-			let e2:Value =
-				ctx.eval(r#"new SyntaxError("some syntax error")"#)?;
+			let e2:Value = ctx.eval(r#"new SyntaxError("some syntax error")"#)?;
 			assert_eq!(
 				write_log(["errors logged".into_js(&ctx)?, e1, e2].into())?,
-				"\tn/a\tINFO\terrors logged ReferenceError: some reference \
-				 error\r  at <eval> (eval_script:1:1) SyntaxError: some \
-				 syntax error\r  at <eval> (eval_script:1:1)"
+				"\tn/a\tINFO\terrors logged ReferenceError: some reference error\r  at <eval> \
+				 (eval_script:1:1) SyntaxError: some syntax error\r  at <eval> (eval_script:1:1)"
 			);
 
 			// newline replacement
