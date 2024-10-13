@@ -1,5 +1,5 @@
-[![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/awslabs/llrt/actions/workflows/ci.yml)
-[![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)](https://github.com/awslabs/llrt/actions/workflows/release.yml)
+[`![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)`](https://github.com/awslabs/llrt/actions/workflows/ci.yml)
+[`![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)`](https://github.com/awslabs/llrt/actions/workflows/release.yml)
 
 LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime
 designed to address the growing demand for fast and efficient Serverless
@@ -13,15 +13,15 @@ memory usage and swift startup.
 > [!WARNING] LLRT is an **experimental** package. It is subject to change and
 > intended only for evaluation purposes.
 
-<sub>LLRT - [DynamoDB Put, ARM, 128MB](example/functions/src/v3-lib.mjs):<sub>
-![DynamoDB Put LLRT](./benchmarks/llrt-ddb-put.png "LLRT DynamoDB Put")
+<sub>LLRT - [`DynamoDB Put, ARM, 128MB`](example/functions/src/v3-lib.mjs):<sub>
+![`DynamoDB Put LLRT`](./benchmarks/llrt-ddb-put.png "LLRT DynamoDB Put")
 
 <sub>Node.js 20 -
-[DynamoDB Put, ARM, 128MB](example/functions/src/v3-lib.mjs):<sub>
-![DynamoDB Put Node20](./benchmarks/node20-ddb-put.png "Node20 DynamoDB Put")
+[`DynamoDB Put, ARM, 128MB`](example/functions/src/v3-lib.mjs):<sub>
+![`DynamoDB Put Node20`](./benchmarks/node20-ddb-put.png "Node20 DynamoDB Put")
 
 HTTP benchmarks measured in **round trip time** for a cold start
-([why?](#benchmark-methodology))
+([`why?`](#benchmark-methodology))
 
 ## Configure Lambda functions to use LLRT
 
@@ -39,7 +39,7 @@ Choose `Custom Runtime on Amazon Linux 2023`, upload `llrt-lambda-arm64.zip` or
 
 ### Option 3: Package LLRT in a container image
 
-See our [AWS SAM example](./example/llrt-sam-container-image) or:
+See our [`AWS SAM example`](./example/llrt-sam-container-image) or:
 
 ```dockerfile
 FROM --platform=arm64 busybox
@@ -55,13 +55,13 @@ CMD [ "llrt" ]
 
 ### Option 4: AWS SAM
 
-The following [example project](example/llrt-sam/) sets up a lambda instrumented
+The following [`example project`](example/llrt-sam/) sets up a lambda instrumented
 with a layer containing the llrt runtime.
 
 ### Option 5: AWS CDK
 
 You can use
-[`cdk-lambda-llrt` construct library](https://github.com/tmokmss/cdk-lambda-llrt)
+[``cdk-lambda-llrt` construct library`](https://github.com/tmokmss/cdk-lambda-llrt)
 to deploy LLRT Lambda functions with AWS CDK.
 
 ```ts
@@ -72,16 +72,16 @@ const handler = new LlrtFunction(this, "Handler", {
 });
 ```
 
-See [Construct Hub](https://constructs.dev/packages/cdk-lambda-llrt/) and
-[its examples](https://github.com/tmokmss/cdk-lambda-llrt/tree/main/example) for
+See [`Construct Hub`](https://constructs.dev/packages/cdk-lambda-llrt/) and
+[`its examples`](https://github.com/tmokmss/cdk-lambda-llrt/tree/main/example) for
 more details.
 
 That's it 🎉
 
 > [!IMPORTANT] Even though LLRT supports
-> [ES2023](https://262.ecma-international.org/14.0/) it's **NOT** a drop in
-> replacement for Node.js. Consult [Compatibility matrix](#compatibility-matrix)
-> and [API](API.md) for more details. All dependencies should be bundled for a
+> [`ES2023`](https://262.ecma-international.org/14.0/) it's **NOT** a drop in
+> replacement for Node.js. Consult [`Compatibility matrix`](#compatibility-matrix)
+> and [`API`](API.md) for more details. All dependencies should be bundled for a
 > `browser` platform and mark included `@aws-sdk` packages as external.
 
 ## Testing & ensuring compatibility
@@ -102,7 +102,7 @@ End-to-End (E2E) Tests
 -   Confirm expected behavior from end-user perspective
 
 For more information about the E2E Tests and how to run them, see
-[here](tests/e2e/README.md).
+[`here`](tests/e2e/README.md).
 
 ### Test runner
 
@@ -124,7 +124,7 @@ tests that match the filename containing `crypto`.
 > [!NOTE] LLRT only support a fraction of the Node.js APIs. It is **NOT** a drop
 > in replacement for Node.js, nor will it ever be. Below is a high level
 > overview of partially supported APIs and modules. For more details consult the
-> [API](API.md) documentation
+> [`API`](API.md) documentation
 
 |               | Node.js | LLRT ⚠️ |
 | ------------- | ------- | ------- |
@@ -240,7 +240,7 @@ JavaScript dependencies used by the AWS SDK by native ones such as Hash
 calculations and XML parsing. V3 SDK packages not included in the list below
 have to be bundled with your source code. For an example on how to use a
 non-included SDK, see
-[this example build script (buildExternalSdkFunction)](example/functions/build.mjs)
+[`this example build script (buildExternalSdkFunction)`](example/functions/build.mjs)
 
 | Bundled AWS SDK packages                  |
 | ----------------------------------------- |
@@ -294,14 +294,14 @@ bundled and transpiled into ES2023 JavaScript.
 ## Rationale
 
 What justifies the introduction of another JavaScript runtime in light of
-existing options such as [Node.js](https://nodejs.org/en), [Bun](https://bun.sh)
-& [Deno](https://deno.com/)?
+existing options such as [`Node.js](https://nodejs.org/en), [Bun`](https://bun.sh)
+& [`Deno`](https://deno.com/)?
 
 Node.js, Bun, and Deno represent highly proficient JavaScript runtimes. However,
 they are designed with general-purpose applications in mind. These runtimes were
 not specifically tailored for the demands of a Serverless environment,
 characterized by short-lived runtime instances. They each depend on a
-([Just-In-Time compiler (JIT)](https://en.wikipedia.org/wiki/Just-in-time_compilation)
+([`Just-In-Time compiler (JIT)`](https://en.wikipedia.org/wiki/Just-in-time_compilation)
 for dynamic code compilation and optimization during execution. While JIT
 compilation offers substantial long-term performance advantages, it carries a
 computational and memory overhead.
@@ -489,13 +489,13 @@ is enabled. TLS 1.3 can also be enabled by setting this variable to `1.3`
 ## Benchmark Methodology
 
 Although Init Duration
-[reported by Lambda](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
+[`reported by Lambda`](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
 is commonly used to understand cold start impact on overall request latency,
 this metric does not include the time needed to copy code into the Lambda
 sandbox.
 
 The technical definition of Init Duration
-([source](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-logging.html#node-logging-output)):
+([`source`](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-logging.html#node-logging-output)):
 
 > For the first request served, the amount of time it took the runtime to load
 > the function and run code outside of the handler method.
@@ -508,10 +508,10 @@ Duration + Function Duration.
 
 ## Security
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more
+See [`CONTRIBUTING`](CONTRIBUTING.md#security-issue-notifications) for more
 information.
 
 ## License
 
 This library is licensed under the Apache-2.0 License. See the
-[LICENSE](LICENSE) file.
+[`LICENSE`](LICENSE) file.
