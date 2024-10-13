@@ -1,5 +1,5 @@
-[`![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)`](https://github.com/awslabs/llrt/actions/workflows/ci.yml)
-[`![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)`](https://github.com/awslabs/llrt/actions/workflows/release.yml)
+[![LLRT CI](https://github.com/awslabs/llrt/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/awslabs/llrt/actions/workflows/ci.yml)
+[![LLRT Release](https://github.com/awslabs/llrt/actions/workflows/release.yml/badge.svg)](https://github.com/awslabs/llrt/actions/workflows/release.yml)
 
 LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime
 designed to address the growing demand for fast and efficient Serverless
@@ -240,7 +240,7 @@ JavaScript dependencies used by the AWS SDK by native ones such as Hash
 calculations and XML parsing. V3 SDK packages not included in the list below
 have to be bundled with your source code. For an example on how to use a
 non-included SDK, see
-[`this example build script (buildExternalSdkFunction)`](example/functions/build.mjs)
+[`this example build script (buildExternalSdkFunction)](example/functions/build.mjs)
 
 | Bundled AWS SDK packages                  |
 | ----------------------------------------- |
@@ -301,7 +301,7 @@ Node.js, Bun, and Deno represent highly proficient JavaScript runtimes. However,
 they are designed with general-purpose applications in mind. These runtimes were
 not specifically tailored for the demands of a Serverless environment,
 characterized by short-lived runtime instances. They each depend on a
-([`Just-In-Time compiler (JIT)`](https://en.wikipedia.org/wiki/Just-in-time_compilation)
+([`Just-In-Time compiler (JIT)](https://en.wikipedia.org/wiki/Just-in-time_compilation)
 for dynamic code compilation and optimization during execution. While JIT
 compilation offers substantial long-term performance advantages, it carries a
 computational and memory overhead.
