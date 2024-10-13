@@ -61,7 +61,7 @@ with a layer containing the llrt runtime.
 ### Option 5: AWS CDK
 
 You can use
-[``cdk-lambda-llrt` construct library`](https://github.com/tmokmss/cdk-lambda-llrt)
+[`cdk-lambda-llrt` construct library`](https://github.com/tmokmss/cdk-lambda-llrt)
 to deploy LLRT Lambda functions with AWS CDK.
 
 ```ts
