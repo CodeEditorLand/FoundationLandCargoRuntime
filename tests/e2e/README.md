@@ -33,7 +33,7 @@ them available through env variables:
    the E2E tests.
 
     ```shell
-    $(aws cloudformation describe-stacks --stack-name LLRTReleaseIntegTestResourcesStack --query "Stacks[*].Outputs[*].{OutputKey: OutputKey, OutputValue: OutputValue}" | jq -r '.[0][] | "export \(.OutputKey|gsub("(?<x>(?!^)|\b[a-zA-Z][a-z]*)(?<y>[A-Z][a-z]*|\\d+)";"\(.x)_\(.y)")| ascii_upcase )=\(.OutputValue)"')
+    $(aws cloudformation describe-stacks --stack-name LLRTReleaseIntegTestResourcesStack --query "Stacks[*].Outputs[*].{OutputKey: OutputKey, OutputValue: OutputValue}" | jq -r '.[0][] | "export \(.OutputKey|gsub("(?<x>(?!^)|\b[a-zA-Z][a-z]*)(?<y>[`A-Z`][a-z]*|\\d+)";"\(.x)_\(.y)")| ascii_upcase )=\(.OutputValue)"')
     ```
 
     If `jq` is not available, look at the CloudFormation `Outputs` and manually

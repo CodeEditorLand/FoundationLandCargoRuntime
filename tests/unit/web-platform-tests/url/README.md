@@ -55,7 +55,7 @@ coverage here are welcome.)
 
 ## Specification
 
-The tests in this directory assert conformance with [the URL Standard][URL].
+The tests in this directory assert conformance with [`the URL Standard`][URL].
 
 [parsing]: https://url.spec.whatwg.org/#concept-basic-url-parser
 [API]: https://url.spec.whatwg.org/#api

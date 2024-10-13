@@ -236,7 +236,7 @@ export function urlToHttpOptions(url: URL): {
 ```typescript
 export class URLSearchParams {
   constructor(
-    init?: string | string[][] | Record<string, string> | URLSearchParams
+    init?: string | string[``][] | Record<string, string> | URLSearchParams
   );
 
   // properties
