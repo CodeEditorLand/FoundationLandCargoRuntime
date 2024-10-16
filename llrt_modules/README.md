@@ -80,7 +80,3 @@ async fn main() -> anyhow::Result<()> {
 
 _⚠️ = partially supported_ _⏱ = planned partial support_ _\* = Not native_
 _\*\* = Use fetch instead_
-
-## License
-
-This library is licensed under the Apache-2.0 License.
