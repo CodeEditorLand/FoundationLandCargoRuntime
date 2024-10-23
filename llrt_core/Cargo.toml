@@ -50,7 +50,7 @@ zstd = { version = "0.13.2", default-features = false, features = [] }
 libc = "0.2.161"
 bytes = "1.8.0"
 uuid-simd = "0.8.0"
-simd-json = { version = "0.14.1", default-features = false, features = [
+simd-json = { version = "0.14.2", default-features = false, features = [
 	"big-int-as-float",
 ] }
 itoa = "1.0.11"
