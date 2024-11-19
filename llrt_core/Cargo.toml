@@ -26,7 +26,7 @@ quick-xml = "0.37.1"
 crc32c = { version = "0.6.8" }
 crc32fast = "1.4.2"
 phf = "0.11.2"
-rquickjs = { version = "0.7.0", features = [
+rquickjs = { version = "0.8.1", features = [
 	"full-async",
 	"parallel",
 	"rust-alloc",
@@ -86,7 +86,7 @@ md-5 = { version = "0.10.6" }
 md-5 = { version = "0.10.6", features = ["asm"] }
 
 [build-dependencies]
-rquickjs = { version = "0.7.0", features = [
+rquickjs = { version = "0.8.1", features = [
 	"full-async",
 	"rust-alloc",
 ], default-features = false }

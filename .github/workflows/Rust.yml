@@ -57,14 +57,14 @@ jobs:
                 toolchain: ["stable", "nightly"]
 
         steps:
-            - uses: actions/checkout@v4.2.1
+            - uses: actions/checkout@v4.2.2
 
             - uses: actions-rs/toolchain@v1.0.7
               with:
                   profile: minimal
                   toolchain: ${{ matrix.toolchain }}
 
-            - uses: actions/cache@v4.1.1
+            - uses: actions/cache@v4.1.2
               with:
                   path: |
                       ~/.cargo/bin/
@@ -79,7 +79,7 @@ jobs:
                 command: build
                 args: --release --all-features --manifest-path ./Cargo.toml
 
-            - uses: actions/cache@v4.1.1
+            - uses: actions/cache@v4.1.2
               with:
                   path: |
                       ~/.cargo/bin/
@@ -94,7 +94,7 @@ jobs:
                 command: build
                 args: --release --all-features --manifest-path ./llrt/Cargo.toml
 
-            - uses: actions/cache@v4.1.1
+            - uses: actions/cache@v4.1.2
               with:
                   path: |
                       ~/.cargo/bin/
@@ -109,7 +109,7 @@ jobs:
                 command: build
                 args: --release --all-features --manifest-path ./llrt_core/Cargo.toml
 
-            - uses: actions/cache@v4.1.1
+            - uses: actions/cache@v4.1.2
               with:
                   path: |
                       ~/.cargo/bin/
@@ -124,7 +124,7 @@ jobs:
                 command: build
                 args: --release --all-features --manifest-path ./llrt_modules/Cargo.toml
 
-            - uses: actions/cache@v4.1.1
+            - uses: actions/cache@v4.1.2
               with:
                   path: |
                       ~/.cargo/bin/
