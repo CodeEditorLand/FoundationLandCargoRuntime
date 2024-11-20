@@ -9,7 +9,7 @@
 		"synth": "cdk synth"
 	},
 	"devDependencies": {
-		"@types/node": "22.9.0",
+		"@types/node": "22.9.1",
 		"aws-cdk": "2.167.2",
 		"aws-cdk-lib": "2.167.2",
 		"constructs": "10.4.2",

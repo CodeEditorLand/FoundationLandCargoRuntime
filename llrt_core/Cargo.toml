@@ -53,10 +53,10 @@ uuid-simd = "0.8.0"
 simd-json = { version = "0.14.3", default-features = false, features = [
 	"big-int-as-float",
 ] }
-itoa = "1.0.11"
+itoa = "1.0.12"
 ryu = "1.0.18"
 fxhash = "0.2.1"
-hyper = { version = "1.5.0", features = ["client", "http1", "http2"] }
+hyper = { version = "1.5.1", features = ["client", "http1", "http2"] }
 hyper-rustls = { version = "0.27.3", default-features = false, features = [
 	"http2",
 	"http1",
