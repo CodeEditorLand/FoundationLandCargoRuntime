@@ -85,7 +85,9 @@ it("should log complex object", () => {
 	const date = new Date();
 
 	const func = () => {};
+
 	const ClassType = class Instance {};
+
 	const instance = new ClassType();
 
 	const obj = {

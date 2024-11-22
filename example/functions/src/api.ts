@@ -17,6 +17,7 @@ const uid = () =>
 	) + new Date().getTime();
 
 const CLIENT = new DynamoDBClient({});
+
 const DOCUMENT_CLIENT = DynamoDBDocumentClient.from(CLIENT as any);
 
 const mapTodo = (
@@ -41,6 +42,7 @@ const API = {
 				TableName: process.env.TABLE_NAME,
 			}),
 		);
+
 		return response.Items.map(mapTodo);
 	},
 	create: async (text: string) => {
@@ -55,6 +57,7 @@ const API = {
 				Item: newItem,
 			}),
 		);
+
 		return newItem;
 	},
 
@@ -81,6 +84,7 @@ const API = {
 				},
 			}),
 		);
+
 		return todo;
 	},
 };

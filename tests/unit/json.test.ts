@@ -49,6 +49,7 @@ describe("JSON Parsing", () => {
 
 	it("should parse JSON with special characters", () => {
 		const specialChars = "!@#$%^&*()_+-={}[]|;:,.<>?/";
+
 		const parsedData = JSON.parse(`{"specialChars": "${specialChars}"}`);
 		expect(parsedData).toStrictEqual({ specialChars });
 	});
@@ -57,7 +58,9 @@ describe("JSON Parsing", () => {
 describe("JSON Stringified", () => {
 	it("should stringify JSON", () => {
 		const data = { key: "value", age: 25 };
+
 		const jsonString = JSON.stringify(data);
+
 		const parsedData = JSON.parse(jsonString);
 		expect(parsedData).toStrictEqual(data);
 	});
@@ -120,7 +123,9 @@ describe("JSON Stringified", () => {
 				},
 			},
 		};
+
 		const jsonString = JSON.stringify(data, null, 4);
+
 		const expectedJsonString = `{
     "key": "value",
     "bool": true,
@@ -156,7 +161,9 @@ describe("JSON Stringified", () => {
 				},
 			},
 		};
+
 		const jsonString = JSON.stringify(data, null, "   ");
+
 		const expectedJsonString = `{
    "key": "value",
    "bool": false,
@@ -180,8 +187,10 @@ describe("JSON Stringified", () => {
 	// Test JSON stringifying with replacer as a function
 	it("Should stringify an object with a replacer function", () => {
 		const data = { key: "value", secret: "hidden" };
+
 		const replacerFunction = (key: string, value: any) =>
 			key === "secret" ? undefined : value;
+
 		const jsonString = JSON.stringify(data, replacerFunction, 2);
 		expect(jsonString).toEqual('{\n  "key": "value"\n}');
 	});
@@ -228,6 +237,7 @@ describe("JSON Stringified", () => {
 		expect(JSON.stringify(valueStart)).toEqual(`{"b":"123","c":"123"}`);
 
 		const jsonStartIndented = JSON.stringify(valueStart, null, "   ");
+
 		const expectedJsonStartString = `{
    "b": "123",
    "c": "123"
@@ -242,6 +252,7 @@ describe("JSON Stringified", () => {
 		expect(JSON.stringify(valueMiddle)).toEqual(`{"a":"123","c":"123"}`);
 
 		const jsonMiddleIndented = JSON.stringify(valueMiddle, null, "   ");
+
 		const expectedJsonMiddleString = `{
    "a": "123",
    "c": "123"
@@ -256,6 +267,7 @@ describe("JSON Stringified", () => {
 		expect(JSON.stringify(valueEnd)).toEqual(`{"a":"123","b":"123"}`);
 
 		const jsonEndIndented = JSON.stringify(valueEnd, null, "   ");
+
 		const expectedJsonEndString = `{
    "a": "123",
    "b": "123"

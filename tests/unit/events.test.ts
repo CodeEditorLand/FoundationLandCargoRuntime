@@ -5,15 +5,20 @@ const sleep = (millis: number) => new Promise((cb) => setTimeout(cb, millis));
 describe("EventEmitter", () => {
 	it("should use custom EventEmitter", () => {
 		let called = 0;
+
 		const symbolA = Symbol();
+
 		const symbolB = Symbol();
+
 		const symbolC = Symbol();
+
 		const callback = () => {
 			called++;
 		};
 
 		class MyEmitter extends EventEmitter {}
 		const myEmitter = new MyEmitter();
+
 		const myEmitter2 = new MyEmitter();
 
 		myEmitter.once("event", function (a, b) {
@@ -107,6 +112,7 @@ describe("EventEmitter", () => {
 describe("AbortSignal & AbortController", () => {
 	it("should set abort reason on AbortSignal", () => {
 		const abortController = new AbortController();
+
 		const signal = abortController.signal;
 
 		abortController.abort("cancelled");
@@ -128,6 +134,7 @@ describe("AbortSignal & AbortController", () => {
 
 	it("should abort if any signal is aborted asynchronously", async () => {
 		const signal = AbortSignal.timeout(5);
+
 		const ctrl = new AbortController();
 		//@ts-ignore
 		const new_signal: AbortSignal = AbortSignal.any([signal, ctrl.signal]);
@@ -140,6 +147,7 @@ describe("AbortSignal & AbortController", () => {
 
 	it("should only emit aborted once", () => {
 		const ctrl = new AbortController();
+
 		let count = 0;
 		ctrl.signal.onabort = () => {
 			count++;

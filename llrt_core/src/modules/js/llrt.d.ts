@@ -20,6 +20,7 @@ declare var __handler: (data: any) => Promise<any>;
 
 declare module "hex" {
 	export const decode: (text: string) => Uint8Array;
+
 	export const encode: (bytes: Uint8Array) => string;
 }
 
@@ -52,6 +53,7 @@ declare module "xml" {
 	export class XmlNode {
 		readonly children: any[];
 		static of(name: string, childText?: string, withName?: string): XmlNode;
+
 		constructor(name: string, children?: any[]);
 		withName(name: string): XmlNode;
 		addAttribute(name: string, value: any): XmlNode;

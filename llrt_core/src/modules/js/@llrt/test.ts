@@ -5,13 +5,18 @@ import { JestAsymmetricMatchers } from "./expect/jest-asymmetric-matchers";
 import { JestChaiExpect } from "./expect/jest-expect";
 
 const GLOBAL = globalThis as any;
+
 const START = Date.now();
+
 const SUITE_LOAD_PROMISES: (() => Promise<void>)[] = [];
+
 const DEFAULT_TIMEOUT_MS = 5000;
+
 const TIMEOUT_MS =
 	Number.parseInt((process.env as any).TEST_TIMEOUT) || DEFAULT_TIMEOUT_MS;
 
 const EMPTY_ARROW_FN_REGEX = /^(async)?\s*\(\s*\)\s*=>/m;
+
 const EMPTY_FN_REGEX = /^(async)?\s*function\s*[a-zA-Z0-9_-]*\s*\(\s*\)\s*\{/m;
 
 type Test = TestSettings & {
@@ -52,16 +57,22 @@ type RootSuite = TestSettings &
 type MaybeAsyncFunction = () => Promise<void> | void;
 
 const testList: RootSuite[] = [];
+
 let rootSuite: RootSuite = {
 	tests: [],
 	suites: [],
 	containsOnly: false,
 	desc: "root",
 };
+
 let onlyCount = 0;
+
 let skippedCount = 0;
+
 let testCount = 0;
+
 let failedCount = 0;
+
 let passedCount = 0;
 
 const colorizer = (color: string) => (text: string) =>
@@ -74,6 +85,7 @@ const Color = {
 	GREEN_BACKGROUND: colorizer("\x1b[42m"),
 	RED_BACKGROUND: colorizer("\x1b[41m"),
 };
+
 const RESET = "\x1b[0m";
 
 class TestOutput {
@@ -101,6 +113,7 @@ class TestOutput {
 		);
 	appendError = (error: any, message: string) => {
 		this.pass = false;
+
 		return this.appendLine(
 			Color.RED("\u2718"),
 			Color.GREY(message),
@@ -124,14 +137,18 @@ const createTestFunction =
 	(desc: string, fn: () => Promise<void>) => {
 		const suite: TestSuite = currentSuite;
 		testCount++;
+
 		if (skip || suite?.skip) {
 			skippedCount++;
+
 			return;
 		}
 		const onlyValue = only || suite.only;
+
 		if (onlyValue) {
 			onlyCount++;
 			suite.containsOnly = true;
+
 			let p = suite.parent;
 
 			while (p) {
@@ -149,7 +166,9 @@ const createTestFunction =
 	};
 
 let currentSuite: TestSuite = undefined as any;
+
 let currentSuites: TestSuite[] = [];
+
 const createDescribe =
 	({ only = false, skip = false }: TestSettings = {}) =>
 	(desc: string, fn: () => Promise<void>) => {
@@ -164,17 +183,21 @@ const createDescribe =
 				desc,
 			};
 			parent.suites!.push(currentSuite);
+
 			const beforeLength = SUITE_LOAD_PROMISES.length;
 
 			await fn();
+
 			const afterLength = SUITE_LOAD_PROMISES.length;
 
 			const items = SUITE_LOAD_PROMISES.splice(
 				beforeLength,
 				afterLength - beforeLength,
 			);
+
 			if (items.length) {
 				SUITE_LOAD_PROMISES.unshift(...items);
+
 				const subSuites = new Array(items.length).fill(currentSuite);
 				currentSuites.unshift(...subSuites);
 			}
@@ -226,6 +249,7 @@ GLOBAL.afterAll = (cb: MaybeAsyncFunction) => {
 
 const executeAsyncOrCallbackFn = async (fn: Function) => {
 	const fnBody = fn.toString();
+
 	const usesArgument = !(
 		EMPTY_ARROW_FN_REGEX.test(fnBody) || EMPTY_FN_REGEX.test(fnBody)
 	);
@@ -238,8 +262,10 @@ const executeAsyncOrCallbackFn = async (fn: Function) => {
 				() => reject(`Timeout after ${TIMEOUT_MS}ms`),
 				TIMEOUT_MS,
 			);
+
 			const resolveWrapper = (error: any) => {
 				clearTimeout(timeout);
+
 				if (error) {
 					return reject(error);
 				}
@@ -286,6 +312,7 @@ async function promiseAllMax(
 	promiseFunctions: (() => Promise<any>)[],
 ) {
 	const results = new Array(promiseFunctions.length);
+
 	let currentIndex = 0;
 
 	const executePromise = async () => {
@@ -319,17 +346,22 @@ const runAllTests = async () => {
 				output.appendLine(
 					`${(i > 0 && "\n") || ""}{{STATUS}} ${testSuite.module}`,
 				);
+
 				if (testSuite.loadError) {
 					output.appendError(null, testSuite.loadError);
 					console.error(output.toString());
+
 					return;
 				}
 				if (testSuite.beforeAll) {
 					await executeAsyncOrCallbackFn(testSuite.beforeAll);
 				}
 				await runTests(testSuite, output, testSuite.tests);
+
 				const stack = [...testSuite.suites];
+
 				const depthList: number[] = [];
+
 				if ((testSuite.tests?.length ?? 0) > 0) {
 					output.setDepth(1);
 				}
@@ -345,10 +377,12 @@ const runAllTests = async () => {
 					const depth = depthList.shift() ?? 1;
 					output.setDepth(depth);
 					output.appendLine(suite.desc);
+
 					if (suite.beforeAll) {
 						await executeAsyncOrCallbackFn(suite.beforeAll);
 					}
 					await runTests(testSuite, output, suite.tests);
+
 					if (suite.afterAll) {
 						await executeAsyncOrCallbackFn(suite.afterAll);
 					}
@@ -365,6 +399,7 @@ const runAllTests = async () => {
 				console.log(output.toString());
 			};
 			acc.push(execute);
+
 			return acc;
 		}, []),
 	);
@@ -374,7 +409,9 @@ const findTests = async () => {
 	for (const entry of GLOBAL.__testEntries) {
 		currentSuite = rootSuite;
 		currentSuites = [];
+
 		const index = entry.lastIndexOf("/");
+
 		if (index !== -1) {
 			rootSuite.module = entry.substring(index + 1);
 		} else {
@@ -411,8 +448,11 @@ const findTests = async () => {
 
 const printStats = () => {
 	const end = Date.now();
+
 	const includedCount = onlyCount || testCount - skippedCount;
+
 	const passed = includedCount == passedCount && failedCount == 0;
+
 	const status = passed
 		? Color.GREEN_BACKGROUND(" \u2714 ALL PASSED ")
 		: Color.RED_BACKGROUND(" \u2718 TESTS FAIL ");
@@ -421,6 +461,7 @@ const printStats = () => {
 			testCount - includedCount
 		} skipped, ${testCount} total\nTime: ${end - START} ms`,
 	);
+
 	if (!passed) {
 		process.exit(1);
 	}

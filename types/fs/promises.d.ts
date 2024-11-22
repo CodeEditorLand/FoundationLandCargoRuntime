@@ -4,6 +4,7 @@
  */
 declare module "fs/promises" {
 	import type { Buffer, BufferEncoding } from "buffer";
+
 	import type {
 		Dirent,
 		MakeDirectoryOptions,

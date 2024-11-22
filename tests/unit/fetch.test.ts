@@ -2,6 +2,7 @@ import { spawn } from "child_process";
 import net from "net";
 
 let server: net.Server;
+
 let url: string;
 
 beforeAll((done) => {
@@ -17,6 +18,7 @@ beforeAll((done) => {
 	server.listen(() => {
 		const addressInfo = server.address()! as any as net.AddressInfo;
 		url = `http://${addressInfo.address}:${addressInfo.port}`;
+
 		done();
 	});
 });
@@ -89,7 +91,9 @@ describe("fetch", () => {
 				},
 			},
 		);
+
 		let stdout = "";
+
 		let stderr = "";
 		proc.stderr.on("data", (data) => {
 			stderr += data.toString();
@@ -102,6 +106,7 @@ describe("fetch", () => {
 				`Error: URL denied: ${deniedUrl.hostname}`,
 			);
 			expect(stdout.trim()).toEqual("OK");
+
 			done();
 		});
 		proc.on("error", done);
@@ -122,7 +127,9 @@ describe("fetch", () => {
 				},
 			},
 		);
+
 		let stdout = "";
+
 		let stderr = "";
 		proc.stderr.on("data", (data) => {
 			stderr += data.toString();
@@ -135,6 +142,7 @@ describe("fetch", () => {
 				`Error: URL not allowed: ${deniedUrl.hostname}`,
 			);
 			expect(stdout.trim()).toEqual("OK");
+
 			done();
 		});
 		proc.on("error", done);
@@ -142,8 +150,10 @@ describe("fetch", () => {
 
 	it("should be abortable using signals", async () => {
 		const abortController = new AbortController();
+
 		const res = fetch(url, { signal: abortController.signal });
 		abortController.abort();
+
 		try {
 			await res;
 		} catch (err: any) {
@@ -152,8 +162,10 @@ describe("fetch", () => {
 	});
 	it("should be abortable using request signal", async () => {
 		const abortController = new AbortController();
+
 		const req = new Request(url, { signal: abortController.signal });
 		abortController.abort("aborted");
+
 		try {
 			await fetch(req);
 		} catch (err: any) {

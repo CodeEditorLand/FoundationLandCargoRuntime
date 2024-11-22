@@ -37,6 +37,7 @@ export function equals(
 	strictCheck?: boolean,
 ): boolean {
 	customTesters = customTesters || [];
+
 	return eq(
 		a,
 		b,
@@ -61,17 +62,23 @@ export function isAsymmetric(obj: any) {
 export function hasAsymmetric(obj: any, seen = new Set()): boolean {
 	if (seen.has(obj)) return false;
 	seen.add(obj);
+
 	if (isAsymmetric(obj)) return true;
+
 	if (Array.isArray(obj)) return obj.some((i) => hasAsymmetric(i, seen));
+
 	if (obj instanceof Set)
 		return Array.from(obj).some((i) => hasAsymmetric(i, seen));
+
 	if (isObject(obj))
 		return Object.values(obj).some((v) => hasAsymmetric(v, seen));
+
 	return false;
 }
 
 function asymmetricMatch(a: any, b: any) {
 	const asymmetricA = isAsymmetric(a);
+
 	const asymmetricB = isAsymmetric(b);
 
 	if (asymmetricA && asymmetricB) return undefined;
@@ -94,9 +101,11 @@ function eq(
 	let result = true;
 
 	const asymmetricResult = asymmetricMatch(a, b);
+
 	if (asymmetricResult !== undefined) return asymmetricResult;
 
 	const testerContext: any = { equals };
+
 	for (let i = 0; i < customTesters.length; i++) {
 		const customTesterResult = customTesters[i].call(
 			testerContext,
@@ -104,6 +113,7 @@ function eq(
 			b,
 			customTesters,
 		);
+
 		if (customTesterResult !== undefined) return customTesterResult;
 	}
 
@@ -119,6 +129,7 @@ function eq(
 	if (a === null || b === null) return a === b;
 
 	const className = Object.prototype.toString.call(a);
+
 	if (className !== Object.prototype.toString.call(b)) return false;
 
 	switch (className) {
@@ -137,6 +148,7 @@ function eq(
 			}
 		case "[object Date]": {
 			const numA = +a;
+
 			const numB = +b;
 			// Coerce dates to numeric primitive values. Dates are compared by their
 			// millisecond representations. Note that invalid dates with millisecond representations
@@ -154,12 +166,14 @@ function eq(
 
 	// Used to detect circular references.
 	let length = aStack.length;
+
 	while (length--) {
 		// Linear search. Performance is inversely proportional to the number of
 		// unique nested structures.
 		// circular references at same depth are equal
 		// circular reference is not equal to non-circular one
 		if (aStack[length] === a) return bStack[length] === b;
+
 		else if (bStack[length] === b) return false;
 	}
 	// Add the first object to the stack of traversed objects.
@@ -171,7 +185,9 @@ function eq(
 
 	// Deep compare objects.
 	const aKeys = keys(a, hasKey);
+
 	let key;
+
 	let size = aKeys.length;
 
 	// Ensure that both objects contain the same number of properties before comparing deep equality.
@@ -244,6 +260,7 @@ export function fnNameFor(func: Function) {
 	const matches = functionToString
 		.call(func)
 		.match(/^(?:async)?\s*function\s*\*?\s*([\w$]+)\s*\(/);
+
 	return matches ? matches[1] : "<anonymous>";
 }
 
@@ -265,7 +282,9 @@ export function hasProperty(obj: object | null, property: string): boolean {
 
 // SENTINEL constants are from https://github.com/facebook/immutable-js
 const IS_KEYED_SENTINEL = "@@__IMMUTABLE_KEYED__@@";
+
 const IS_SET_SENTINEL = "@@__IMMUTABLE_SET__@@";
+
 const IS_ORDERED_SENTINEL = "@@__IMMUTABLE_ORDERED__@@";
 
 export function isImmutableUnorderedKeyed(maybeKeyed: any) {
@@ -317,6 +336,7 @@ export function iterableEquality(
 	if (a.constructor !== b.constructor) return false;
 
 	let length = aStack.length;
+
 	while (length--) {
 		// Linear search. Performance is inversely proportional to the number of
 		// unique nested structures.
@@ -347,20 +367,24 @@ export function iterableEquality(
 			return false;
 		} else if (isA("Set", a) || isImmutableUnorderedSet(a)) {
 			let allFound = true;
+
 			for (const aValue of a) {
 				if (!b.has(aValue)) {
 					let has = false;
+
 					for (const bValue of b) {
 						const isEqual = equals(
 							aValue,
 							bValue,
 							filteredCustomTesters,
 						);
+
 						if (isEqual === true) has = true;
 					}
 
 					if (has === false) {
 						allFound = false;
+
 						break;
 					}
 				}
@@ -368,15 +392,18 @@ export function iterableEquality(
 			// Remove the first value from the stack of traversed values.
 			aStack.pop();
 			bStack.pop();
+
 			return allFound;
 		} else if (isA("Map", a) || isImmutableUnorderedKeyed(a)) {
 			let allFound = true;
+
 			for (const aEntry of a) {
 				if (
 					!b.has(aEntry[0]) ||
 					!equals(aEntry[1], b.get(aEntry[0]), filteredCustomTesters)
 				) {
 					let has = false;
+
 					for (const bEntry of b) {
 						const matchedKey = equals(
 							aEntry[0],
@@ -385,6 +412,7 @@ export function iterableEquality(
 						);
 
 						let matchedValue = false;
+
 						if (matchedKey === true)
 							matchedValue = equals(
 								aEntry[1],
@@ -397,6 +425,7 @@ export function iterableEquality(
 
 					if (has === false) {
 						allFound = false;
+
 						break;
 					}
 				}
@@ -404,6 +433,7 @@ export function iterableEquality(
 			// Remove the first value from the stack of traversed values.
 			aStack.pop();
 			bStack.pop();
+
 			return allFound;
 		}
 	}
@@ -412,6 +442,7 @@ export function iterableEquality(
 
 	for (const aValue of a) {
 		const nextB = bIterator.next();
+
 		if (nextB.done || !equals(aValue, nextB.value, filteredCustomTesters))
 			return false;
 	}
@@ -420,6 +451,7 @@ export function iterableEquality(
 	// Remove the first value from the stack of traversed values.
 	aStack.pop();
 	bStack.pop();
+
 	return true;
 }
 
@@ -487,6 +519,7 @@ export function subsetEquality(
 				// Thus we should delete the reference immediately so that it doesn't interfere
 				// other nodes within the same level on tree.
 				seenReferences.delete(subset[key]);
+
 				return result;
 			});
 		};
@@ -506,6 +539,7 @@ export function arrayBufferEquality(
 	b: unknown,
 ): boolean | undefined {
 	let dataViewA = a as DataView;
+
 	let dataViewB = b as DataView;
 
 	if (!(a instanceof DataView && b instanceof DataView)) {
@@ -540,10 +574,13 @@ export function sparseArrayEquality(
 
 	// A sparse array [, , 1] will have keys ["2"] whereas [undefined, undefined, 1] will have keys ["0", "1", "2"]
 	const aKeys = Object.keys(a);
+
 	const bKeys = Object.keys(b);
+
 	const filteredCustomTesters = customTesters.filter(
 		(t) => t !== sparseArrayEquality,
 	);
+
 	return equals(a, b, filteredCustomTesters, true) && equals(aKeys, bKeys);
 }
 

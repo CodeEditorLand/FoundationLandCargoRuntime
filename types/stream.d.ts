@@ -1,5 +1,6 @@
 declare module "stream" {
 	import { EventEmitter } from "events";
+
 	import type { Buffer } from "buffer";
 
 	class ReadableStreamInner

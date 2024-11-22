@@ -79,14 +79,17 @@ describe("random", () => {
 		defaultImport.randomFill(Buffer.alloc(16), (err, buffer) => {
 			expect(err).toBeNull();
 			expect(buffer.length).toEqual(16);
+
 			done();
 		});
 	});
 
 	it("should generate random bytes synchronously into a Uint8Array using randomFillSync", () => {
 		const uint8Array = new Uint8Array(16);
+
 		defaultImport.randomFillSync(uint8Array);
 		expect(uint8Array.length).toEqual(16);
+
 		for (const byte of uint8Array) {
 			expect(byte >= 0 && byte <= 255).toBeTruthy();
 		}
@@ -94,10 +97,12 @@ describe("random", () => {
 
 	it("should generate random bytes asynchronously into a DataView using randomFill", (done) => {
 		const dataView = new DataView(new ArrayBuffer(32));
+
 		defaultImport.randomFill(dataView, (err, buffer) => {
 			expect(err).toBeNull();
 			expect(buffer.buffer).toEqual(dataView.buffer);
 			expect(dataView.byteLength).toEqual(32);
+
 			for (let i = 0; i < 32; i++) {
 				expect(
 					dataView.getUint8(i) >= 0 && dataView.getUint8(i) <= 255,
@@ -110,6 +115,7 @@ describe("random", () => {
 	it("should generate a random UUID using randomUUID", () => {
 		const uuid = defaultImport.randomUUID();
 		expect(uuid.length).toEqual(36);
+
 		const uuidRegex =
 			/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 		expect(uuid).toMatch(uuidRegex);
@@ -143,8 +149,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Int8Array using getRandomValues", () => {
 		const int8Array = new Int8Array(10);
+
 		defaultImport.getRandomValues(int8Array);
 		expect(int8Array.length).toEqual(10);
+
 		for (const byte of int8Array) {
 			expect(byte >= -0x80 && byte <= 0x7f).toBeTruthy();
 		}
@@ -152,8 +160,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Uint8Array using getRandomValues", () => {
 		const uint8Array = new Uint8Array(10);
+
 		defaultImport.getRandomValues(uint8Array);
 		expect(uint8Array.length).toEqual(10);
+
 		for (const byte of uint8Array) {
 			expect(byte >= 0x00 && byte <= 0xff).toBeTruthy();
 		}
@@ -161,8 +171,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Uint8ClampedArray using getRandomValues", () => {
 		const uint8ClampedArray = new Uint8ClampedArray(10);
+
 		defaultImport.getRandomValues(uint8ClampedArray);
 		expect(uint8ClampedArray.length).toEqual(10);
+
 		for (const byte of uint8ClampedArray) {
 			expect(byte >= 0x00 && byte <= 0xff).toBeTruthy();
 		}
@@ -170,8 +182,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Int16Array using getRandomValues", () => {
 		const int16Array = new Int16Array(10);
+
 		defaultImport.getRandomValues(int16Array);
 		expect(int16Array.length).toEqual(10);
+
 		for (const byte of int16Array) {
 			expect(byte >= -0x8000 && byte <= 0x7fff).toBeTruthy();
 		}
@@ -179,8 +193,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Uint16Array using getRandomValues", () => {
 		const uint16Array = new Uint16Array(10);
+
 		defaultImport.getRandomValues(uint16Array);
 		expect(uint16Array.length).toEqual(10);
+
 		for (const byte of uint16Array) {
 			expect(byte >= 0x0000 && byte <= 0xffff).toBeTruthy();
 		}
@@ -188,8 +204,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Int32Array using getRandomValues", () => {
 		const int32Array = new Int32Array(10);
+
 		defaultImport.getRandomValues(int32Array);
 		expect(int32Array.length).toEqual(10);
+
 		for (const byte of int32Array) {
 			expect(byte >= -0x80000000 && byte <= 0x7fffffff).toBeTruthy();
 		}
@@ -197,8 +215,10 @@ describe("random", () => {
 
 	it("should generate random bytes synchronously into a Uint32Array using getRandomValues", () => {
 		const uint32Array = new Uint32Array(10);
+
 		defaultImport.getRandomValues(uint32Array);
 		expect(uint32Array.length).toEqual(10);
+
 		for (const byte of uint32Array) {
 			expect(byte >= 0x00000000 && byte <= 0xffffffff).toBeTruthy();
 		}
@@ -206,7 +226,9 @@ describe("random", () => {
 
 	it("should be an error, if it exceeds 65536 bytes", () => {
 		const int8Array = new BigInt64Array(65536 / 8 + 1);
+
 		let errorMessage = "";
+
 		try {
 			defaultImport.getRandomValues(int8Array);
 		} catch (ex: any) {

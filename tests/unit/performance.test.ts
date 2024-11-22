@@ -10,6 +10,7 @@ describe("performance.now()", () => {
 	});
 	it("should be a monotonic clock", () => {
 		const before = performance.now();
+
 		const after = performance.now();
 		expect(Number(after)).toBeGreaterThanOrEqual(Number(before));
 	});

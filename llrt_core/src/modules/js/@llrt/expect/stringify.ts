@@ -58,6 +58,7 @@ export function stringify(
 	}: PrettyFormatOptions & { maxLength?: number } = {},
 ): string {
 	const MAX_LENGTH = maxLength ?? 10000;
+
 	let result;
 
 	try {

@@ -70,6 +70,7 @@ describe("UUID Generation", () => {
 
 	it("should convert v1 -> v6 and vice versa", () => {
 		const v1 = "f4df6856-5238-11ef-a311-d4807f27f0c6";
+
 		const v6 = "1ef5238f-4df6-6856-a311-d4807f27f0c6";
 
 		const convertedv6 = uuidv1ToV6(v1);
@@ -83,7 +84,9 @@ describe("UUID Generation", () => {
 
 	it("should parse and stringify a UUID", () => {
 		const uuid = uuidv1();
+
 		const parsedUuid = parse(uuid);
+
 		const stringifiedUuid = stringify(parsedUuid);
 		expect(typeof parsedUuid).toEqual("object");
 		expect(typeof stringifiedUuid).toEqual("string");
@@ -113,10 +116,15 @@ describe("UUID Generation", () => {
 
 	it("should return correct versions", () => {
 		const v1 = uuidv1();
+
 		const v3 = uuidv3("hello", uuidv3.URL);
+
 		const v4 = uuidv4();
+
 		const v5 = uuidv5("hello", uuidv3.URL);
+
 		const v6 = uuidv6();
+
 		const v7 = uuidv7();
 		expect(version(v1)).toEqual(1);
 		expect(version(v3)).toEqual(3);

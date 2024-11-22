@@ -16,13 +16,18 @@ const runTest = (test, done) => {
 		encodings_table: encodings,
 		fetch: (url) => {
 			let data;
+
 			switch (url) {
 				case "resources/urltestdata.json":
 					data = require("./web-platform-tests/url/resources/urltestdata.json");
+
 					break;
+
 				case "resources/setters_tests.json":
 					data = require("./web-platform-tests/url/resources/setters_tests.json");
+
 					break;
+
 				default:
 					throw new Error(`Cannot fetch URL: ${url}`);
 			}
@@ -57,6 +62,7 @@ const runTest = (test, done) => {
 			done(new Error("No tests were executed!"));
 		}
 		const failure = tests.find((test) => test.status !== 0);
+
 		done(failure);
 	});
 

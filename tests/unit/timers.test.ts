@@ -6,6 +6,7 @@ describe("timers", () => {
 		await new Promise((resolve) => {
 			setTimeout(resolve, 10);
 		});
+
 		const end = Date.now();
 		expect(end - start >= 10).toBeTruthy();
 	});
@@ -18,6 +19,7 @@ describe("timers", () => {
 
 	it("should clear timeout", async () => {
 		const start = Date.now();
+
 		let status = "";
 		await new Promise<void>((resolve) => {
 			const timeout = setTimeout(() => {
@@ -32,6 +34,7 @@ describe("timers", () => {
 
 			clearTimeout(timeout);
 		});
+
 		const end = Date.now();
 
 		expect(end - start >= 10).toBeTruthy();
@@ -40,16 +43,19 @@ describe("timers", () => {
 
 	it("should set interval", async () => {
 		const start = Date.now();
+
 		let count = 1;
 		await new Promise<void>((resolve) => {
 			const interval = setInterval(() => {
 				if (count > 4) {
 					clearInterval(interval);
+
 					return resolve();
 				}
 				count++;
 			}, 5);
 		});
+
 		const end = Date.now();
 		expect(end - start >= 10).toBeTruthy();
 		expect(count).toEqual(5);
@@ -57,17 +63,21 @@ describe("timers", () => {
 
 	it("should clear interval", async () => {
 		const start = Date.now();
+
 		let count = 1;
 		await new Promise<void>((resolve) => {
 			const interval = setInterval(() => {
 				if (count == 2) {
 					clearInterval(interval);
+
 					return;
 				}
 				count++;
 			}, 5);
+
 			setTimeout(resolve, 20);
 		});
+
 		const end = Date.now();
 		expect(end - start > 10).toBeTruthy();
 		expect(count).toEqual(2);
@@ -82,6 +92,7 @@ describe("timers", () => {
 		await new Promise((resolve) => {
 			setTimeout(resolve);
 		});
+
 		const end = Date.now();
 		expect(end - start >= 0).toBeTruthy();
 	});
@@ -91,6 +102,7 @@ describe("timers", () => {
 		await new Promise((resolve) => {
 			setTimeout(resolve, -1);
 		});
+
 		const end = Date.now();
 		expect(end - start >= 0).toBeTruthy();
 	});

@@ -3,7 +3,9 @@ import hex from "llrt:hex";
 describe("llrt:hex", () => {
 	it("should encode/decode text", () => {
 		const hello = "hello";
+
 		const encoded = new TextEncoder().encode(hello);
+
 		const decoded = new TextDecoder().decode(encoded);
 
 		expect(decoded).toEqual(hello);
@@ -11,6 +13,7 @@ describe("llrt:hex", () => {
 
 	it("should encode/decode hex", () => {
 		const byteArray = new TextEncoder().encode("hello");
+
 		const encoded = hex.encode(byteArray);
 
 		expect(encoded).toEqual("68656c6c6f");
@@ -20,8 +23,10 @@ describe("llrt:hex", () => {
 describe("atoa & btoa", () => {
 	it("btoa/atob", () => {
 		const text = "Hello, world!";
+
 		const encodedData = btoa(text);
 		expect(encodedData).toEqual("SGVsbG8sIHdvcmxkIQ==");
+
 		const decodedData = atob(encodedData);
 		expect(decodedData).toEqual(text);
 	});
@@ -34,6 +39,7 @@ describe("TextDecoder", () => {
 			0x00, 0x77, 0x00, 0x6f, 0x00, 0x72, 0x00, 0x6c, 0x00, 0x64, 0x00,
 			0x21, 0x00,
 		]);
+
 		const decoded = new TextDecoder("UTF-16LE");
 		expect(decoded.encoding).toEqual("utf-16le");
 		expect(decoded.decode(ary_u8)).toEqual("H€llo world!");
@@ -41,6 +47,7 @@ describe("TextDecoder", () => {
 
 	it("should not be removed BOM", () => {
 		const smile = "😄";
+
 		const bomPlusSmile = new Uint8Array([
 			0xef, 0xbb, 0xbf, 240, 159, 152, 132,
 		]);
@@ -49,15 +56,18 @@ describe("TextDecoder", () => {
 		const decoded = new TextDecoder("utf8", { ignoreBOM: true });
 		expect(decoded.encoding).toEqual("utf-8");
 		expect(decoded.ignoreBOM).toBeTruthy();
+
 		const encoded = new TextEncoder().encode(decoded.decode(bomPlusSmile));
 		expect(encoded).toEqual(bomPlusSmile);
 	});
 
 	it("should be generated fatal error", () => {
 		const illegalString = new Uint8Array([0xff, 0xfe, 0xfd]);
+
 		try {
 			const decoded = new TextDecoder("utf-8", { fatal: true });
 			expect(decoded.fatal).toBeTruthy();
+
 			const a = decoded.decode(illegalString);
 		} catch (ex) {
 			expect(ex.message).toEqual(
@@ -80,9 +90,11 @@ describe("TextDecoder", () => {
 describe("TextEncoder", () => {
 	it("should be able to encodeInto of surrogate pair character(Short Array)", () => {
 		const hono = "🔥";
+
 		const encoded = new TextEncoder();
 
 		const u8Array3 = new Uint8Array(3);
+
 		const result3 = encoded.encodeInto(hono, u8Array3);
 		expect(result3.read).toEqual(0);
 		expect(result3.written).toEqual(0);
@@ -91,9 +103,11 @@ describe("TextEncoder", () => {
 
 	it("should be able to encodeInto of surrogate pair character(Equal Length Array)", () => {
 		const hono = "🔥";
+
 		const encoded = new TextEncoder();
 
 		const u8Array4 = new Uint8Array(4);
+
 		const result4 = encoded.encodeInto(hono, u8Array4);
 		expect(result4.read).toEqual(2);
 		expect(result4.written).toEqual(4);
@@ -102,9 +116,11 @@ describe("TextEncoder", () => {
 
 	it("should be able to encodeInto of surrogate pair character(Long Array)", () => {
 		const hono = "🔥";
+
 		const encoded = new TextEncoder();
 
 		const u8Array5 = new Uint8Array(5);
+
 		const result5 = encoded.encodeInto(hono, u8Array5);
 		expect(result5.read).toEqual(2);
 		expect(result5.written).toEqual(4);
@@ -113,9 +129,11 @@ describe("TextEncoder", () => {
 
 	it("should be able to encodeInto and decode", () => {
 		const hono = "hono - [炎] means flame🔥 in Japanese";
+
 		const encoded = new TextEncoder();
 
 		const u8Array40 = new Uint8Array(40);
+
 		const resultHono = encoded.encodeInto(hono, u8Array40);
 		expect(resultHono.read).toEqual(36);
 		expect(resultHono.written).toEqual(40);

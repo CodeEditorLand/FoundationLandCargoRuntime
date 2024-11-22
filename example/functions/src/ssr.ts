@@ -15,6 +15,7 @@ type ResponseOptions = {
 };
 
 const ASSET_CACHE: Record<string, string> = {};
+
 const MIME_TYPES = {
 	js: "text/javascript",
 	css: "text/css",
@@ -31,6 +32,7 @@ let htmlContent: string | null = null;
 
 class HttpError extends Error {
 	status: number;
+
 	constructor(status: number, message: string) {
 		super(message);
 		this.status = status;
@@ -61,16 +63,20 @@ const apiResponse = async (
 	body?: string,
 ) => {
 	const [id] = pathParams;
+
 	if (id) {
 		if (method === "DELETE") {
 			await API.delete(id);
+
 			return response("", {
 				contentType: "application/json",
 			});
 		}
 		if (method === "PUT") {
 			const { text, completedDate } = JSON.parse(body);
+
 			const item = await API.update({ id, text, completedDate });
+
 			return response(JSON.stringify(item), {
 				contentType: "application/json",
 			});
@@ -79,7 +85,9 @@ const apiResponse = async (
 
 	if (pathParams.length == 0 && method === "POST") {
 		const { text } = JSON.parse(body);
+
 		const item = await API.create(text);
+
 		return response(JSON.stringify(item), {
 			contentType: "application/json",
 		});
@@ -90,6 +98,7 @@ const apiResponse = async (
 
 const appResponse = async () => {
 	let todoItems;
+
 	if (htmlContent) {
 		todoItems = await API.getAll();
 	} else {
@@ -104,6 +113,7 @@ const appResponse = async () => {
 	const app = ReactDOMServer.renderToString(
 		React.createElement(App, { todoItems }),
 	);
+
 	const html = htmlContent
 		.replace(
 			'<script id="init" type="text/javascript"></script>',
@@ -125,7 +135,9 @@ const fileExists = (file: string) =>
 
 const loadAsset = async (asset: string) => {
 	const safeAsset = asset.replace("..", "");
+
 	const cachedAsset = ASSET_CACHE[safeAsset];
+
 	if (cachedAsset) {
 		return cachedAsset;
 	}
@@ -134,13 +146,17 @@ const loadAsset = async (asset: string) => {
 	}
 	const data = (await fs.readFile(safeAsset)).toString("base64");
 	ASSET_CACHE[safeAsset] = data;
+
 	return data;
 };
 
 const assetResponse = async (path: string) => {
 	const data = await loadAsset(path);
+
 	const extIndex = path.lastIndexOf(".");
+
 	let contentType = null;
+
 	if (extIndex > -1) {
 		const ext = path.substring(extIndex + 1);
 		contentType = MIME_TYPES[ext as keyof typeof MIME_TYPES];
@@ -173,6 +189,7 @@ export const handler = async (event: any) => {
 		throw new HttpError(400, "Method not supported");
 	} catch (e) {
 		console.error(e);
+
 		if (e instanceof HttpError) {
 			return {
 				statusCode: e.status,

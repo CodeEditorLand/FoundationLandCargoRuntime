@@ -14,6 +14,7 @@ describe("createServer and connect", () => {
 
 	it("should handle data transfer between server and client", (done) => {
 		const message = "Hello from client";
+
 		const server = net.createServer((socket) => {
 			socket.on("data", (data) => {
 				expect(data.toString()).toEqual(message);
@@ -35,6 +36,7 @@ describe("createServer and connect", () => {
 
 	it("should handle data from server first", (done) => {
 		const message = "Hello from client";
+
 		const server = net.createServer((socket) => {
 			socket.write(message);
 		});
@@ -54,11 +56,13 @@ describe("createServer and connect", () => {
 describe("error handling", () => {
 	it("should handle connection error", (done) => {
 		const nonExistentPort = 9999;
+
 		const client = net
 			.connect(nonExistentPort, "localhost")
 			.on("error", (error) => {
 				expect(error).toBeInstanceOf(Error);
 				client.end();
+
 				done(); // Test passes if an error event is emitted
 			});
 	});
@@ -87,6 +91,7 @@ describe("error handling", () => {
 				socket.write("hello", (err) => {
 					expect(err).toBeTruthy();
 					server.close();
+
 					done();
 				});
 			}, 5);

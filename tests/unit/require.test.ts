@@ -10,7 +10,9 @@ it("should require a file", () => {
 
 it("should return same module when require multiple files", () => {
 	const { hello: hello1 } = _require(`${CWD}/fixtures/hello.js`);
+
 	const { hello: hello2 } = _require(`${CWD}/fixtures/hello.js`);
+
 	const { hello: hello3 } = _require(`${CWD}/fixtures/hello.js`);
 
 	expect(hello1).toEqual(hello2);
@@ -19,6 +21,7 @@ it("should return same module when require multiple files", () => {
 
 it("should handle cyclic requires", () => {
 	const a = _require(`${CWD}/fixtures/a.js`);
+
 	const b = _require(`${CWD}/fixtures/b.js`);
 
 	expect(a.done).toEqual(b.done);
@@ -32,6 +35,7 @@ it("should handle cjs requires", () => {
 
 it("should be able to use node module with prefix `node:` with require", () => {
 	const { Console } = require("node:console");
+
 	const consoleObj = new Console({
 		stdout: process.stdout,
 		stderr: process.stderr,

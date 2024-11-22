@@ -18,13 +18,16 @@
  */
 declare module "fs" {
 	import * as promises from "fs/promises";
+
 	import type { Buffer, BufferEncoding } from "buffer";
+
 	export { promises };
 
 	/**
 	 * Valid types for path values in "fs".
 	 */
 	export type PathLike = string;
+
 	export type Mode = number;
 
 	export interface StatsBase<T> {

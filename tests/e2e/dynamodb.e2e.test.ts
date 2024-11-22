@@ -31,6 +31,7 @@ import {
 
 describe(DynamoDBDocument.name, () => {
 	const dynamodb = new DynamoDB({ maxAttempts: 10 });
+
 	const doc = DynamoDBDocument.from(dynamodb, {
 		marshallOptions: {
 			convertTopLevelContainer: true,
@@ -51,6 +52,7 @@ describe(DynamoDBDocument.name, () => {
 	// don't delete the table in afterAll().
 	// The table will in that case be re-used.
 	const randId = (Math.random() + 1).toString(36).substring(2, 6);
+
 	const timestamp = (Date.now() / 1000) | 0;
 
 	const TableName = `js-sdk-dynamodb-test-${timestamp}-${randId}`;
@@ -143,12 +145,16 @@ describe(DynamoDBDocument.name, () => {
 				return Object.entries(input).reduce((acc, [k, v]) => {
 					// @ts-ignore
 					acc[updateTransform(k)] = updateTransform(v);
+
 					return acc;
 				}, {}) as T;
+
 			case "boolean":
 				return !input as T;
+
 			case "number":
 				return (input + 1) as T;
+
 			case "string":
 				return (input + "-x") as T;
 		}
@@ -165,6 +171,7 @@ describe(DynamoDBDocument.name, () => {
 			.catch((e) => {
 				return null;
 			});
+
 		if (!log.describe?.Table) {
 			log.create = await dynamodb
 				.createTable({
@@ -300,6 +307,7 @@ describe(DynamoDBDocument.name, () => {
 				],
 			})
 			.catch(passError);
+
 		for (const [k] of Object.entries(data)) {
 			log.executeTransactionReadBack[k] = await doc
 				.get({
@@ -557,6 +565,7 @@ describe(DynamoDBDocument.name, () => {
 
 	it("can batch read", async () => {
 		throwIfError(log.batchRead);
+
 		const results = log.batchRead?.Responses?.[TableName] ?? [];
 
 		for (const result of results) {
@@ -571,6 +580,7 @@ describe(DynamoDBDocument.name, () => {
 
 	it("can transact read", async () => {
 		throwIfError(log.transactRead);
+
 		const results = log.transactRead?.Responses ?? [];
 
 		for (const result of results) {
@@ -594,6 +604,7 @@ describe(DynamoDBDocument.name, () => {
 		expect(
 			log.batchExecuteStatementReadBack?.Responses?.length,
 		).toBeGreaterThan(0);
+
 		for (const response of log.batchExecuteStatementReadBack?.Responses ??
 			[]) {
 			// @ts-ignore

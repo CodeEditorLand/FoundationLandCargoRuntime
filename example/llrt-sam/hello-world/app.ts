@@ -22,6 +22,7 @@ export const lambdaHandler = async (
 		};
 	} catch (err) {
 		console.log(err);
+
 		return {
 			statusCode: 500,
 			body: JSON.stringify({

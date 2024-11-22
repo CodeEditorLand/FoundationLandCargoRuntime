@@ -27,6 +27,7 @@ const main = async () => {
 	});
 
 	const app = new App();
+
 	const stack = new Stack(app, "llrt-example", {
 		env: {
 			region: process.env.CDK_DEFAULT_REGION,
@@ -36,11 +37,15 @@ const main = async () => {
 	const routePaths: string[] = [];
 
 	const tmpDir = os.tmpdir();
+
 	const targetFunctionsDir = path.join(tmpDir, "functions");
+
 	const sourceFunctionsDir = path.resolve("../functions/src");
 
 	await fs.mkdir(targetFunctionsDir, { recursive: true });
+
 	const sourceDirs = {};
+
 	const sources = await fs.readdir(sourceFunctionsDir);
 	await Promise.all(
 		sources.map(async (source) => {
@@ -48,6 +53,7 @@ const main = async () => {
 				return;
 			}
 			const { name, ext } = path.parse(source);
+
 			const targetDir = path.join(targetFunctionsDir, name);
 			await fs.mkdir(targetDir, { recursive: true });
 			await fs.copyFile(
@@ -70,6 +76,7 @@ const main = async () => {
 
 	const createDistribution = (route: string) => {
 		const id = route.substring(1).replace(/-\//g, "");
+
 		const distribution = new aws_cloudfront.Distribution(
 			stack,
 			`${id}Distribution`,

@@ -75,6 +75,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 	}
 
 	var didOnEnd = false;
+
 	function onend() {
 		if (didOnEnd) return;
 		didOnEnd = true;
@@ -92,6 +93,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 	// don't leave dangling pipes when there are errors.
 	function onerror(er: any) {
 		cleanup();
+
 		if (source.listenerCount("error") === 0) {
 			throw er; // Unhandled stream error in pipe.
 		}

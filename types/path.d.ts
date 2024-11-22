@@ -138,5 +138,6 @@ declare module "path" {
 		}
 	}
 	const path: path.PlatformPath;
+
 	export = path;
 }

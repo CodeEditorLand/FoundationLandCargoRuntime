@@ -1,7 +1,9 @@
 // From https://github.com/aws/aws-sdk-js-v3/blob/89f97b5cea8052510471cdad69acced9f5be60d1/clients/client-s3/test/e2e/S3.e2e.spec.ts#L15
 
 import { S3, type SelectObjectContentEventStream } from "@aws-sdk/client-s3";
+
 const Bucket = process?.env?.AWS_SMOKE_TEST_BUCKET;
+
 const mrapArn = process?.env?.AWS_SMOKE_TEST_MRAP_ARN;
 
 let Key = `${Date.now()}`;
@@ -20,15 +22,20 @@ describe("@aws-sdk/client-s3", () => {
 		it("should succeed with Node.js readable stream body", async () => {
 			const length = 10 * 1000; // 10KB
 			const chunkSize = 10;
+
 			const { Readable } = require("stream");
+
 			let sizeLeft = length;
+
 			const inputStream = new Readable({
 				read() {
 					if (sizeLeft <= 0) {
 						this.push(null); //end stream;
+
 						return;
 					}
 					let chunk = "";
+
 					for (let i = 0; i < Math.min(sizeLeft, chunkSize); i++) {
 						chunk += "x";
 					}
@@ -63,6 +70,7 @@ describe("@aws-sdk/client-s3", () => {
 				await client.putObject({ Bucket, Key, Body: body });
 			} catch (e) {
 				console.error("failed to put");
+
 				throw e;
 			}
 
@@ -71,6 +79,7 @@ describe("@aws-sdk/client-s3", () => {
 				var result = await client.getObject({ Bucket, Key });
 			} catch (e) {
 				console.error("failed to get");
+
 				throw e;
 			}
 
@@ -108,7 +117,9 @@ describe("@aws-sdk/client-s3", () => {
 
 	describe("MultipartUpload", () => {
 		let UploadId: string;
+
 		let Etag: string;
+
 		const multipartObjectKey = `${Key}-multipart`;
 		beforeAll(() => {
 			Key = `${Date.now()}`;
@@ -183,6 +194,7 @@ describe("@aws-sdk/client-s3", () => {
 				Key: multipartObjectKey,
 			});
 			expect(createResult.$metadata.httpStatusCode).toEqual(200);
+
 			const toAbort = createResult.UploadId;
 			expect(typeof toAbort).toEqual("string");
 
@@ -240,6 +252,7 @@ esfuture,29`;
 			});
 
 			const events: SelectObjectContentEventStream[] = [];
+
 			for await (const event of Payload!) {
 				events.push(event);
 			}
@@ -273,7 +286,9 @@ esfuture,29`;
 
 export const createBuffer = (size: string) => {
 	const KB_REGEX = /(\d+)KB/;
+
 	const MB_REGEX = /(\d+)MB/;
+
 	if (KB_REGEX.test(size)) {
 		return new Uint8Array(
 			Number.parseInt(size.match(KB_REGEX)![1]) * 1024,

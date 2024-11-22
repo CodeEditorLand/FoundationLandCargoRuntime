@@ -33,6 +33,7 @@ import { stringify } from "./stringify";
 export interface AsymmetricMatcherInterface {
 	asymmetricMatch: (other: unknown) => boolean;
 	toString: () => string;
+
 	getExpectedType?: () => string;
 	toAsymmetricMatcher?: () => string;
 }
@@ -65,6 +66,7 @@ export abstract class AsymmetricMatcher<T>
 
 	abstract asymmetricMatch(other: unknown): boolean;
 	abstract toString(): string;
+
 	getExpectedType?(): string;
 	toAsymmetricMatcher?(): string;
 
@@ -73,7 +75,9 @@ export abstract class AsymmetricMatcher<T>
 	[Symbol.for("chai/inspect")](options: { depth: number; truncate: number }) {
 		// minimal pretty-format with simple manual truncation
 		const result = stringify(this, options.depth, { min: true });
+
 		if (result.length <= options.truncate) return result;
+
 		return `${this.toString()}{…}`;
 	}
 }
@@ -154,6 +158,7 @@ export class ObjectContaining extends AsymmetricMatcher<
 				!equals(this.sample[property], other[property], [])
 			) {
 				result = false;
+
 				break;
 			}
 		}
@@ -221,6 +226,7 @@ export class Any extends AsymmetricMatcher<any> {
 		const matches = functionToString
 			.call(func)
 			.match(/^(?:async)?\s*function\s*\*?\s*([\w$]+)\s*\(/);
+
 		return matches ? matches[1] : "<anonymous>";
 	}
 
@@ -312,6 +318,7 @@ class CloseTo extends AsymmetricMatcher<number> {
 		if (!isA("Number", other)) return false;
 
 		let result = false;
+
 		if (
 			other === Number.POSITIVE_INFINITY &&
 			this.sample === Number.POSITIVE_INFINITY

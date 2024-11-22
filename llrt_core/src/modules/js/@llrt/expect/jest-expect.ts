@@ -61,6 +61,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		};
 
 		if (Array.isArray(name)) name.forEach((n) => addMethod(n));
+
 		else addMethod(name);
 	}
 
@@ -71,8 +72,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				...args: any[]
 			) {
 				const promise = utils.flag(this, "promise");
+
 				const object = utils.flag(this, "object");
+
 				const isNot = utils.flag(this, "negate") as boolean;
+
 				if (promise === "rejects") {
 					utils.flag(this, "object", () => {
 						throw object;
@@ -91,9 +95,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 						const message =
 							utils.flag(this, "message") ||
 							"expected promise to throw an error, but it didn't";
+
 						const error = {
 							showDiff: false,
 						};
+
 						throw new AssertionError(
 							message,
 							error,
@@ -108,10 +114,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 
 	def("toEqual", function (expected) {
 		const actual = utils.flag(this, "object");
+
 		const equal = jestEquals(actual, expected, [
 			...customTesters,
 			iterableEquality,
 		]);
+
 		return this.assert(
 			equal,
 			"expected #{this} to deeply equal #{exp}",
@@ -123,6 +131,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 
 	def("toStrictEqual", function (expected) {
 		const obj = utils.flag(this, "object");
+
 		const equal = jestEquals(
 			obj,
 			expected,
@@ -146,6 +155,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 	});
 	def("toBe", function (expected) {
 		const actual = this._obj;
+
 		const pass = Object.is(actual, expected);
 
 		let deepEqualityName = "";
@@ -186,6 +196,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 	});
 	def("toMatchObject", function (expected) {
 		const actual = this._obj;
+
 		return this.assert(
 			jestEquals(actual, expected, [
 				...customTesters,
@@ -200,6 +211,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 	});
 	def("toMatch", function (expected: string | RegExp) {
 		if (typeof expected === "string") return this.include(expected);
+
 		else return this.match(expected);
 	});
 	def("toContain", function (item) {
@@ -208,10 +220,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		// make "actual" indexable to have compatibility with jest
 		if (actual != null && typeof actual !== "string")
 			utils.flag(this, "object", Array.from(actual as Iterable<unknown>));
+
 		return this.contain(item);
 	});
 	def("toContainEqual", function (expected) {
 		const obj = utils.flag(this, "object");
+
 		const index = Array.from(obj).findIndex((item) => {
 			return jestEquals(item, expected, customTesters);
 		});
@@ -247,6 +261,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		const actual = this._obj as number | bigint;
 		assertTypes(actual, "actual", ["number", "bigint"]);
 		assertTypes(expected, "expected", ["number", "bigint"]);
+
 		return this.assert(
 			actual > expected,
 			`expected ${actual} to be greater than ${expected}`,
@@ -260,6 +275,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		const actual = this._obj as number | bigint;
 		assertTypes(actual, "actual", ["number", "bigint"]);
 		assertTypes(expected, "expected", ["number", "bigint"]);
+
 		return this.assert(
 			actual >= expected,
 			`expected ${actual} to be greater than or equal to ${expected}`,
@@ -273,6 +289,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		const actual = this._obj as number | bigint;
 		assertTypes(actual, "actual", ["number", "bigint"]);
 		assertTypes(expected, "expected", ["number", "bigint"]);
+
 		return this.assert(
 			actual < expected,
 			`expected ${actual} to be less than ${expected}`,
@@ -286,6 +303,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		const actual = this._obj as number | bigint;
 		assertTypes(actual, "actual", ["number", "bigint"]);
 		assertTypes(expected, "expected", ["number", "bigint"]);
+
 		return this.assert(
 			actual <= expected,
 			`expected ${actual} to be less than or equal to ${expected}`,
@@ -326,7 +344,9 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				| "undefined",
 		) {
 			const actual = typeof this._obj;
+
 			const equal = expected === actual;
+
 			return this.assert(
 				equal,
 				"expected #{this} to be type of #{exp}",
@@ -354,17 +374,23 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 					.join(".");
 
 			const actual = this._obj as any;
+
 			const [propertyName, expected] = args;
+
 			const getValue = () => {
 				const hasOwn = Object.prototype.hasOwnProperty.call(
 					actual,
 					propertyName,
 				);
+
 				if (hasOwn)
 					return { value: actual[propertyName], exists: true };
+
 				return utils.getPathInfo(actual, propertyName);
 			};
+
 			const { value, exists } = getValue();
+
 			const pass =
 				exists &&
 				(args.length === 1 ||
@@ -386,8 +412,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 	);
 	def("toBeCloseTo", function (received: number, precision = 2) {
 		const expected = this._obj;
+
 		let pass = false;
+
 		let expectedDiff = 0;
+
 		let receivedDiff = 0;
 
 		if (
@@ -417,6 +446,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 
 	const ordinalOf = (i: number) => {
 		const j = i % 10;
+
 		const k = i % 100;
 
 		if (j === 1 && k !== 11) return `${i}st`;
@@ -439,8 +469,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				return this.throws(expected);
 
 			const obj = this._obj;
+
 			const promise = utils.flag(this, "promise");
+
 			const isNot = utils.flag(this, "negate") as boolean;
+
 			let thrown: any = null;
 
 			if (promise === "rejects") {
@@ -456,9 +489,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 					const message =
 						utils.flag(this, "message") ||
 						"expected promise to throw an error, but it didn't";
+
 					const error = {
 						showDiff: false,
 					};
+
 					throw new AssertionError(
 						message,
 						error,
@@ -467,10 +502,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				}
 			} else {
 				let isThrow = false;
+
 				try {
 					obj();
 				} catch (err) {
 					isThrow = true;
+
 					thrown = err;
 				}
 
@@ -478,9 +515,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 					const message =
 						utils.flag(this, "message") ||
 						"expected function to throw an error, but it didn't";
+
 					const error = {
 						showDiff: false,
 					};
+
 					throw new AssertionError(
 						message,
 						error,
@@ -493,6 +532,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				// @ts-ignore
 				const name =
 					expected.name || expected.prototype.constructor.name;
+
 				return this.assert(
 					thrown && thrown instanceof expected,
 					`expected error to be instance of ${name}`,
@@ -518,6 +558,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 				typeof (expected as any).asymmetricMatch === "function"
 			) {
 				const matcher = expected as any as AsymmetricMatcher<any>;
+
 				return this.assert(
 					thrown && matcher.asymmetricMatch(thrown),
 					"expected error to match asymmetric matcher",
@@ -544,7 +585,9 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			const error = new Error("resolves");
 			utils.flag(this, "promise", "resolves");
 			utils.flag(this, "error", error);
+
 			const test: any = utils.flag(this, "vitest-test");
+
 			const obj = utils.flag(this, "object");
 
 			if (typeof obj?.then !== "function")
@@ -565,6 +608,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 						const promise = obj.then(
 							(value: any) => {
 								utils.flag(this, "object", value);
+
 								return result.call(this, ...args);
 							},
 							(err: any) => {
@@ -578,6 +622,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 									error.message,
 									_error.message,
 								);
+
 								throw _error;
 							},
 						);
@@ -598,8 +643,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			const error = new Error("rejects");
 			utils.flag(this, "promise", "rejects");
 			utils.flag(this, "error", error);
+
 			const test: any = utils.flag(this, "vitest-test");
+
 			const obj = utils.flag(this, "object");
+
 			const wrapper = typeof obj === "function" ? obj() : obj; // for jest compat
 
 			if (typeof wrapper?.then !== "function")
@@ -631,10 +679,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 									error.message,
 									_error.message,
 								);
+
 								throw _error;
 							},
 							(err: any) => {
 								utils.flag(this, "object", err);
+
 								return result.call(this, ...args);
 							},
 						);
@@ -655,7 +705,9 @@ export function assertTypes(
 	types: string[],
 ): void {
 	const receivedType = typeof value;
+
 	const pass = types.includes(receivedType);
+
 	if (!pass)
 		throw new TypeError(
 			`${name} value must be ${types.join(" or ")}, received "${receivedType}"`,
@@ -671,6 +723,7 @@ export function recordAsyncExpect(
 		// if promise is explicitly awaited, remove it from the list
 		promise = promise.finally(() => {
 			const index = test.promises.indexOf(promise);
+
 			if (index !== -1) test.promises.splice(index, 1);
 		});
 

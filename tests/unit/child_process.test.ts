@@ -3,11 +3,14 @@ import { spawn } from "child_process";
 describe("child_process.spawn", () => {
 	it("should spawn a child process", (done) => {
 		const command = "ls";
+
 		const args = ["-l"];
+
 		const child = spawn(command, args);
 		child.on("exit", (code) => {
 			try {
 				expect(code).toEqual(0);
+
 				done();
 			} catch (error) {
 				done(error);
@@ -16,6 +19,7 @@ describe("child_process.spawn", () => {
 	});
 	it("should spawn in a diffrent directory", (done) => {
 		const child = spawn("pwd", { cwd: "./tests" });
+
 		let output = "";
 		child.stdout.on("data", (data) => {
 			output += data.toString();
@@ -25,6 +29,7 @@ describe("child_process.spawn", () => {
 			try {
 				expect(output.trim()).toEqual(`${process.cwd()}/tests`);
 				expect(code).toEqual(0);
+
 				done();
 			} catch (error) {
 				done(error);
@@ -33,8 +38,11 @@ describe("child_process.spawn", () => {
 	});
 	it("should capture output from the child process", (done) => {
 		const command = "echo";
+
 		const args = ["Hello, World!"];
+
 		const child = spawn(command, args);
+
 		let output = "";
 		child.stdout.on("data", (data) => {
 			output += data.toString();
@@ -44,6 +52,7 @@ describe("child_process.spawn", () => {
 			try {
 				expect(output.trim()).toEqual(args[0]);
 				expect(code).toEqual(0);
+
 				done();
 			} catch (error) {
 				done(error);
@@ -53,7 +62,9 @@ describe("child_process.spawn", () => {
 
 	it("should send input to the child process", (done) => {
 		const command = "cat";
+
 		const input = "Hello, world!";
+
 		const child = spawn(command);
 
 		child.stdin.write(input);
@@ -68,6 +79,7 @@ describe("child_process.spawn", () => {
 			try {
 				expect(code).toEqual(0);
 				expect(output.trim()).toEqual(input);
+
 				done();
 			} catch (error) {
 				done(error);
@@ -81,10 +93,12 @@ describe("child_process.spawn", () => {
 			return done();
 		}
 		const command = "nonexistent-command";
+
 		const child = spawn(command);
 		child.on("error", (err) => {
 			try {
 				expect(err).toBeTruthy();
+
 				done();
 			} catch (error) {
 				done(error);
@@ -94,12 +108,14 @@ describe("child_process.spawn", () => {
 
 	it("should handle child process termination", (done) => {
 		const command = "sleep 4; echo 123";
+
 		const child = spawn(command, { shell: true });
 
 		child.on("exit", (code, signal) => {
 			try {
 				expect(code).toEqual(0);
 				expect(signal).toEqual("SIGINT");
+
 				done();
 			} catch (error) {
 				done(error);
@@ -116,6 +132,7 @@ describe("child_process.spawn", () => {
 		child.on("exit", (code) => {
 			try {
 				expect(code).toEqual(0);
+
 				done();
 			} catch (error) {
 				done(error);
@@ -127,6 +144,7 @@ describe("child_process.spawn", () => {
 		child.on("exit", (code) => {
 			try {
 				expect(code).toEqual(0);
+
 				done();
 			} catch (error) {
 				done(error);

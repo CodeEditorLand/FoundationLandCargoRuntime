@@ -55,14 +55,17 @@ describe("path.format", () => {
 			ext: ".txt",
 			name: "baz",
 		};
+
 		const pathObj2 = {
 			dir: "/foo/bar",
 			base: "baz.txt",
 		};
+
 		const pathObj3 = {
 			root: "/",
 			base: "baz.txt",
 		};
+
 		const pathObj4 = {
 			name: "baz",
 		};
@@ -76,8 +79,11 @@ describe("path.format", () => {
 describe("path.parse", () => {
 	it("should return an object from a path string", () => {
 		const pathStr1 = "/foo/bar/baz.txt";
+
 		const pathStr2 = "/foo/bar/baz/";
+
 		const pathStr3 = "baz.txt";
+
 		const pathStr4 = "/foo/bar/baz.tar.gz";
 
 		const pathObj1 = {
@@ -87,6 +93,7 @@ describe("path.parse", () => {
 			ext: ".txt",
 			name: "baz",
 		};
+
 		const pathObj2 = {
 			root: "/",
 			dir: "/foo/bar",
@@ -94,6 +101,7 @@ describe("path.parse", () => {
 			ext: "",
 			name: "baz",
 		};
+
 		const pathObj3 = {
 			root: "",
 			dir: "",
@@ -101,6 +109,7 @@ describe("path.parse", () => {
 			ext: ".txt",
 			name: "baz",
 		};
+
 		const pathObj4 = {
 			root: "/",
 			dir: "/foo/bar",

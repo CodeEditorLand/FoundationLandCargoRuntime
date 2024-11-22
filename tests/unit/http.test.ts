@@ -3,13 +3,17 @@ import * as urlModule from "url";
 describe("URL module import", () => {
 	it("global URL and imported URL are equal", () => {
 		const testUrl = "https://www.example.com";
+
 		const moduleUrl = new urlModule.URL(testUrl);
+
 		const globalUrl = new URL(testUrl);
 		expect(moduleUrl).toEqual(globalUrl);
 	});
 	it("global URLSearchParams and imported URLSearchParams are equal", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const moduleSearchParams = new urlModule.URLSearchParams(paramsString);
+
 		const globalSearchParams = new URLSearchParams(paramsString);
 		expect(moduleSearchParams).toEqual(globalSearchParams);
 	});
@@ -31,6 +35,7 @@ describe("URL module import", () => {
 			const validCanParse = urlModule.URL.canParse(
 				"https://www.example.com",
 			);
+
 			const invalidCanParse = urlModule.URL.canParse("not_valid");
 			expect(validCanParse).toEqual(true);
 			expect(invalidCanParse).toEqual(false);
@@ -43,6 +48,7 @@ describe("URL module import", () => {
 	describe("import { URLSearchParams } from 'url';", () => {
 		it("supports URLSearchParams basic API", () => {
 			const paramsString = "topic=api&a=1&a=2&a=3";
+
 			const searchParams = new urlModule.URLSearchParams(paramsString);
 			expect(searchParams.size).toEqual(4);
 			searchParams.append("foo", "bar");
@@ -64,6 +70,7 @@ describe("URL module import", () => {
 describe("Headers class", () => {
 	it("should construct a new Headers object with the provided headers", () => {
 		const headers = { "content-type": "application/json" };
+
 		const h = new Headers(headers);
 		expect(h.get("Content-Type")).toEqual(headers["content-type"]);
 	});
@@ -76,6 +83,7 @@ describe("Headers class", () => {
 
 	it("should overwrite headers in the Headers object", () => {
 		const headers = { "Content-Type": "application/json" };
+
 		const h = new Headers(headers);
 		h.set("Content-Type", "text/plain");
 		expect(h.get("Content-Type")).toEqual("text/plain");
@@ -83,6 +91,7 @@ describe("Headers class", () => {
 
 	it("should delete headers from the Headers object", () => {
 		const headers = { "Content-Type": "application/json" };
+
 		const h = new Headers(headers);
 		h.delete("Content-Type");
 		expect(h.get("Content-Type")).toBeNull();
@@ -93,6 +102,7 @@ describe("Headers class", () => {
 			"content-type": "application/json",
 			authorization: "Bearer 1234",
 		};
+
 		const h = new Headers(headers);
 		h.append(
 			"set-cookie",
@@ -104,6 +114,7 @@ describe("Headers class", () => {
 		);
 
 		const iterator = h.entries();
+
 		let next = iterator.next();
 		expect(next.value).toStrictEqual(["authorization", "Bearer 1234"]);
 		next = iterator.next();
@@ -126,6 +137,7 @@ describe("Headers class", () => {
 		const headers = {
 			"content-type": "application/json",
 		};
+
 		const h = new Headers(headers);
 		h.forEach((value, key) => {
 			expect(key).toStrictEqual("content-type");
@@ -167,6 +179,7 @@ describe("Headers class", () => {
 describe("Request class", () => {
 	it("should construct a new Request object with the provided URL", () => {
 		const url = "https://example.com";
+
 		const request = new Request(url);
 		expect(request.url).toEqual(url);
 	});
@@ -193,19 +206,23 @@ describe("Request class", () => {
 
 	it("should set the method to the provided value", () => {
 		const method = "POST";
+
 		const request = new Request("https://example.com", { method });
 		expect(request.method).toEqual(method);
 	});
 
 	it("should set the headers to an empty object by default", () => {
 		const request = new Request("https://example.com");
+
 		const headers = new Headers();
 		expect(request.headers.entries()).toEqual(headers.entries());
 	});
 
 	it("should set the headers to the provided value", () => {
 		const headers = { "Content-Type": "application/json" };
+
 		const headerValue = new Headers(headers);
+
 		const request = new Request("https://example.com", { headers });
 		expect(request.headers).toStrictEqual(headerValue);
 	});
@@ -217,6 +234,7 @@ describe("Request class", () => {
 
 	it("should set the body to the provided value", () => {
 		const body = "hello world!";
+
 		const request = new Request("https://example.com", {
 			body,
 			method: "POST",
@@ -227,6 +245,7 @@ describe("Request class", () => {
 
 	it("should set the body to a Blob if a Blob is provided", async () => {
 		const blob = new Blob(["Hello, world!"], { type: "text/plain" });
+
 		const request = new Request("https://example.com", {
 			body: blob,
 			method: "POST",
@@ -243,6 +262,7 @@ describe("Request class", () => {
 			headers: { From: "webmaster@example.org" },
 		});
 		expect(oldRequest.headers.get("From")).toEqual("webmaster@example.org");
+
 		const newRequest = new Request(oldRequest, {
 			headers: { From: "developer@example.org" },
 		});
@@ -252,6 +272,7 @@ describe("Request class", () => {
 
 	it("should accept a signal as an option", () => {
 		const controller = new AbortController();
+
 		const request = new Request("http://localhost", {
 			signal: controller.signal,
 		});
@@ -285,6 +306,7 @@ describe("Request class", () => {
 
 	it("should set the body to the provided value", async () => {
 		const body = "Hello, world!";
+
 		const request = new Request("http://localhost", {
 			body: body,
 			method: "POST",
@@ -295,6 +317,7 @@ describe("Request class", () => {
 
 	it("should set the body to a JSON object if a JSON object is provided", async () => {
 		const jsonBody = { key: "value" };
+
 		const request = new Request("http://localhost", {
 			body: JSON.stringify(jsonBody),
 			method: "POST",
@@ -304,6 +327,7 @@ describe("Request class", () => {
 
 	it("should set the body to a bytes object if a bytes object is provided", async () => {
 		const myArray = new Uint8Array([1, 2, 3]);
+
 		const request = new Request("http://localhost", {
 			body: myArray,
 			method: "POST",
@@ -313,6 +337,7 @@ describe("Request class", () => {
 
 	it("should set the body to a Blob if a Blob is provided", async () => {
 		const blob = new Blob(["Hello, world!"], { type: "text/plain" });
+
 		const request = new Request("http://localhost", {
 			body: blob,
 			method: "POST",
@@ -324,6 +349,7 @@ describe("Request class", () => {
 
 	it("should set the body to a Blob if Blob and content-type are provided", async () => {
 		const blob = new Blob(["Hello, world!"], { type: "text/html" });
+
 		const request = new Request("http://localhost", {
 			body: blob,
 			method: "POST",
@@ -356,6 +382,7 @@ describe("Response class", () => {
 
 	it("should set the headers to the provided value", () => {
 		const headers = new Headers({ "Content-Type": "application/json" });
+
 		const response = new Response(null, { headers });
 
 		expect(response.headers.get("Content-Type")).toStrictEqual(
@@ -365,18 +392,21 @@ describe("Response class", () => {
 
 	it("should set the body to the provided value", async () => {
 		const body = "Hello, world!";
+
 		const response = new Response(body);
 		expect(await response.text()).toStrictEqual(body);
 	});
 
 	it("should set the body to a Blob if a Blob is provided", async () => {
 		const blob = new Blob(["Hello, world!"], { type: "text/plain" });
+
 		const response = new Response(blob);
 		expect(await response.text()).toEqual("Hello, world!");
 	});
 
 	it("should set the body to a JSON object if a JSON object is provided", async () => {
 		const jsonBody = { key: "value" };
+
 		const response = new Response(JSON.stringify(jsonBody), {
 			headers: { "Content-Type": "application/json" },
 		});
@@ -385,12 +415,14 @@ describe("Response class", () => {
 
 	it("should set the body to a bytes object if a bytes object is provided", async () => {
 		const myArray = new Uint8Array([1, 2, 3]);
+
 		const response = new Response(myArray);
 		expect(await response.bytes()).toStrictEqual(myArray);
 	});
 
 	it("should clone the response with the clone() method", () => {
 		const response = new Response("Original response");
+
 		const clonedResponse = response.clone();
 		expect(response.body).toEqual(clonedResponse.body);
 		expect(response.url).toEqual(clonedResponse.url);
@@ -432,6 +464,7 @@ describe("Response class", () => {
 
 	it("should be returned specified values in redirect static function called double param", () => {
 		const redirectUrl = "http://localhost/";
+
 		const response = Response.redirect(redirectUrl, 301);
 		expect(response.status).toEqual(301);
 		expect(response.headers.get("location")).toEqual(redirectUrl);
@@ -439,6 +472,7 @@ describe("Response class", () => {
 
 	it("should be returned specified values in json static function called single param", () => {
 		const jsonBody = { some: "data", more: "information" };
+
 		const response = Response.json(JSON.stringify(jsonBody));
 		expect(response.status).toEqual(200);
 		response.json().then((parsedJson) => {
@@ -448,6 +482,7 @@ describe("Response class", () => {
 
 	it("should be returned specified values in json static function called double param", () => {
 		const jsonBody = { some: "data", more: "information" };
+
 		const response = Response.json(JSON.stringify(jsonBody), {
 			status: 200,
 			statusText: "SuperSmashingGreat!",
@@ -470,6 +505,7 @@ describe("URL class", () => {
 
 	it("should create a copy of a valid URL", () => {
 		const url: any = new URL("https://www.example.com");
+
 		const url2 = new URL(url);
 		expect(url).toEqual(url2);
 		expect(url).not.toBe(url2);
@@ -537,6 +573,7 @@ describe("URL class", () => {
 	});
 	it("should provide parse/canParse util", () => {
 		const validUrl = "https://www.example.com/";
+
 		const invalidUrl = "not_a_valid_url";
 		expect(URL.parse(validUrl).href).toEqual(validUrl);
 		expect(URL.canParse(validUrl)).toEqual(true);
@@ -560,6 +597,7 @@ describe("URLSearchParams class", () => {
 
 	it("constructor from object", () => {
 		const paramsObject = { foo: "1", bar: "2" };
+
 		const searchParams = new URLSearchParams(paramsObject);
 		expect(searchParams.get("foo")).toBe("1");
 		expect(searchParams.get("bar")).toBe("2");
@@ -570,6 +608,7 @@ describe("URLSearchParams class", () => {
 			["foo", "1"],
 			["bar", "2"],
 		];
+
 		const paramsIterator = paramsArray[Symbol.iterator]();
 		//@ts-ignore
 		const searchParams = new URLSearchParams(paramsIterator);
@@ -579,6 +618,7 @@ describe("URLSearchParams class", () => {
 
 	it("constructor from string with special characters", () => {
 		const paramsString = "topic=api&category=coding%20skills";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.get("topic")).toBe("api");
 		expect(searchParams.get("category")).toBe("coding skills");
@@ -586,49 +626,58 @@ describe("URLSearchParams class", () => {
 
 	it("constructor from URLSearchParams object", () => {
 		const existingParamsString = "topic=api";
+
 		const existingSearchParams = new URLSearchParams(existingParamsString);
+
 		const newSearchParams = new URLSearchParams(existingSearchParams);
 		expect(newSearchParams.get("topic")).toBe("api");
 	});
 
 	it("should have a parameter if it exists", () => {
 		const paramsString = "?topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.has("topic")).toBeTruthy();
 	});
 
 	it("should not have a parameter if it doesn't exist", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(!searchParams.has("foo")).toBeTruthy();
 	});
 
 	it("should return the value of the parameter if it exists", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.get("topic") === "api").toBeTruthy();
 	});
 
 	it("should return null if the parameter doesn't exist", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.get("foo")).toBeNull();
 	});
 
 	it("should return an array of all values of the parameter if it exists", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.getAll("a")).toEqual(["1", "2", "3"]);
 	});
 
 	it("should return an empty array if the parameter doesn't exist", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		expect(searchParams.getAll("foo")).toEqual([]);
 	});
 
 	it("should add the parameter to the end of the query string", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		searchParams.append("topic", "webdev");
 		expect(searchParams.toString()).toEqual(
@@ -638,6 +687,7 @@ describe("URLSearchParams class", () => {
 
 	it("should replace all values of the parameter with the given value", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		searchParams.set("topic", "More webdev");
 		expect(searchParams.toString()).toEqual(
@@ -653,6 +703,7 @@ describe("URLSearchParams class", () => {
 
 	it("should remove the parameter from the query string", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
 		searchParams.delete("topic");
 		expect(searchParams.toString()).toEqual("a=1&a=2&a=3");
@@ -660,8 +711,11 @@ describe("URLSearchParams class", () => {
 
 	it("should iterate over all parameters in the query string", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
+
 		const arr: [string, string][] = [];
+
 		for (const p of searchParams) {
 			arr.push(p);
 		}
@@ -675,7 +729,9 @@ describe("URLSearchParams class", () => {
 
 	it("should for_each all parameters in the query string", () => {
 		const paramsString = "topic=api&a=1&a=2&a=3";
+
 		const searchParams = new URLSearchParams(paramsString);
+
 		const arr: [string, string][] = [];
 		searchParams.forEach((value, key) => {
 			arr.push([key, value]);
@@ -690,8 +746,11 @@ describe("URLSearchParams class", () => {
 
 	it("should get key parameters in the query string", () => {
 		const paramsString = "key1=value1&key2=value2";
+
 		const searchParams = new URLSearchParams(paramsString);
+
 		let keys = "";
+
 		for (const key of searchParams.keys()) {
 			keys = keys + key;
 		}
@@ -700,8 +759,11 @@ describe("URLSearchParams class", () => {
 
 	it("should get value parameters in the query string", () => {
 		const paramsString = "key1=value1&key2=value2";
+
 		const searchParams = new URLSearchParams(paramsString);
+
 		let values = "";
+
 		for (const value of searchParams.values()) {
 			values = values + value;
 		}
@@ -712,7 +774,9 @@ describe("URLSearchParams class", () => {
 describe("Blob class", () => {
 	it("should construct a new Blob object with the provided data and options", () => {
 		const blobData = ["Hello, world!"];
+
 		const blobOptions = { type: "text/plain" };
+
 		const blob = new Blob(blobData, blobOptions);
 
 		expect(blob.size).toEqual(blobData[0].length);
@@ -721,6 +785,7 @@ describe("Blob class", () => {
 
 	it("should create a Blob with default type if options.type is not provided", () => {
 		const blobData = ["Hello, world!"];
+
 		const blob = new Blob(blobData);
 
 		expect(blob.size).toEqual(blobData[0].length);
@@ -745,6 +810,7 @@ describe("Blob class", () => {
 		});
 
 		expect(blob.type).toEqual("");
+
 		if (process.platform != "win32") {
 			expect(blob.size < text.length).toBeTruthy();
 			expect(await blob.text()).toEqual(text.replace(/\r\n/g, "\n"));
@@ -753,6 +819,7 @@ describe("Blob class", () => {
 
 	it("should return an ArrayBuffer with the arrayBuffer() method", async () => {
 		const blobData = ["Hello, world!"];
+
 		const blob = new Blob(blobData, { type: "text/plain" });
 
 		const arrayBuffer = await blob.arrayBuffer();
@@ -762,6 +829,7 @@ describe("Blob class", () => {
 
 	it("should return an Uint8Array with the bytes() method", async () => {
 		const blobData = ["Hello, world!"];
+
 		const blob = new Blob(blobData, { type: "text/plain" });
 
 		const bytes = await blob.bytes();
@@ -771,6 +839,7 @@ describe("Blob class", () => {
 
 	it("should return a DataView with the slice method", () => {
 		const blobData = ["Hello, world!"];
+
 		const blob = new Blob(blobData, { type: "text/plain" });
 
 		const slicedBlob = blob.slice(0, 5, "text/plain");
@@ -786,6 +855,7 @@ describe("URL Utility Functions", () => {
 		const url = new URL(
 			"https://user:password@example.com:8080/path/to/file?param1=value1&param2=value2#fragment",
 		);
+
 		const options = urlModule.urlToHttpOptions(url);
 
 		expect(options).toEqual({
@@ -803,6 +873,7 @@ describe("URL Utility Functions", () => {
 
 	it("handles URL without credentials or port with urlToHttpOptions", () => {
 		const url = new URL("http://example.com/path/to/file");
+
 		const options = urlModule.urlToHttpOptions(url);
 
 		expect(options).toEqual({
@@ -837,6 +908,7 @@ describe("URL Utility Functions", () => {
 
 	it("converts file URL to system path with fileURLToPath", () => {
 		const url = new URL("file:///path/to/file.txt");
+
 		const path = urlModule.fileURLToPath(url);
 
 		expect(path).toBe("/path/to/file.txt"); // Platform specific path handling might differ
@@ -905,12 +977,14 @@ describe("File class", () => {
 
 	it("has last modified date", () => {
 		const file = new File(["file content"], "example.txt");
+
 		const now = new Date();
 		expect(file.lastModified).toBeLessThanOrEqual(now.getTime());
 	});
 
 	it("can slice file", () => {
 		const file = new File(["file content"], "example.txt");
+
 		const slice = file.slice(0, 5);
 		expect(slice).toBeInstanceOf(Blob);
 		expect(slice.size).toBe(5);
@@ -918,13 +992,16 @@ describe("File class", () => {
 
 	it("can read file as text", async () => {
 		const file = new File(["file content"], "example.txt");
+
 		const text = await file.text();
 		expect(text).toBe("file content");
 	});
 
 	it("can read file as arrayBuffer", async () => {
 		const file = new File([1, 2, 3, 4] as any, "example.txt");
+
 		const arrayBuffer = await file.arrayBuffer();
+
 		const uint8Array = new Uint8Array(arrayBuffer);
 		expect(Array.from(uint8Array)).toStrictEqual([49, 50, 51, 52]);
 		expect(uint8Array.length).toBe(4);

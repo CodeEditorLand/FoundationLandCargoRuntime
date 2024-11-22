@@ -19,6 +19,7 @@ declare global {
 		readonly stack: string;
 	}
 	var Error: ErrorConstructor;
+
 	var DOMException: {
 		prototype: DOMException;
 		new (message?: string, name?: string): DOMException;

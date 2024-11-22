@@ -121,6 +121,7 @@ describe("jest-expect", () => {
 		expect(() => {
 			throw new TestError("error");
 		}).toThrow(TestError);
+
 		const err = new Error("hello world");
 		expect(() => {
 			throw err;
@@ -224,6 +225,7 @@ describe("jest-expect", () => {
 		expect({}).not.toBe({});
 
 		const foo = {};
+
 		const complex = {
 			"0": "zero",
 			foo: 1,
@@ -283,6 +285,7 @@ describe("jest-expect", () => {
 
 		expect(() => {
 			const x = { a: { b: { c: 1 } } };
+
 			const y = { a: { b: { c: 2 } } };
 			Object.freeze(x.a);
 			expect(x).toEqual(y);
@@ -409,6 +412,7 @@ describe(".toStrictEqual()", () => {
 
 	it("does not simply compare constructor names", () => {
 		const c = new TestClassC(1, 2);
+
 		const d = new TestClassD(1, 2);
 		expect(c.constructor.name).toEqual(d.constructor.name);
 		expect({ test: c }).not.toStrictEqual({ test: d });

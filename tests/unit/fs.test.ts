@@ -30,6 +30,7 @@ describe("readdir", () => {
 		const dir = await fs.readdir("fixtures/fs/readdir", {
 			recursive: true,
 		});
+
 		const compare = (a: string, b: string) => (a >= b ? 1 : -1);
 		expect(dir.sort(compare)).toEqual(
 			["recursive/readdir.js", "recursive", "readdir.js"].sort(compare),
@@ -65,6 +66,7 @@ describe("readdirSync", () => {
 		const dir = defaultFsImport.readdirSync("fixtures/fs/readdir", {
 			recursive: true,
 		});
+
 		const compare = (a: string | Buffer, b: string | Buffer): number =>
 			a >= b ? 1 : -1;
 		expect(dir.sort(compare)).toEqual(
@@ -76,8 +78,11 @@ describe("readdirSync", () => {
 describe("readfile", () => {
 	it("should read a file", async () => {
 		const buf = await fs.readFile("fixtures/hello.txt");
+
 		const text = buf.toString();
+
 		const base64Text = buf.toString("base64");
+
 		const hexText = buf.toString("hex");
 
 		expect(buf).toBeInstanceOf(Buffer);
@@ -112,8 +117,11 @@ describe("readfile", () => {
 describe("readfileSync", () => {
 	it("should read a file synchronously", () => {
 		const buf = defaultFsImport.readFileSync("fixtures/hello.txt");
+
 		const text = buf.toString();
+
 		const base64Text = buf.toString("base64");
+
 		const hexText = buf.toString("hex");
 
 		expect(buf).toBeInstanceOf(Buffer);
@@ -155,6 +163,7 @@ describe("mkdtemp", () => {
 	it("should create a temporary directory with a given prefix", async () => {
 		// Create a temporary directory with the given prefix
 		const prefix = "test-";
+
 		const dirPath = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
 
 		// Check that the directory exists
@@ -177,6 +186,7 @@ describe("mkdtempSync", () => {
 	it("should create a temporary directory with a given prefix synchronously", () => {
 		// Create a temporary directory with the given prefix
 		const prefix = "test-";
+
 		const dirPath = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), prefix),
 		);
@@ -240,7 +250,9 @@ describe("mkdirSync", () => {
 describe("writeFile", () => {
 	it("should write a file", async () => {
 		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "test-"));
+
 		const filePath = path.join(tmpDir, "test");
+
 		const fileContents = "hello";
 		await fs.writeFile(filePath, fileContents);
 
@@ -257,8 +269,11 @@ describe("writeFile synchronously", () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
 		);
+
 		const filePath = path.join(tmpDir, "test");
+
 		const fileContents = "hello";
+
 		defaultFsImport.writeFileSync(filePath, fileContents);
 
 		const contents = defaultFsImport.readFileSync(filePath).toString();
@@ -272,7 +287,9 @@ describe("writeFile synchronously", () => {
 describe("rm", () => {
 	it("should delete file and directory", async () => {
 		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "test-"));
+
 		const filePath = path.join(tmpDir, "test");
+
 		const fileContents = "hello";
 		await fs.writeFile(filePath, fileContents);
 
@@ -296,6 +313,7 @@ describe("rm", () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
 		);
+
 		const filePath = path.join(tmpDir, "test");
 
 		await expect(fs.rm(filePath, {})).rejects.toThrow(
@@ -304,6 +322,7 @@ describe("rm", () => {
 	});
 	it("should not throw an error if file does not exists and force is used", async () => {
 		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "test-"));
+
 		const filePath = path.join(tmpDir, "test");
 
 		await expect(fs.access(filePath)).rejects.toThrow(
@@ -319,7 +338,9 @@ describe("rmSync", () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
 		);
+
 		const filePath = path.join(tmpDir, "test");
+
 		const fileContents = "hello";
 		await fs.writeFile(filePath, fileContents);
 
@@ -335,6 +356,7 @@ describe("rmSync", () => {
 
 		// Check dir still exists and then delete it
 		defaultFsImport.accessSync(tmpDir);
+
 		defaultFsImport.rmSync(tmpDir, { recursive: true });
 		expect(() => defaultFsImport.accessSync(tmpDir)).toThrow(
 			/[Nn]o such file or directory/,
@@ -344,6 +366,7 @@ describe("rmSync", () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
 		);
+
 		const filePath = path.join(tmpDir, "test");
 
 		expect(() => defaultFsImport.rmSync(filePath, {})).toThrow(
@@ -354,6 +377,7 @@ describe("rmSync", () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
 		);
+
 		const filePath = path.join(tmpDir, "test");
 
 		expect(() => defaultFsImport.accessSync(filePath)).toThrow(
@@ -399,6 +423,7 @@ describe("access", () => {
 describe("accessSync", () => {
 	it("should access a file synchronously", () => {
 		const filePath = "fixtures/hello.txt";
+
 		defaultFsImport.accessSync(filePath);
 	});
 

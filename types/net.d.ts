@@ -10,7 +10,9 @@
  */
 declare module "net" {
 	import type { Buffer } from "buffer";
+
 	import { EventEmitter } from "events";
+
 	import { DefaultDuplexStream as Duplex } from "stream";
 
 	interface AddressInfo {
@@ -243,6 +245,7 @@ declare module "net" {
 	 */
 	class Server extends EventEmitter {
 		constructor(connectionListener?: (socket: Socket) => void);
+
 		constructor(
 			options?: ServerOpts,
 			connectionListener?: (socket: Socket) => void,
@@ -455,6 +458,7 @@ declare module "net" {
 	function createServer(
 		connectionListener?: (socket: Socket) => void,
 	): Server;
+
 	function createServer(
 		options?: ServerOpts,
 		connectionListener?: (socket: Socket) => void,
@@ -473,12 +477,15 @@ declare module "net" {
 		options: NetConnectOpts,
 		connectionListener?: () => void,
 	): Socket;
+
 	function connect(
 		port: number,
 		host: string,
 		connectionListener?: () => void,
 	): Socket;
+
 	function connect(port: number, connectionListener?: () => void): Socket;
+
 	function connect(path: string, connectionListener?: () => void): Socket;
 
 	/**
@@ -502,15 +509,18 @@ declare module "net" {
 		options: NetConnectOpts,
 		connectionListener?: () => void,
 	): Socket;
+
 	function createConnection(
 		port: number,
 		host: string,
 		connectionListener?: () => void,
 	): Socket;
+
 	function createConnection(
 		port: number,
 		connectionListener?: () => void,
 	): Socket;
+
 	function createConnection(
 		path: string,
 		connectionListener?: () => void,

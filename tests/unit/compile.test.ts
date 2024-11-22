@@ -6,6 +6,7 @@ const spawnCapture = async (cmd: string, args: string[]) => {
 	const child = spawn(cmd, args);
 
 	let stdout = "";
+
 	let stderr = "";
 
 	child.stdout.on("data", (data) => {
