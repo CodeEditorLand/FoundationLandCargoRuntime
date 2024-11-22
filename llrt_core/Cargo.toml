@@ -70,7 +70,7 @@ rustls = { version = "0.23.17", default-features = false, features = [
 	"tls12",
 	"ring",
 ] }
-webpki-roots = "0.26.6"
+webpki-roots = "0.26.7"
 ring = "0.17.8"
 rand = "0.8.5"
 flate2 = { version = "1.0.35", features = [
