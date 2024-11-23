@@ -1,12 +1,9 @@
 import { execSync } from "child_process";
+import * as fs from "fs/promises";
 import os from "os";
 import path from "path";
 import {
 	App,
-	CfnOutput,
-	Duration,
-	Fn,
-	Stack,
 	aws_apigatewayv2,
 	aws_apigatewayv2_integrations,
 	aws_cloudfront,
@@ -17,8 +14,11 @@ import {
 	aws_lambda_nodejs,
 	aws_logs,
 	aws_s3,
+	CfnOutput,
+	Duration,
+	Fn,
+	Stack,
 } from "aws-cdk-lib";
-import * as fs from "fs/promises";
 
 const main = async () => {
 	execSync("node build.mjs", {

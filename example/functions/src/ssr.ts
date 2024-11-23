@@ -1,9 +1,9 @@
 import fs from "fs/promises";
-import ReactDOMServer from "react-dom/server";
-import App from "./react/App";
-
 import React from "react";
+import ReactDOMServer from "react-dom/server";
+
 import API from "./api";
+import App from "./react/App";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
 

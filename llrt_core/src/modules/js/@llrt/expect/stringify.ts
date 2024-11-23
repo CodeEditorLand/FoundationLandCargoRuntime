@@ -25,10 +25,10 @@ SOFTWARE.
 
 // Extracted and modified from Vitest:  https://github.com/vitest-dev/vitest/blob/0f86ff98975a80191d6215b0d30ff6cd9f8388d3/packages/utils/src/stringify.ts
 
-import type { PrettyFormatOptions } from "pretty-format";
 import {
 	format as prettyFormat,
 	plugins as prettyFormatPlugins,
+	type PrettyFormatOptions,
 } from "pretty-format";
 
 const {

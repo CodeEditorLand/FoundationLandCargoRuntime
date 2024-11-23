@@ -1,4 +1,4 @@
-import { XMLParser, XmlNode, XmlText } from "llrt:xml";
+import { XmlNode, XMLParser, XmlText } from "llrt:xml";
 
 describe("XMLParser options and handling", () => {
 	it("should parse xml", () => {

@@ -1,3 +1,6 @@
+import { equals, isA, pluralize } from "./jest-utils";
+import { stringify } from "./stringify";
+
 /*
 MIT License
 
@@ -26,9 +29,6 @@ SOFTWARE.
 // Extracted and modified from Vitest:  https://github.com/vitest-dev/vitest/blob/7a31a1ae4223aed3adf260e63ac3b3f7fab3c9d7/packages/expect/src/jest-asymmetric-matchers.ts
 
 import ChaiPlugin = Chai.ChaiPlugin;
-
-import { equals, isA, pluralize } from "./jest-utils";
-import { stringify } from "./stringify";
 
 export interface AsymmetricMatcherInterface {
 	asymmetricMatch: (other: unknown) => boolean;

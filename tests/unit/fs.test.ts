@@ -1,8 +1,8 @@
 import defaultFsImport from "fs";
 import * as namedFsImport from "fs";
+import fs from "fs/promises";
 import os from "os";
 import path from "path";
-import fs from "fs/promises";
 
 describe("readdir", () => {
 	it("should read a directory", async () => {

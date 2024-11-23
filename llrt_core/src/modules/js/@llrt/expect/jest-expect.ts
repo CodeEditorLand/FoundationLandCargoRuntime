@@ -25,6 +25,7 @@ SOFTWARE.
 
 // Extracted and modified from Vitest:  https://github.com/vitest-dev/vitest/blob/a199ac2dd1322d7839d4d1350c983070da546805/packages/expect/src/jest-expect.ts
 
+import type { AsymmetricMatcher } from "./jest-asymmetric-matchers";
 import {
 	arrayBufferEquality,
 	generateToBeMessage,
@@ -34,9 +35,9 @@ import {
 	subsetEquality,
 	typeEquality,
 } from "./jest-utils";
+
 import ChaiPlugin = Chai.ChaiPlugin;
 import Assertion = Chai.Assertion;
-import type { AsymmetricMatcher } from "./jest-asymmetric-matchers";
 
 // Jest Expect Compact
 export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
@@ -61,7 +62,6 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		};
 
 		if (Array.isArray(name)) name.forEach((n) => addMethod(n));
-
 		else addMethod(name);
 	}
 
@@ -211,7 +211,6 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 	});
 	def("toMatch", function (expected: string | RegExp) {
 		if (typeof expected === "string") return this.include(expected);
-
 		else return this.match(expected);
 	});
 	def("toContain", function (item) {

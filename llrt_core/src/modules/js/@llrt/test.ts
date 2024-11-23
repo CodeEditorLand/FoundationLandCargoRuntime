@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import * as chai from "chai";
+
 import { JestAsymmetricMatchers } from "./expect/jest-asymmetric-matchers";
 import { JestChaiExpect } from "./expect/jest-expect";
 

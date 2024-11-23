@@ -2,22 +2,22 @@
 
 import {
 	BillingMode,
+	DynamoDB,
+	waitUntilTableExists,
 	type CreateTableCommandOutput,
 	type DeleteItemCommandOutput,
 	type DescribeTableCommandOutput,
-	DynamoDB,
 	type GetItemCommandOutput,
-	waitUntilTableExists,
 } from "@aws-sdk/client-dynamodb";
 import {
+	DynamoDBDocument,
+	NumberValue,
 	type BatchExecuteStatementCommandOutput,
 	type BatchGetCommandOutput,
 	type BatchWriteCommandOutput,
-	DynamoDBDocument,
 	type ExecuteStatementCommandOutput,
 	type ExecuteTransactionCommandOutput,
 	type GetCommandOutput,
-	NumberValue,
 	type PutCommandOutput,
 	type QueryCommandOutput,
 	type ScanCommandOutput,

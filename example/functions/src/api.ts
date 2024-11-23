@@ -7,6 +7,7 @@ import {
 	ScanCommand,
 	UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
+
 import type { Todo } from "./react/TodoList";
 
 const uid = () =>

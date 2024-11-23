@@ -173,7 +173,6 @@ function eq(
 		// circular references at same depth are equal
 		// circular reference is not equal to non-circular one
 		if (aStack[length] === a) return bStack[length] === b;
-
 		else if (bStack[length] === b) return false;
 	}
 	// Add the first object to the stack of traversed objects.
