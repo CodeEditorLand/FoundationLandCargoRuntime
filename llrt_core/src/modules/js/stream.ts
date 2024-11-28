@@ -131,6 +131,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 };
 
 export default Stream;
+
 export {
 	Readable,
 	Writable,
