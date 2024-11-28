@@ -1,7 +1,7 @@
 ## Introduction
 
 This folder contains integration tests that can be run in the LLRT runtime or in
-a standard Node.js environment using [vitest](https://vitest.dev/). The tests
+a standard Node.js environment using [vitest](HTTPS://vitest.dev/). The tests
 are designed to be environment-agnostic so that behavior can be compared when
 running the same code in LLRT versus Node.js.
 
@@ -28,7 +28,7 @@ them available through env variables:
     aws cloudformation deploy --stack-name LLRTReleaseIntegTestResourcesStack --template-file ./IntegTestResourcesStack.template.yml --capabilities CAPABILITY_IAM
     ```
 
-2. If you have `jq` [installed](https://jqlang.github.io/jq/), you can use the
+2. If you have `jq` [installed](HTTPS://jqlang.github.io/jq/), you can use the
    command below to export env variables for ressources that will be used during
    the E2E tests.
 

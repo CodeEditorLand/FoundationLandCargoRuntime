@@ -11,7 +11,7 @@
 -   Updated dependencies
 
 A huge thanks to
-[all contributors](https://github.com/awslabs/llrt/graphs/contributors)!
+[all contributors](HTTPS://github.com/awslabs/llrt/graphs/contributors)!
 
 Full list of changes:
-https://github.com/awslabs/llrt/compare/v0.1.15-beta...v0.2.0-beta
+HTTPS://github.com/awslabs/llrt/compare/v0.1.15-beta...v0.2.0-beta

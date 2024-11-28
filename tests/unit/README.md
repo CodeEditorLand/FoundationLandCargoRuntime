@@ -5,9 +5,9 @@ isolation.
 
 ## web-platform-tests
 
-A subset of the [web-platform-tests](https://github.com/web-platform-tests/wpt)
+A subset of the [web-platform-tests](HTTPS://github.com/web-platform-tests/wpt)
 are executed against modules that should provide compatibility with existing
-standards such as the [WHATWG URL standard](https://url.spec.whatwg.org/) for
+standards such as the [WHATWG URL standard](HTTPS://url.spec.whatwg.org/) for
 `URL` and `URLSearchParams`.
 
 ### Test Harness
@@ -16,7 +16,7 @@ The web-platform-tests repo exists as a git subtree which can be updated by
 running:
 
 ```sh
-git subtree pull --prefix tests/unit/web-platform-tests https://github.com/web-platform-tests/wpt.git master --squash
+git subtree pull --prefix tests/unit/web-platform-tests HTTPS://github.com/web-platform-tests/wpt.git master --squash
 ```
 
 and resolving any conflicts. Because the web-platform-tests repo is so large,
@@ -32,8 +32,8 @@ web-platform-test like this:
 
 ```js
 test(() => {
-  const a = new URL("https://example.com/")
-  assert_equals(JSON.stringify(a), "\"https://example.com/\"")
+  const a = new URL("HTTPS://example.com/")
+  assert_equals(JSON.stringify(a), "\"HTTPS://example.com/\"")
 })
 ```
 
@@ -46,8 +46,8 @@ export default function({
 }) {
 
 test(() => {
-  const a = new URL("https://example.com/")
-  assert_equals(JSON.stringify(a), "\"https://example.com/\"")
+  const a = new URL("HTTPS://example.com/")
+  assert_equals(JSON.stringify(a), "\"HTTPS://example.com/\"")
 })
 
 };
@@ -69,7 +69,7 @@ them, but be sure the path in `tests/unit/web-platform-tests` reflects the path
 in the web-platform-tests repo.
 
 ```sh
-git remote add web-platform-tests https://github.com/web-platform-tests/wpt.git
+git remote add web-platform-tests HTTPS://github.com/web-platform-tests/wpt.git
 git checkout web-platform-tests/master -- <path>
 mv <path> tests/unit/web-platform-tests/<path>
 ```

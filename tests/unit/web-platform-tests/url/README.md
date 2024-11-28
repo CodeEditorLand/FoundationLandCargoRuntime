@@ -57,6 +57,6 @@ coverage here are welcome.)
 
 The tests in this directory assert conformance with [`the URL Standard`][URL].
 
-[parsing]: https://url.spec.whatwg.org/#concept-basic-url-parser
-[API]: https://url.spec.whatwg.org/#api
-[URL]: https://url.spec.whatwg.org/
+[parsing]: HTTPS://url.spec.whatwg.org/#concept-basic-url-parser
+[API]: HTTPS://url.spec.whatwg.org/#api
+[URL]: HTTPS://url.spec.whatwg.org/

@@ -1,9 +1,9 @@
 # LLRT Modules
 
-LLRT Modules is a library of [rquickjs](https://github.com/DelSkayn/rquickjs)
+LLRT Modules is a library of [rquickjs](HTTPS://github.com/DelSkayn/rquickjs)
 modules that can be used independantly of LLRT (**L**ow **L**atency
-**R**un**t**ime). They aim to bring to [quickjs](https://bellard.org/quickjs/)
-APIs from [Node.js](https://nodejs.org/) and [WinterCG](https://wintercg.org/).
+**R**un**t**ime). They aim to bring to [quickjs](HTTPS://bellard.org/quickjs/)
+APIs from [Node.js](HTTPS://nodejs.org/) and [WinterCG](HTTPS://wintercg.org/).
 
 LLRT (**L**ow **L**atency **R**un**t**ime) is a lightweight JavaScript runtime
 designed to address the growing demand for fast and efficient Serverless

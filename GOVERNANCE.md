@@ -58,6 +58,6 @@ Committee) will be removed if any of the following occur:
 
 This document is a modified work of the GitHub Minimal Viable Governance model,
 located here: ﻿
-[https://github.com/github/MVG/﻿](https://github.com/github/MVG/) This document
+[HTTPS://github.com/github/MVG/﻿](HTTPS://github.com/github/MVG/) This document
 may be used, modified, and/or distributed under the terms of the ﻿
-[Creative Commons Attribution 4.0 International (CC-BY) license﻿](https://creativecommons.org/licenses/by/4.0/legalcode).
+[Creative Commons Attribution 4.0 International (CC-BY) license﻿](HTTPS://creativecommons.org/licenses/by/4.0/legalcode).

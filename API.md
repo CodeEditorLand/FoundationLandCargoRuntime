@@ -1,63 +1,63 @@
 # API documentation
 
 > [!NOTE] The long term goal for LLRT is to become
-> [`Winter CG compliant`](https://github.com/wintercg/admin/blob/main/proposals.md).
+> [`Winter CG compliant`](HTTPS://github.com/wintercg/admin/blob/main/proposals.md).
 > Not every API from Node.js will be supported.
 
 ## buffer
 
-[`alloc`](https://nodejs.org/api/buffer.html#static-method-bufferallocsize-fill-encoding)
+[`alloc`](HTTPS://nodejs.org/api/buffer.html#static-method-bufferallocsize-fill-encoding)
 
-[`byteLength`](https://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)
+[`byteLength`](HTTPS://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)
 
-[`concat`](https://nodejs.org/api/buffer.html#static-method-bufferconcatlist-totallength)
+[`concat`](HTTPS://nodejs.org/api/buffer.html#static-method-bufferconcatlist-totallength)
 
-[`from`](https://nodejs.org/api/buffer.html#static-method-bufferfromarray)
+[`from`](HTTPS://nodejs.org/api/buffer.html#static-method-bufferfromarray)
 
 Everything else inherited from
-[`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
+[`Uint8Array`](HTTPS://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)
 
 ## child_process
 
 > [!WARNING] > `spawn` uses native streams that is not 100% compatible with the
 > Node.js Streams API.
 
-[`spawn`](https://nodejs.org/api/child_process.html#child_processspawncommand-args-options)
+[`spawn`](HTTPS://nodejs.org/api/child_process.html#child_processspawncommand-args-options)
 
 ## console
 
-[`Console`](https://nodejs.org/api/console.html#class-console)
+[`Console`](HTTPS://nodejs.org/api/console.html#class-console)
 
 ## crypto
 
-[`createHash`](https://nodejs.org/api/crypto.html#cryptocreatehashalgorithm-options)
+[`createHash`](HTTPS://nodejs.org/api/crypto.html#cryptocreatehashalgorithm-options)
 
-[`createHmac`](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)
+[`createHmac`](HTTPS://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)
 
-[`getRandomValues`](https://nodejs.org/api/crypto.html#cryptogetrandomvaluestypedarray)
+[`getRandomValues`](HTTPS://nodejs.org/api/crypto.html#cryptogetrandomvaluestypedarray)
 
-[`randomBytes`](https://nodejs.org/api/crypto.html#cryptorandombytessize-callback)
+[`randomBytes`](HTTPS://nodejs.org/api/crypto.html#cryptorandombytessize-callback)
 
-[`randomFill`](https://nodejs.org/api/crypto.html#cryptorandomfillbuffer-offset-size-callback)
+[`randomFill`](HTTPS://nodejs.org/api/crypto.html#cryptorandomfillbuffer-offset-size-callback)
 
-[`randomFillSync`](https://nodejs.org/api/crypto.html#cryptorandomfillsyncbuffer-offset-size)
+[`randomFillSync`](HTTPS://nodejs.org/api/crypto.html#cryptorandomfillsyncbuffer-offset-size)
 
-[`randomInt`](https://nodejs.org/api/crypto.html#cryptorandomintmin-max-callback)
+[`randomInt`](HTTPS://nodejs.org/api/crypto.html#cryptorandomintmin-max-callback)
 
-[`randomUUID`](https://nodejs.org/api/crypto.html#cryptorandomuuidoptions)
+[`randomUUID`](HTTPS://nodejs.org/api/crypto.html#cryptorandomuuidoptions)
 
 ## events
 
-[`EventEmitter`](https://nodejs.org/api/events.html#class-eventemitter)
+[`EventEmitter`](HTTPS://nodejs.org/api/events.html#class-eventemitter)
 
 ## fetch
 
 Available globally
 
-[`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
+[`fetch`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/fetch)
 
 > [!IMPORTANT] There are some differences with the
-> [`WHATWG standard`](https://fetch.spec.whatwg.org). Mainly browser specific
+> [`WHATWG standard`](HTTPS://fetch.spec.whatwg.org). Mainly browser specific
 > behavior is removed:
 >
 > -   `keepalive` is always true
@@ -70,53 +70,53 @@ Available globally
 
 ## file
 
-[`file`](https://developer.mozilla.org/en-US/docs/Web/API/File)
+[`file`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/File)
 
 ## fs
 
-[`accessSync`](https://nodejs.org/api/fs.html#fsaccesssyncpath-mode)
+[`accessSync`](HTTPS://nodejs.org/api/fs.html#fsaccesssyncpath-mode)
 
-[`mkdirSync`](https://nodejs.org/api/fs.html#fsmkdirsyncpath-options)
+[`mkdirSync`](HTTPS://nodejs.org/api/fs.html#fsmkdirsyncpath-options)
 
-[`mkdtempSync`](https://nodejs.org/api/fs.html#fsmkdtempsyncprefix-options)
+[`mkdtempSync`](HTTPS://nodejs.org/api/fs.html#fsmkdtempsyncprefix-options)
 
-[`readdirSync`](https://nodejs.org/api/fs.html#fsreaddirsyncpath-options)
+[`readdirSync`](HTTPS://nodejs.org/api/fs.html#fsreaddirsyncpath-options)
 
-[`readFileSync`](https://nodejs.org/api/fs.html#fsreadfilesyncpath-options)
+[`readFileSync`](HTTPS://nodejs.org/api/fs.html#fsreadfilesyncpath-options)
 
-[`rmdirSync`](https://nodejs.org/api/fs.html#fsrmdirsyncpath-options)
+[`rmdirSync`](HTTPS://nodejs.org/api/fs.html#fsrmdirsyncpath-options)
 
-[`rmSync`](https://nodejs.org/api/fs.html#fsrmsyncpath-options)
+[`rmSync`](HTTPS://nodejs.org/api/fs.html#fsrmsyncpath-options)
 
-[`statSync`](https://nodejs.org/api/fs.html#fsstatsyncpath-options)
+[`statSync`](HTTPS://nodejs.org/api/fs.html#fsstatsyncpath-options)
 
-[`writeFileSync`](https://nodejs.org/api/fs.html#fswritefilesyncfile-data-options)
+[`writeFileSync`](HTTPS://nodejs.org/api/fs.html#fswritefilesyncfile-data-options)
 
 ## fs/promises
 
-[`access`](https://nodejs.org/api/fs.html#fsstatpath-options-callback)
+[`access`](HTTPS://nodejs.org/api/fs.html#fsstatpath-options-callback)
 
-[`constants`](https://nodejs.org/api/fs.html#file-access-constants)
+[`constants`](HTTPS://nodejs.org/api/fs.html#file-access-constants)
 
-[`mkdir`](https://nodejs.org/api/fs.html#fsmkdirpath-options-callback)
+[`mkdir`](HTTPS://nodejs.org/api/fs.html#fsmkdirpath-options-callback)
 
-[`mkdtemp`](https://nodejs.org/api/fs.html#fsmkdtempprefix-options-callback)
+[`mkdtemp`](HTTPS://nodejs.org/api/fs.html#fsmkdtempprefix-options-callback)
 
-[`readdir`](https://nodejs.org/api/fs.html#fspromisesreaddirpath-options)
+[`readdir`](HTTPS://nodejs.org/api/fs.html#fspromisesreaddirpath-options)
 
-[`readFile`](https://nodejs.org/api/fs.html#filehandlereadfileoptions)
+[`readFile`](HTTPS://nodejs.org/api/fs.html#filehandlereadfileoptions)
 
-[`rm`](https://nodejs.org/api/fs.html#fsrmpath-options-callback)
+[`rm`](HTTPS://nodejs.org/api/fs.html#fsrmpath-options-callback)
 
-[`rmdir`](https://nodejs.org/api/fs.html#fsrmdirpath-options-callback)
+[`rmdir`](HTTPS://nodejs.org/api/fs.html#fsrmdirpath-options-callback)
 
-[`stat`](https://nodejs.org/api/fs.html#fsstatpath-options-callback)
+[`stat`](HTTPS://nodejs.org/api/fs.html#fsstatpath-options-callback)
 
-[`writeFile`](https://nodejs.org/api/fs.html#fspromiseswritefilefile-data-options)
+[`writeFile`](HTTPS://nodejs.org/api/fs.html#fspromiseswritefilefile-data-options)
 
 ## module
 
-[`createRequire`](https://nodejs.org/api/module.html#modulecreaterequirefilename)
+[`createRequire`](HTTPS://nodejs.org/api/module.html#modulecreaterequirefilename)
 
 > [!NOTE] > `require` is available from esm modules natively. This function is
 > just for compatibility
@@ -129,59 +129,59 @@ Available globally
 > don't expose servers. Some server options are not supported: `highWaterMark`,
 > `pauseOnConnect`, `keepAlive`, `noDelay`, `keepAliveInitialDelay`
 
-[`connect`](https://nodejs.org/api/net.html#netconnect)
+[`connect`](HTTPS://nodejs.org/api/net.html#netconnect)
 
-[`createConnection`](https://nodejs.org/api/net.html#netcreateconnection)
+[`createConnection`](HTTPS://nodejs.org/api/net.html#netcreateconnection)
 
-[`createServer`](https://nodejs.org/api/net.html#netcreateserveroptions-connectionlistener)
+[`createServer`](HTTPS://nodejs.org/api/net.html#netcreateserveroptions-connectionlistener)
 
 ## os
 
-[`platform`](https://nodejs.org/api/os.html#osplatform)
+[`platform`](HTTPS://nodejs.org/api/os.html#osplatform)
 
-[`release`](https://nodejs.org/api/os.html#osrelease)
+[`release`](HTTPS://nodejs.org/api/os.html#osrelease)
 
-[`tmpdir`](https://nodejs.org/api/os.html#osplatform)
+[`tmpdir`](HTTPS://nodejs.org/api/os.html#osplatform)
 
-[`type`](https://nodejs.org/api/os.html#ostype)
+[`type`](HTTPS://nodejs.org/api/os.html#ostype)
 
 ## path
 
-[`basename`](https://nodejs.org/api/path.html#pathbasenamepath-suffix)
+[`basename`](HTTPS://nodejs.org/api/path.html#pathbasenamepath-suffix)
 
-[`delimiter`](https://nodejs.org/api/path.html#pathdelimiter)
+[`delimiter`](HTTPS://nodejs.org/api/path.html#pathdelimiter)
 
-[`dirname`](https://nodejs.org/api/path.html#pathdirnamepath)
+[`dirname`](HTTPS://nodejs.org/api/path.html#pathdirnamepath)
 
-[`extname`](https://nodejs.org/api/path.html#pathextnamepath)
+[`extname`](HTTPS://nodejs.org/api/path.html#pathextnamepath)
 
-[`format`](https://nodejs.org/api/path.html#pathformatpathobject)
+[`format`](HTTPS://nodejs.org/api/path.html#pathformatpathobject)
 
-[`isAbsolute`](https://nodejs.org/api/path.html#pathisabsolutepath)
+[`isAbsolute`](HTTPS://nodejs.org/api/path.html#pathisabsolutepath)
 
-[`join`](https://nodejs.org/api/path.html#pathjoinpaths)
+[`join`](HTTPS://nodejs.org/api/path.html#pathjoinpaths)
 
-[`normalize`](https://nodejs.org/api/path.html#pathnormalizepath)
+[`normalize`](HTTPS://nodejs.org/api/path.html#pathnormalizepath)
 
-[`parse`](https://nodejs.org/api/path.html#pathparsepath)
+[`parse`](HTTPS://nodejs.org/api/path.html#pathparsepath)
 
-[`resolve`](https://nodejs.org/api/path.html#pathresolvepaths)
+[`resolve`](HTTPS://nodejs.org/api/path.html#pathresolvepaths)
 
 ## timers
 
 _Also available globally_
 
-[`clearImmediate`](https://nodejs.org/api/timers.html#clearimmediateimmediate)
+[`clearImmediate`](HTTPS://nodejs.org/api/timers.html#clearimmediateimmediate)
 
-[`clearInterval`](https://nodejs.org/api/timers.html#clearintervaltimeout)
+[`clearInterval`](HTTPS://nodejs.org/api/timers.html#clearintervaltimeout)
 
-[`clearTimeout`](https://nodejs.org/api/timers.html#cleartimeouttimeout)
+[`clearTimeout`](HTTPS://nodejs.org/api/timers.html#cleartimeouttimeout)
 
-[`setImmediate`](https://nodejs.org/api/timers.html#setimmediatecallback-args)
+[`setImmediate`](HTTPS://nodejs.org/api/timers.html#setimmediatecallback-args)
 
-[`setInterval`](https://nodejs.org/api/timers.html#setintervalcallback-delay-args)
+[`setInterval`](HTTPS://nodejs.org/api/timers.html#setintervalcallback-delay-args)
 
-[`setTimeout`](https://nodejs.org/api/timers.html#settimeoutcallback-delay-args)
+[`setTimeout`](HTTPS://nodejs.org/api/timers.html#settimeoutcallback-delay-args)
 
 ## url
 
@@ -266,43 +266,43 @@ export class URLSearchParams {
 > [!IMPORTANT] Supported encodings: hex, base64, utf-8, utf-16le, windows-1252
 > and their aliases.
 
-[`TextDecoder`](https://nodejs.org/api/util.html#class-utiltextdecoder)
+[`TextDecoder`](HTTPS://nodejs.org/api/util.html#class-utiltextdecoder)
 
-[`TextEncoder`](https://nodejs.org/api/util.html#class-utiltextdecoder)
+[`TextEncoder`](HTTPS://nodejs.org/api/util.html#class-utiltextdecoder)
 
 ## zlib
 
-[`deflate`](https://nodejs.org/api/zlib.html#zlibdeflatebuffer-options-callback)
+[`deflate`](HTTPS://nodejs.org/api/zlib.html#zlibdeflatebuffer-options-callback)
 
-[`deflateSync`](https://nodejs.org/api/zlib.html#zlibdeflatesyncbuffer-options)
+[`deflateSync`](HTTPS://nodejs.org/api/zlib.html#zlibdeflatesyncbuffer-options)
 
-[`deflateRaw`](https://nodejs.org/api/zlib.html#zlibdeflaterawbuffer-options-callback)
+[`deflateRaw`](HTTPS://nodejs.org/api/zlib.html#zlibdeflaterawbuffer-options-callback)
 
-[`deflateRawSync`](https://nodejs.org/api/zlib.html#zlibdeflaterawsyncbuffer-options)
+[`deflateRawSync`](HTTPS://nodejs.org/api/zlib.html#zlibdeflaterawsyncbuffer-options)
 
-[`gzip`](https://nodejs.org/api/zlib.html#zlibgzipbuffer-options-callback)
+[`gzip`](HTTPS://nodejs.org/api/zlib.html#zlibgzipbuffer-options-callback)
 
-[`gzipSync`](https://nodejs.org/api/zlib.html#zlibgzipsyncbuffer-options)
+[`gzipSync`](HTTPS://nodejs.org/api/zlib.html#zlibgzipsyncbuffer-options)
 
-[`inflate`](https://nodejs.org/api/zlib.html#zlibinflatebuffer-options-callback)
+[`inflate`](HTTPS://nodejs.org/api/zlib.html#zlibinflatebuffer-options-callback)
 
-[`inflateSync`](https://nodejs.org/api/zlib.html#zlibinflatesyncbuffer-options)
+[`inflateSync`](HTTPS://nodejs.org/api/zlib.html#zlibinflatesyncbuffer-options)
 
-[`inflateRaw`](https://nodejs.org/api/zlib.html#zlibinflaterawbuffer-options-callback)
+[`inflateRaw`](HTTPS://nodejs.org/api/zlib.html#zlibinflaterawbuffer-options-callback)
 
-[`inflateRawSync`](https://nodejs.org/api/zlib.html#zlibinflaterawsyncbuffer-options)
+[`inflateRawSync`](HTTPS://nodejs.org/api/zlib.html#zlibinflaterawsyncbuffer-options)
 
-[`gunzip`](https://nodejs.org/api/zlib.html#zlibgunzipbuffer-options-callback)
+[`gunzip`](HTTPS://nodejs.org/api/zlib.html#zlibgunzipbuffer-options-callback)
 
-[`gunzipSync`](https://nodejs.org/api/zlib.html#zlibgunzipsyncbuffer-options)
+[`gunzipSync`](HTTPS://nodejs.org/api/zlib.html#zlibgunzipsyncbuffer-options)
 
-[`brotliCompress`](https://nodejs.org/api/zlib.html#zlibbrotlicompressbuffer-options-callback)
+[`brotliCompress`](HTTPS://nodejs.org/api/zlib.html#zlibbrotlicompressbuffer-options-callback)
 
-[`brotliCompressSync`](https://nodejs.org/api/zlib.html#zlibbrotlicompresssyncbuffer-options)
+[`brotliCompressSync`](HTTPS://nodejs.org/api/zlib.html#zlibbrotlicompresssyncbuffer-options)
 
-[`brotliDecompress`](https://nodejs.org/api/zlib.html#zlibbrotlidecompressbuffer-options-callback)
+[`brotliDecompress`](HTTPS://nodejs.org/api/zlib.html#zlibbrotlidecompressbuffer-options-callback)
 
-[`brotliDecompressSync`](https://nodejs.org/api/zlib.html#zlibbrotlidecompresssyncbuffer-options)
+[`brotliDecompressSync`](HTTPS://nodejs.org/api/zlib.html#zlibbrotlidecompresssyncbuffer-options)
 
 ## llrt:hex
 
@@ -360,20 +360,20 @@ export class XMLParser(options?: XmlParserOptions){
 
 ## Misc Global objects
 
-[`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+[`AbortController`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/AbortController)
 
-[`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
+[`AbortSignal`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/AbortSignal)
 
-[`atob`](https://developer.mozilla.org/en-US/docs/Web/API/atob)
+[`atob`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/atob)
 
-[`btoa`](https://developer.mozilla.org/en-US/docs/Web/API/btoa)
+[`btoa`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/btoa)
 
-[`DOMException`](https://developer.mozilla.org/en-US/docs/Web/API/DOMException)
+[`DOMException`](HTTPS://developer.mozilla.org/en-US/docs/Web/API/DOMException)
 
-[`navigator.userAgent`](https://nodejs.org/api/globals.html#navigatoruseragent)
+[`navigator.userAgent`](HTTPS://nodejs.org/api/globals.html#navigatoruseragent)
 
-[`performance.now`](https://nodejs.org/api/perf_hooks.html#performancenow)
+[`performance.now`](HTTPS://nodejs.org/api/perf_hooks.html#performancenow)
 
-[`performance.timeOrigin`](https://nodejs.org/api/perf_hooks.html#performancetimeorigin)
+[`performance.timeOrigin`](HTTPS://nodejs.org/api/perf_hooks.html#performancetimeorigin)
 
-[`structuredClone`](https://nodejs.org/api/globals.html#structuredclonevalue-options)
+[`structuredClone`](HTTPS://nodejs.org/api/globals.html#structuredclonevalue-options)

@@ -23,10 +23,10 @@ contributing, see [CONTRIBUTING](CONTRIBUTING.md).
 
 | Maintainer      | GitHub ID                                           | Affiliation |
 | --------------- | --------------------------------------------------- | ----------- |
-| Richard Davison | [richarddavison](https://github.com/richarddavison) | Amazon      |
-| Nik Pinski      | [nikp](https://github.com/nikp)                     | Amazon      |
-| Harold Sun      | [bnusunny](https://github.com/bnusunny)             | Amazon      |
-| Iain Maitland   | [imaitland](https://github.com/imaitland)           | Amazon      |
+| Richard Davison | [richarddavison](HTTPS://github.com/richarddavison) | Amazon      |
+| Nik Pinski      | [nikp](HTTPS://github.com/nikp)                     | Amazon      |
+| Harold Sun      | [bnusunny](HTTPS://github.com/bnusunny)             | Amazon      |
+| Iain Maitland   | [imaitland](HTTPS://github.com/imaitland)           | Amazon      |
 
 ## Labels
 
@@ -35,7 +35,7 @@ contributing, see [CONTRIBUTING](CONTRIBUTING.md).
 ## Maintainer Responsibilities
 
 Maintainers are active and visible members of the community, and have
-[maintain-level permissions on a repository](https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization).
+[maintain-level permissions on a repository](HTTPS://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization).
 Use those privileges to serve the community and evolve code as follows.
 
 Be aware of recurring ambiguous situations and
@@ -71,9 +71,9 @@ PRs are [labeled](#labels) based on file changes and semantic title. Pay
 attention to whether labels reflect the current state of the PR and correct
 accordingly.
 
-Use and enforce [semantic versioning](https://semver.org/) pull request titles,
+Use and enforce [semantic versioning](HTTPS://semver.org/) pull request titles,
 as these will be used for [CHANGELOG](CHANGELOG.md) and
-[Release notes](https://github.com/awslabs/llrt/releases) - make sure they
+[Release notes](HTTPS://github.com/awslabs/llrt/releases) - make sure they
 communicate their intent at the human level.
 
 See [Common scenarios](#common-scenarios) section for additional guidance.
@@ -87,7 +87,7 @@ original author for implementation, unless it is a sensitive task that is best
 handled by maintainers.
 
 Make sure issues are assigned to our
-[board of activities](https://github.com/orgs/awslabs/projects/145/)
+[board of activities](HTTPS://github.com/orgs/awslabs/projects/145/)
 
 Use our [labels](#labels) to signal good first issues to new community members,
 and to set expectation that this might need additional feedback from the author,

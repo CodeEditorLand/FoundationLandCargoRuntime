@@ -26,9 +26,9 @@ environment and API.
 To use the SAM CLI, you need the following tools.
 
 -   Docker -
-    [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+    [Install Docker community edition](HTTPS://hub.docker.com/search/?type=edition&offering=community)
 -   SAM CLI -
-    [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+    [Install the SAM CLI](HTTPS://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 
 To build and deploy your application for the first time, run the following in
 your shell:
@@ -96,7 +96,7 @@ The SAM CLI can also emulate your application's API. Use the
 
 ```bash
 llrt-sam-oci$ sam local start-api
-llrt-sam-oci$ curl http://localhost:3000/
+llrt-sam-oci$ curl HTTP://localhost:3000/
 ```
 
 The SAM CLI reads the application template to determine the API's routes and the
@@ -118,9 +118,9 @@ The application template uses AWS Serverless Application Model (AWS SAM) to
 define application resources. AWS SAM is an extension of AWS CloudFormation with
 a simpler syntax for configuring common serverless application resources such as
 functions, triggers, and APIs. For resources not included in
-[the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md),
+[the SAM specification](HTTPS://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md),
 you can use standard
-[AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+[AWS CloudFormation](HTTPS://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
 resource types.
 
 ## Fetch, tail, and filter Lambda function logs
@@ -139,12 +139,12 @@ llrt-sam-oci$ sam logs -n HelloWorldFunction --stack-name llrt-sam-oci --tail
 
 You can find more information and examples about filtering Lambda function logs
 in the
-[SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
+[SAM CLI Documentation](HTTPS://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
 ## Unit tests
 
 Tests are defined in the `hello-world/tests` folder in this project. Use NPM to
-install the [Mocha test framework](https://mochajs.org/) and run unit tests from
+install the [Mocha test framework](HTTPS://mochajs.org/) and run unit tests from
 your local machine.
 
 ```bash
@@ -165,11 +165,11 @@ sam delete --stack-name llrt-sam-oci
 ## Resources
 
 See the
-[AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
+[AWS SAM developer guide](HTTPS://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html)
 for an introduction to SAM specification, the SAM CLI, and serverless
 application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use
 Apps that go beyond hello world samples and learn how authors developed their
 applications:
-[AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+[AWS Serverless Application Repository main page](HTTPS://aws.amazon.com/serverless/serverlessrepo/)
