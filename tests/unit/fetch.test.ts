@@ -11,12 +11,14 @@ beforeAll((done) => {
 			socket.write(
 				"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html></html>",
 			);
+
 			socket.end();
 		});
 	});
 
 	server.listen(() => {
 		const addressInfo = server.address()! as any as net.AddressInfo;
+
 		url = `http://${addressInfo.address}:${addressInfo.port}`;
 
 		done();
@@ -32,6 +34,7 @@ describe("fetch", () => {
 		const res = await fetch(url);
 
 		expect(res.status).toEqual(200);
+
 		expect(
 			res.headers.get("content-type")?.startsWith("text/html"),
 		).toBeTruthy();
@@ -46,7 +49,9 @@ describe("fetch", () => {
 		const request = new Request(url);
 
 		const res = await fetch(request, options);
+
 		expect(res.status).toEqual(200);
+
 		expect(
 			res.headers.get("content-type")?.startsWith("text/html"),
 		).toBeTruthy();
@@ -54,19 +59,25 @@ describe("fetch", () => {
 
 	it("should fetch a website with different resource options", async () => {
 		let res = await fetch(new Request(url));
+
 		expect(res.status).toEqual(200);
+
 		expect(
 			res.headers.get("content-type")?.startsWith("text/html"),
 		).toBeTruthy();
 
 		res = await fetch(new URL(url));
+
 		expect(res.status).toEqual(200);
+
 		expect(
 			res.headers.get("content-type")?.startsWith("text/html"),
 		).toBeTruthy();
 
 		res = await fetch("", { url } as any);
+
 		expect(res.status).toEqual(200);
+
 		expect(
 			res.headers.get("content-type")?.startsWith("text/html"),
 		).toBeTruthy();
@@ -95,20 +106,25 @@ describe("fetch", () => {
 		let stdout = "";
 
 		let stderr = "";
+
 		proc.stderr.on("data", (data) => {
 			stderr += data.toString();
 		});
+
 		proc.stdout.on("data", (data) => {
 			stdout += data.toString();
 		});
+
 		proc.on("close", () => {
 			expect(stderr.trim()).toEqual(
 				`Error: URL denied: ${deniedUrl.hostname}`,
 			);
+
 			expect(stdout.trim()).toEqual("OK");
 
 			done();
 		});
+
 		proc.on("error", done);
 	});
 
@@ -131,20 +147,25 @@ describe("fetch", () => {
 		let stdout = "";
 
 		let stderr = "";
+
 		proc.stderr.on("data", (data) => {
 			stderr += data.toString();
 		});
+
 		proc.stdout.on("data", (data) => {
 			stdout += data.toString();
 		});
+
 		proc.on("close", () => {
 			expect(stderr.trim()).toEqual(
 				`Error: URL not allowed: ${deniedUrl.hostname}`,
 			);
+
 			expect(stdout.trim()).toEqual("OK");
 
 			done();
 		});
+
 		proc.on("error", done);
 	});
 
@@ -152,6 +173,7 @@ describe("fetch", () => {
 		const abortController = new AbortController();
 
 		const res = fetch(url, { signal: abortController.signal });
+
 		abortController.abort();
 
 		try {
@@ -160,10 +182,12 @@ describe("fetch", () => {
 			expect(err.name).toBe("AbortError");
 		}
 	});
+
 	it("should be abortable using request signal", async () => {
 		const abortController = new AbortController();
 
 		const req = new Request(url, { signal: abortController.signal });
+
 		abortController.abort("aborted");
 
 		try {

@@ -152,6 +152,7 @@ declare module "child_process" {
 		 * 3. exit
 		 */
 		addListener(event: string, listener: (...args: any[]) => void): this;
+
 		addListener(
 			event: "close",
 			listener: (
@@ -159,7 +160,9 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		addListener(
 			event: "exit",
 			listener: (
@@ -167,19 +170,25 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		emit(event: string | symbol, ...args: any[]): boolean;
+
 		emit(
 			event: "close",
 			code: number | null,
 			signal: QuickJS.Signals | null,
 		): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		emit(
 			event: "exit",
 			code: number | null,
 			signal: QuickJS.Signals | null,
 		): boolean;
+
 		on(event: string, listener: (...args: any[]) => void): this;
+
 		on(
 			event: "close",
 			listener: (
@@ -187,7 +196,9 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		on(
 			event: "exit",
 			listener: (
@@ -195,7 +206,9 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		once(event: string, listener: (...args: any[]) => void): this;
+
 		once(
 			event: "close",
 			listener: (
@@ -203,7 +216,9 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		once(
 			event: "exit",
 			listener: (
@@ -211,10 +226,12 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		prependListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(
 			event: "close",
 			listener: (
@@ -222,7 +239,9 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(
 			event: "exit",
 			listener: (
@@ -230,10 +249,12 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		prependOnceListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(
 			event: "close",
 			listener: (
@@ -241,10 +262,12 @@ declare module "child_process" {
 				signal: QuickJS.Signals | null,
 			) => void,
 		): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
 		): this;
+
 		prependOnceListener(
 			event: "exit",
 			listener: (
@@ -256,7 +279,9 @@ declare module "child_process" {
 	// return this object when stdio option is undefined or not specified
 	interface ChildProcessWithoutNullStreams extends ChildProcess {
 		stdin: Writable;
+
 		stdout: Readable;
+
 		stderr: Readable;
 	}
 	// return this object when stdio option is a tuple of 3
@@ -266,18 +291,24 @@ declare module "child_process" {
 		E extends null | Readable,
 	> extends ChildProcess {
 		stdin: I;
+
 		stdout: O;
+
 		stderr: E;
 	}
 
 	type IOType = "pipe" | "ignore" | "inherit";
+
 	type StdioOptions = IOType | Array<IOType | number | null | undefined>;
 
 	interface ProcessEnvOptions {
 		uid?: number | undefined;
+
 		gid?: number | undefined;
+
 		cwd?: string | undefined;
 	}
+
 	interface SpawnOptions extends ProcessEnvOptions {
 		/**
 		 * Can be set to 'pipe', 'inherit', or 'ignore', or an array of these strings.
@@ -287,15 +318,22 @@ declare module "child_process" {
 		 * @default 'pipe'
 		 */
 		stdio?: StdioOptions | undefined;
+
 		shell?: boolean | string | undefined;
+
 		windowsVerbatimArguments?: boolean | undefined;
 	}
+
 	interface SpawnOptionsWithoutStdio extends SpawnOptions {
 		stdio?: StdioPipeNamed | StdioPipe[] | undefined;
 	}
+
 	type StdioNull = "inherit" | "ignore";
+
 	type StdioPipeNamed = "pipe";
+
 	type StdioPipe = undefined | null | StdioPipeNamed;
+
 	interface SpawnOptionsWithStdioTuple<
 		Stdin extends StdioNull | StdioPipe,
 		Stdout extends StdioNull | StdioPipe,

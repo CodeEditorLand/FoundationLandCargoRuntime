@@ -32,9 +32,11 @@ import ChaiPlugin = Chai.ChaiPlugin;
 
 export interface AsymmetricMatcherInterface {
 	asymmetricMatch: (other: unknown) => boolean;
+
 	toString: () => string;
 
 	getExpectedType?: () => string;
+
 	toAsymmetricMatcher?: () => string;
 }
 
@@ -65,9 +67,11 @@ export abstract class AsymmetricMatcher<T>
 	// }
 
 	abstract asymmetricMatch(other: unknown): boolean;
+
 	abstract toString(): string;
 
 	getExpectedType?(): string;
+
 	toAsymmetricMatcher?(): string;
 
 	// implement custom chai/loupe inspect for better AssertionError.message formatting
@@ -215,6 +219,7 @@ export class Any extends AsymmetricMatcher<any> {
 					"Please pass one or use anything() to match any object.",
 			);
 		}
+
 		super(sample);
 	}
 
@@ -310,7 +315,9 @@ class CloseTo extends AsymmetricMatcher<number> {
 			throw new Error("Precision is not a Number");
 
 		super(sample);
+
 		this.inverse = inverse;
+
 		this.precision = precision;
 	}
 
@@ -332,6 +339,7 @@ class CloseTo extends AsymmetricMatcher<number> {
 		} else {
 			result = Math.abs(this.sample - other) < 10 ** -this.precision / 2;
 		}
+
 		return this.inverse ? !result : result;
 	}
 

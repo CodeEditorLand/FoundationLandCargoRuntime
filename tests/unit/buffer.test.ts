@@ -102,6 +102,7 @@ describe("Buffer.from", () => {
 		const input2 = "SGVsbG8sIHdvcmxkIQ";
 
 		const buffer2 = Buffer.from(input2, "base64");
+
 		expect(buffer2.toString()).toEqual("Hello, world!");
 	});
 
@@ -136,6 +137,7 @@ describe("Buffer.from", () => {
 		const offset = 0;
 		// @ts-ignore
 		let buffer = Buffer.from(byteArray, offset, length);
+
 		expect(buffer.length).toEqual(byteArray.length);
 
 		for (let i = 0; i < length; i++) {
@@ -144,10 +146,12 @@ describe("Buffer.from", () => {
 
 		// @ts-ignore
 		buffer = Buffer.from(byteArray, 99, 2);
+
 		expect(buffer.length).toEqual(0);
 
 		// @ts-ignore
 		buffer = Buffer.from(byteArray, 99, 999);
+
 		expect(buffer.length).toEqual(0);
 	});
 
@@ -161,14 +165,19 @@ describe("Buffer.from", () => {
 		const c = Buffer.from(a);
 
 		expect(a.buffer).toStrictEqual(b.buffer);
+
 		expect(a.toString()).toEqual("ABCDE");
+
 		expect(b.toString()).toEqual("BCD");
+
 		expect(c.toString()).toEqual("ABCDE");
 
 		typedArray.set([70, 71], 1);
 
 		expect(a.toString()).toEqual("AFGDE");
+
 		expect(b.toString()).toEqual("FGD");
+
 		expect(c.toString()).toEqual("ABCDE");
 	});
 });
@@ -243,6 +252,7 @@ describe("Buffer.concat", () => {
 			const buffer1 = Buffer.from("Hello");
 
 			const invalidBuffer = "InvalidBuffer";
+
 			Buffer.concat([buffer1, invalidBuffer as any]);
 		}).toThrow(TypeError);
 	});
@@ -280,6 +290,7 @@ describe("Buffer.concat", () => {
 		const resultBuffer = Buffer.concat([buffer1, buffer2], 999);
 
 		expect(resultBuffer.toString()).toEqual("HelloWorld");
+
 		expect(resultBuffer.length).toEqual(buffer1.length + buffer2.length);
 	});
 });

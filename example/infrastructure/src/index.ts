@@ -47,19 +47,24 @@ const main = async () => {
 	const sourceDirs = {};
 
 	const sources = await fs.readdir(sourceFunctionsDir);
+
 	await Promise.all(
 		sources.map(async (source) => {
 			if (source === "react") {
 				return;
 			}
+
 			const { name, ext } = path.parse(source);
 
 			const targetDir = path.join(targetFunctionsDir, name);
+
 			await fs.mkdir(targetDir, { recursive: true });
+
 			await fs.copyFile(
 				path.join(sourceFunctionsDir, source),
 				path.join(targetDir, `index${ext}`),
 			);
+
 			sourceDirs[source] = targetDir;
 		}),
 	);
@@ -95,6 +100,7 @@ const main = async () => {
 				},
 			},
 		);
+
 		new CfnOutput(stack, `DistributionOutput${id}`, {
 			value: distribution.distributionDomainName,
 		});
@@ -115,6 +121,7 @@ const main = async () => {
 			),
 			integration,
 		});
+
 		new aws_apigatewayv2.HttpRoute(stack, `${lambda.node.id}ProxyRoute`, {
 			httpApi,
 			routeKey: aws_apigatewayv2.HttpRouteKey.with(
@@ -372,32 +379,55 @@ const main = async () => {
 	);
 
 	todoTable.grantReadWriteData(reactFunction);
+
 	todoTable.grantReadWriteData(llrtReactFunction);
+
 	table.grantReadWriteData(v2Function);
+
 	table.grantReadWriteData(v3BundledFunction);
+
 	table.grantReadWriteData(v3providedFunction);
+
 	table.grantReadWriteData(v3providedMonoFunction);
+
 	table.grantReadWriteData(v3BundledMonoFunction);
+
 	table.grantReadWriteData(llrtFunction);
+
 	table.grantReadWriteData(llrtS3Function);
+
 	table.grantReadWriteData(s3Function);
 
 	bucket.grantReadWrite(llrtS3Function);
+
 	bucket.grantReadWrite(s3Function);
 
 	addRoute(helloNode20Function, "/hello-20");
+
 	addRoute(helloNode18Function, "/hello-18");
+
 	addRoute(helloNode16Function, "/hello-16");
+
 	addRoute(helloLlrtFunction, "/hello-llrt");
+
 	addRoute(v2Function, "/v2");
+
 	addRoute(v3BundledFunction, "/v3-bundled");
+
 	addRoute(v3providedFunction, "/v3-provided");
+
 	addRoute(v3providedMonoFunction, "/v3-provided-mono");
+
 	addRoute(v3BundledMonoFunction, "/v3-bundled-mono");
+
 	addRoute(llrtFunction, "/llrt");
+
 	addRoute(llrtS3Function, "/llrt-s3");
+
 	addRoute(s3Function, "/s3");
+
 	addRoute(reactFunction, "/react");
+
 	addRoute(llrtReactFunction, "/llrt-react");
 
 	for (const [i, route] of routePaths.entries()) {
@@ -407,6 +437,7 @@ const main = async () => {
 	}
 
 	createDistribution("/llrt-react");
+
 	createDistribution("/react");
 };
 

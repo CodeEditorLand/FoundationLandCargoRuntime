@@ -18,14 +18,18 @@ declare module "process" {
 				| "SIGSEGV"
 				| "SIGTERM";
 		}
+
 		type Platform = "darwin" | "linux" | "win32";
+
 		type Architecture = "arm64" | "x64";
 	}
+
 	interface Dict<T> {
 		[key: string]: T | undefined;
 	}
 	// Alias for compatibility
 	interface ProcessEnv extends Dict<string> {}
+
 	interface HRTime {
 		(): [number, number];
 
@@ -34,12 +38,15 @@ declare module "process" {
 		 */
 		bigint(): bigint;
 	}
+
 	interface ProcessRelease {
 		name: string;
 	}
+
 	interface ProcessVersions extends Dict<string> {
 		llrt: string;
 	}
+
 	interface Process extends EventEmitter {
 		hrtime: HRTime;
 		/**

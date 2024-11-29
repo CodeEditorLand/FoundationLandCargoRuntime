@@ -17,12 +17,14 @@ describe("EventEmitter", () => {
 		};
 
 		class MyEmitter extends EventEmitter {}
+
 		const myEmitter = new MyEmitter();
 
 		const myEmitter2 = new MyEmitter();
 
 		myEmitter.once("event", function (a, b) {
 			expect(a).toEqual("a");
+
 			expect(b).toEqual("b");
 			// @ts-ignore
 			expect(this instanceof MyEmitter).toBeTruthy();
@@ -30,29 +32,40 @@ describe("EventEmitter", () => {
 			expect(this === myEmitter).toBeTruthy();
 			// @ts-ignore
 			expect(this !== myEmitter2).toBeTruthy();
+
 			called++;
 		});
 
 		myEmitter.on(symbolA, callback);
+
 		myEmitter.on(symbolB, callback);
+
 		myEmitter.on(symbolC, callback);
 
 		myEmitter.emit("event", "a", "b");
+
 		myEmitter.emit(symbolA);
+
 		myEmitter.emit(symbolB);
+
 		myEmitter.emit(symbolC);
 
 		expect(called).toEqual(4);
+
 		expect(myEmitter.eventNames()).toEqual([symbolA, symbolB, symbolC]);
 
 		myEmitter.off(symbolB, callback);
 
 		myEmitter.emit("event", "a", "b");
+
 		myEmitter.emit(symbolA);
+
 		myEmitter.emit(symbolB);
+
 		myEmitter.emit(symbolC);
 
 		expect(called).toEqual(6);
+
 		expect(myEmitter.eventNames()).toEqual([symbolA, symbolC]);
 	});
 
@@ -64,12 +77,15 @@ describe("EventEmitter", () => {
 		myEmitter.addListener("event", () => {
 			eventsArray.push("added first");
 		});
+
 		myEmitter.prependListener("event", () => {
 			eventsArray.push("added to beginning");
 		});
+
 		myEmitter.addListener("event", () => {
 			eventsArray.push("last");
 		});
+
 		myEmitter.prependListener("event", () => {
 			eventsArray.push("even before that");
 		});
@@ -118,17 +134,21 @@ describe("AbortSignal & AbortController", () => {
 		abortController.abort("cancelled");
 
 		expect(signal.aborted).toEqual(true);
+
 		expect(signal.reason).toEqual("cancelled");
 	});
 
 	it("should throw DomException on timeout", async () => {
 		const signal = AbortSignal.timeout(5);
+
 		expect(signal.aborted).toBe(false);
 
 		await sleep(10);
+
 		expect(signal.aborted).toBe(true);
 		//@ts-ignore
 		expect(signal.reason).toBeInstanceOf(DOMException);
+
 		expect(signal.reason.name).toBe("TimeoutError");
 	});
 
@@ -142,6 +162,7 @@ describe("AbortSignal & AbortController", () => {
 		expect(new_signal.aborted).toBe(false);
 
 		await sleep(10);
+
 		expect(new_signal.aborted).toBe(true);
 	});
 
@@ -149,14 +170,20 @@ describe("AbortSignal & AbortController", () => {
 		const ctrl = new AbortController();
 
 		let count = 0;
+
 		ctrl.signal.onabort = () => {
 			count++;
 		};
+
 		expect(ctrl.signal.onabort).toEqual(expect.any(Function));
+
 		ctrl.abort();
+
 		expect(ctrl.signal.onabort).toEqual(expect.any(Function)); //keep listener
 		ctrl.abort();
+
 		ctrl.abort();
+
 		expect(count).toBe(1);
 	});
 });
@@ -170,6 +197,7 @@ describe("EventTarget", () => {
 		myTarget.addEventListener("event", () => {
 			eventsArray.push("1st");
 		});
+
 		myTarget.addEventListener(
 			"event",
 			() => {
@@ -179,9 +207,11 @@ describe("EventTarget", () => {
 		);
 
 		myTarget.dispatchEvent(new CustomEvent("event"));
+
 		expect(eventsArray).toEqual(["1st", "2nd"]);
 
 		myTarget.dispatchEvent(new CustomEvent("event"));
+
 		expect(eventsArray).toEqual(["1st", "2nd", "1st"]);
 	});
 });

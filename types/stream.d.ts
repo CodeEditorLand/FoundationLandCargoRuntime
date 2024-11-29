@@ -107,61 +107,102 @@ declare module "stream" {
 		 * 5. readable
 		 */
 		addListener(event: EventKey, listener: (...args: any[]) => void): this;
+
 		addListener(event: "close", listener: () => void): this;
+
 		addListener(event: "data", listener: (chunk: Buffer) => void): this;
+
 		addListener(event: "end", listener: () => void): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		addListener(event: "readable", listener: () => void): this;
+
 		emit(event: EventKey, ...args: any[]): boolean;
+
 		emit(event: "close"): boolean;
+
 		emit(event: "data", chunk: Buffer): boolean;
+
 		emit(event: "end"): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		emit(event: "readable"): boolean;
+
 		on(event: EventKey, listener: (...args: any[]) => void): this;
+
 		on(event: "close", listener: () => void): this;
+
 		on(event: "data", listener: (chunk: Buffer) => void): this;
+
 		on(event: "end", listener: () => void): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		on(event: "readable", listener: () => void): this;
+
 		once(event: EventKey, listener: (...args: any[]) => void): this;
+
 		once(event: "close", listener: () => void): this;
+
 		once(event: "data", listener: (chunk: Buffer) => void): this;
+
 		once(event: "end", listener: () => void): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		once(event: "readable", listener: () => void): this;
+
 		prependListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(event: "close", listener: () => void): this;
+
 		prependListener(event: "data", listener: (chunk: Buffer) => void): this;
+
 		prependListener(event: "end", listener: () => void): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(event: "readable", listener: () => void): this;
+
 		prependOnceListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(event: "close", listener: () => void): this;
+
 		prependOnceListener(
 			event: "data",
 			listener: (chunk: Buffer) => void,
 		): this;
+
 		prependOnceListener(event: "end", listener: () => void): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
 		): this;
+
 		prependOnceListener(event: "readable", listener: () => void): this;
+
 		removeListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		removeListener(event: "close", listener: () => void): this;
+
 		removeListener(event: "data", listener: (chunk: Buffer) => void): this;
+
 		removeListener(event: "end", listener: () => void): this;
+
 		removeListener(event: "error", listener: (err: Error) => void): this;
+
 		removeListener(event: "readable", listener: () => void): this;
 
 		/**
@@ -229,44 +270,71 @@ declare module "stream" {
 		 * 3. finish
 		 */
 		addListener(event: EventKey, listener: (...args: any[]) => void): this;
+
 		addListener(event: "close", listener: () => void): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		addListener(event: "finish", listener: () => void): this;
+
 		emit(event: EventKey, ...args: any[]): boolean;
+
 		emit(event: "close"): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		emit(event: "finish"): boolean;
+
 		on(event: EventKey, listener: (...args: any[]) => void): this;
+
 		on(event: "close", listener: () => void): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		on(event: "finish", listener: () => void): this;
+
 		once(event: EventKey, listener: (...args: any[]) => void): this;
+
 		once(event: "close", listener: () => void): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		once(event: "finish", listener: () => void): this;
+
 		prependListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(event: "close", listener: () => void): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(event: "finish", listener: () => void): this;
+
 		prependOnceListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(event: "close", listener: () => void): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
 		): this;
+
 		prependOnceListener(event: "finish", listener: () => void): this;
+
 		removeListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		removeListener(event: "close", listener: () => void): this;
+
 		removeListener(event: "error", listener: (err: Error) => void): this;
+
 		removeListener(event: "finish", listener: () => void): this;
 	}
 
@@ -333,44 +401,71 @@ declare module "stream" {
 		 * 3. finish
 		 */
 		addListener(event: EventKey, listener: (...args: any[]) => void): this;
+
 		addListener(event: "close", listener: () => void): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		addListener(event: "finish", listener: () => void): this;
+
 		emit(event: EventKey, ...args: any[]): boolean;
+
 		emit(event: "close"): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		emit(event: "finish"): boolean;
+
 		on(event: EventKey, listener: (...args: any[]) => void): this;
+
 		on(event: "close", listener: () => void): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		on(event: "finish", listener: () => void): this;
+
 		once(event: EventKey, listener: (...args: any[]) => void): this;
+
 		once(event: "close", listener: () => void): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		once(event: "finish", listener: () => void): this;
+
 		prependListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(event: "close", listener: () => void): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(event: "finish", listener: () => void): this;
+
 		prependOnceListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(event: "close", listener: () => void): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
 		): this;
+
 		prependOnceListener(event: "finish", listener: () => void): this;
+
 		removeListener(
 			event: EventKey,
 			listener: (...args: any[]) => void,
 		): this;
+
 		removeListener(event: "close", listener: () => void): this;
+
 		removeListener(event: "error", listener: (err: Error) => void): this;
+
 		removeListener(event: "finish", listener: () => void): this;
 	}
 
@@ -390,6 +485,7 @@ declare module "stream" {
 						| SharedArrayBuffer,
 					callback?: (err?: Error | null) => void,
 				): void;
+
 				end(): this;
 			}
 		}

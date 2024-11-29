@@ -12,10 +12,12 @@ describe("deflate/inflate", () => {
 			});
 		});
 	});
+
 	it("deflateSync/inflateSync", () => {
 		const compressed = zlib.deflateSync(data);
 
 		const decompressed = zlib.inflateSync(compressed);
+
 		expect(data).toEqual(decompressed.toString());
 	});
 });
@@ -30,10 +32,12 @@ describe("deflateRaw/inflateRaw", () => {
 			});
 		});
 	});
+
 	it("deflateRawSync/inflateRawSync", () => {
 		const compressed = zlib.deflateRawSync(data);
 
 		const decompressed = zlib.inflateRawSync(compressed);
+
 		expect(data).toEqual(decompressed.toString());
 	});
 });
@@ -48,10 +52,12 @@ describe("gzip/gunzip", () => {
 			});
 		});
 	});
+
 	it("gzipSync/gunzipSync", () => {
 		const compressed = zlib.gzipSync(data);
 
 		const decompressed = zlib.gunzipSync(compressed);
+
 		expect(data).toEqual(decompressed.toString());
 	});
 });
@@ -66,10 +72,12 @@ describe("brotli", () => {
 			});
 		});
 	});
+
 	it("brotliCompressSync/brotliDecompressSync", () => {
 		const compressed = zlib.brotliCompressSync(data);
 
 		const decompressed = zlib.brotliDecompressSync(compressed);
+
 		expect(data).toEqual(decompressed.toString());
 	});
 });

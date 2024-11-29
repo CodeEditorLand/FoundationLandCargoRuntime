@@ -17,21 +17,28 @@ declare module "net" {
 
 	interface AddressInfo {
 		address: string;
+
 		family: string;
+
 		port: number;
 	}
 
 	interface SocketConstructorOpts {
 		allowHalfOpen?: boolean | undefined;
 	}
+
 	interface TcpSocketConnectOpts {
 		port: number;
+
 		host?: string | undefined;
 	}
+
 	interface IpcSocketConnectOpts {
 		path: string;
 	}
+
 	type SocketConnectOpts = TcpSocketConnectOpts | IpcSocketConnectOpts;
+
 	type SocketReadyState =
 		| "opening"
 		| "open"
@@ -75,12 +82,15 @@ declare module "net" {
 			options: SocketConnectOpts,
 			connectionListener?: () => void,
 		): this;
+
 		connect(
 			port: number,
 			host: string,
 			connectionListener?: () => void,
 		): this;
+
 		connect(port: number, connectionListener?: () => void): this;
+
 		connect(path: string, connectionListener?: () => void): this;
 
 		/**
@@ -166,59 +176,95 @@ declare module "net" {
 		 *   5. error
 		 */
 		addListener(event: string, listener: (...args: any[]) => void): this;
+
 		addListener(
 			event: "close",
 			listener: (hadError: boolean) => void,
 		): this;
+
 		addListener(event: "connect", listener: () => void): this;
+
 		addListener(event: "data", listener: (data: Buffer) => void): this;
+
 		addListener(event: "drain", listener: () => void): this;
+
 		addListener(event: "end", listener: () => void): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		emit(event: string | symbol, ...args: any[]): boolean;
+
 		emit(event: "close", hadError: boolean): boolean;
+
 		emit(event: "connect"): boolean;
+
 		emit(event: "data", data: Buffer): boolean;
+
 		emit(event: "end"): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		on(event: string, listener: (...args: any[]) => void): this;
+
 		on(event: "close", listener: (hadError: boolean) => void): this;
+
 		on(event: "connect", listener: () => void): this;
+
 		on(event: "data", listener: (data: Buffer) => void): this;
+
 		on(event: "end", listener: () => void): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		once(event: string, listener: (...args: any[]) => void): this;
+
 		once(event: "close", listener: (hadError: boolean) => void): this;
+
 		once(event: "connect", listener: () => void): this;
+
 		once(event: "data", listener: (data: Buffer) => void): this;
+
 		once(event: "end", listener: () => void): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(
 			event: "close",
 			listener: (hadError: boolean) => void,
 		): this;
+
 		prependListener(event: "connect", listener: () => void): this;
+
 		prependListener(event: "data", listener: (data: Buffer) => void): this;
+
 		prependListener(event: "end", listener: () => void): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependOnceListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(
 			event: "close",
 			listener: (hadError: boolean) => void,
 		): this;
+
 		prependOnceListener(event: "connect", listener: () => void): this;
+
 		prependOnceListener(
 			event: "data",
 			listener: (data: Buffer) => void,
 		): this;
+
 		prependOnceListener(event: "end", listener: () => void): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
@@ -227,8 +273,11 @@ declare module "net" {
 
 	interface ListenOptions {
 		port?: number | undefined;
+
 		host?: string | undefined;
+
 		backlog?: number | undefined;
+
 		path?: string | undefined;
 	}
 
@@ -273,29 +322,36 @@ declare module "net" {
 		 * call or `server.close()` has been called. Otherwise, an error will be thrown.
 		 */
 		listen(listeningListener?: () => void): void;
+
 		listen(
 			port?: number,
 			hostname?: string,
 			backlog?: number,
 			listeningListener?: () => void,
 		): void;
+
 		listen(
 			port?: number,
 			hostname?: string,
 			listeningListener?: () => void,
 		): void;
+
 		listen(
 			port?: number,
 			backlog?: number,
 			listeningListener?: () => void,
 		): void;
+
 		listen(port?: number, listeningListener?: () => void): void;
+
 		listen(
 			path: string,
 			backlog?: number,
 			listeningListener?: () => void,
 		): void;
+
 		listen(path: string, listeningListener?: () => void): void;
+
 		listen(options: ListenOptions, listeningListener?: () => void): void;
 
 		/**
@@ -344,52 +400,81 @@ declare module "net" {
 		 *   4. listening
 		 */
 		addListener(event: string, listener: (...args: any[]) => void): this;
+
 		addListener(event: "close", listener: () => void): this;
+
 		addListener(
 			event: "connection",
 			listener: (socket: Socket) => void,
 		): this;
+
 		addListener(event: "error", listener: (err: Error) => void): this;
+
 		addListener(event: "listening", listener: () => void): this;
+
 		emit(event: string | symbol, ...args: any[]): boolean;
+
 		emit(event: "close"): boolean;
+
 		emit(event: "connection", socket: Socket): boolean;
+
 		emit(event: "error", err: Error): boolean;
+
 		emit(event: "listening"): boolean;
+
 		on(event: string, listener: (...args: any[]) => void): this;
+
 		on(event: "close", listener: () => void): this;
+
 		on(event: "connection", listener: (socket: Socket) => void): this;
+
 		on(event: "error", listener: (err: Error) => void): this;
+
 		on(event: "listening", listener: () => void): this;
+
 		once(event: string, listener: (...args: any[]) => void): this;
+
 		once(event: "close", listener: () => void): this;
+
 		once(event: "connection", listener: (socket: Socket) => void): this;
+
 		once(event: "error", listener: (err: Error) => void): this;
+
 		once(event: "listening", listener: () => void): this;
+
 		prependListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependListener(event: "close", listener: () => void): this;
+
 		prependListener(
 			event: "connection",
 			listener: (socket: Socket) => void,
 		): this;
+
 		prependListener(event: "error", listener: (err: Error) => void): this;
+
 		prependListener(event: "listening", listener: () => void): this;
+
 		prependOnceListener(
 			event: string,
 			listener: (...args: any[]) => void,
 		): this;
+
 		prependOnceListener(event: "close", listener: () => void): this;
+
 		prependOnceListener(
 			event: "connection",
 			listener: (socket: Socket) => void,
 		): this;
+
 		prependOnceListener(
 			event: "error",
 			listener: (err: Error) => void,
 		): this;
+
 		prependOnceListener(event: "listening", listener: () => void): this;
 	}
 

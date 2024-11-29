@@ -32,31 +32,56 @@ declare module "fs" {
 
 	export interface StatsBase<T> {
 		isFile(): boolean;
+
 		isDirectory(): boolean;
+
 		isBlockDevice(): boolean;
+
 		isCharacterDevice(): boolean;
+
 		isSymbolicLink(): boolean;
+
 		isFIFO(): boolean;
+
 		isSocket(): boolean;
+
 		dev: T;
+
 		ino: T;
+
 		mode: T;
+
 		nlink: T;
+
 		uid: T;
+
 		gid: T;
+
 		rdev: T;
+
 		size: T;
+
 		blksize: T;
+
 		blocks: T;
+
 		atimeMs: T;
+
 		mtimeMs: T;
+
 		ctimeMs: T;
+
 		birthtimeMs: T;
+
 		atime: Date;
+
 		mtime: Date;
+
 		ctime: Date;
+
 		birthtime: Date;
 	}
+
 	export interface Stats extends StatsBase<number> {}
 	/**
 	 * A `fs.Stats` object provides information about a file.
@@ -227,6 +252,7 @@ declare module "fs" {
 		path: PathLike,
 		options?: {
 			withFileTypes?: false | undefined;
+
 			recursive?: boolean | undefined;
 		},
 	): string[];
@@ -240,6 +266,7 @@ declare module "fs" {
 		path: PathLike,
 		options: {
 			withFileTypes: true;
+
 			recursive?: boolean | undefined;
 		},
 	): Dirent[];

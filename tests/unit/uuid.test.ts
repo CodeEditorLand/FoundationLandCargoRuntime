@@ -22,49 +22,73 @@ const UUID_PATTERN =
 describe("UUID Generation", () => {
 	it("should generate a valid v1 UUID", () => {
 		const uuid = uuidv1();
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(1);
 	});
 
 	it("should generate a valid v3 UUID", () => {
 		const uuid = uuidv3("hello", uuidv3.URL);
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(3);
 	});
 
 	it("should generate a valid v4 UUID", () => {
 		const uuid = uuidv4();
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(4);
 	});
 
 	it("should generate a valid v5 UUID", () => {
 		const uuid = uuidv5("hello", uuidv5.DNS);
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(5);
 	});
 
 	it("should generate a valid v6 UUID", () => {
 		const uuid = uuidv6();
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(6);
 	});
 
 	it("should generate a valid v7 UUID", () => {
 		const uuid = uuidv7();
+
 		expect(typeof uuid).toEqual("string");
+
 		expect(uuid.length).toEqual(36);
+
 		expect(uuid).toMatch(UUID_PATTERN);
+
 		expect(version(uuid)).toEqual(7);
 	});
 
@@ -74,11 +98,15 @@ describe("UUID Generation", () => {
 		const v6 = "1ef5238f-4df6-6856-a311-d4807f27f0c6";
 
 		const convertedv6 = uuidv1ToV6(v1);
+
 		expect(convertedv6).toEqual(v6);
+
 		expect(version(convertedv6)).toEqual(6);
 
 		const convertedv1 = uuidv6ToV1(convertedv6);
+
 		expect(convertedv1).toEqual(v1);
+
 		expect(version(convertedv1)).toEqual(1);
 	});
 
@@ -88,13 +116,17 @@ describe("UUID Generation", () => {
 		const parsedUuid = parse(uuid);
 
 		const stringifiedUuid = stringify(parsedUuid);
+
 		expect(typeof parsedUuid).toEqual("object");
+
 		expect(typeof stringifiedUuid).toEqual("string");
+
 		expect(stringifiedUuid).toEqual(uuid);
 	});
 
 	it("should validate a valid UUID", () => {
 		const uuid = uuidv1();
+
 		expect(validate(uuid)).toEqual(true);
 	});
 
@@ -104,13 +136,17 @@ describe("UUID Generation", () => {
 
 	it("should generate a NIL UUID", () => {
 		const nilUuid = NIL;
+
 		expect(nilUuid).toEqual("00000000-0000-0000-0000-000000000000");
+
 		expect(version(nilUuid)).toEqual(0);
 	});
 
 	it("should generate a MAX UUID", () => {
 		const maxUuid = MAX;
+
 		expect(maxUuid).toEqual("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
 		expect(version(maxUuid)).toEqual(15);
 	});
 
@@ -126,13 +162,21 @@ describe("UUID Generation", () => {
 		const v6 = uuidv6();
 
 		const v7 = uuidv7();
+
 		expect(version(v1)).toEqual(1);
+
 		expect(version(v3)).toEqual(3);
+
 		expect(version(v4)).toEqual(4);
+
 		expect(version(v5)).toEqual(5);
+
 		expect(version(v6)).toEqual(6);
+
 		expect(version(v7)).toEqual(7);
+
 		expect(version(NIL)).toEqual(0);
+
 		expect(version(MAX)).toEqual(15);
 	});
 });

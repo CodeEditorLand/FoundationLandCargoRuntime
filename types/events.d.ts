@@ -1,14 +1,20 @@
 declare module "events" {
 	type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap;
+
 	type DefaultEventMap = [never];
+
 	type AnyRest = [...args: any[]];
+
 	type Args<K, T> = T extends DefaultEventMap
 		? AnyRest
 		: K extends keyof T
 			? T[K]
 			: never;
+
 	type Key<K, T> = T extends DefaultEventMap ? EventKey : K | keyof T;
+
 	type Key2<K, T> = T extends DefaultEventMap ? EventKey : K & keyof T;
+
 	type Listener<K, T, F> = T extends DefaultEventMap
 		? F
 		: K extends keyof T
@@ -16,6 +22,7 @@ declare module "events" {
 				? (...args: T[K]) => void
 				: never
 			: never;
+
 	type Listener1<K, T> = Listener<K, T, (...args: any[]) => void>;
 
 	export class EventEmitter<T extends EventMap<T> = DefaultEventMap> {

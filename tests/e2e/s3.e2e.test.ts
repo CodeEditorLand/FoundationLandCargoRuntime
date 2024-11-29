@@ -16,9 +16,11 @@ describe("@aws-sdk/client-s3", () => {
 		beforeAll(() => {
 			Key = `${Date.now()}`;
 		});
+
 		afterAll(async () => {
 			await client.deleteObject({ Bucket, Key });
 		});
+
 		it("should succeed with Node.js readable stream body", async () => {
 			const length = 10 * 1000; // 10KB
 			const chunkSize = 10;
@@ -34,21 +36,26 @@ describe("@aws-sdk/client-s3", () => {
 
 						return;
 					}
+
 					let chunk = "";
 
 					for (let i = 0; i < Math.min(sizeLeft, chunkSize); i++) {
 						chunk += "x";
 					}
+
 					this.push(chunk);
+
 					sizeLeft -= chunk.length;
 				},
 			});
+
 			inputStream.size = length; // This is required
 			const result = await client.putObject({
 				Bucket,
 				Key,
 				Body: inputStream,
 			});
+
 			expect(result.$metadata.httpStatusCode).toEqual(200);
 		});
 	});
@@ -84,6 +91,7 @@ describe("@aws-sdk/client-s3", () => {
 			}
 
 			const actual = result.$metadata.httpStatusCode;
+
 			expect(actual).toEqual(200);
 		});
 	});
@@ -92,22 +100,28 @@ describe("@aws-sdk/client-s3", () => {
 	describe("ListObjects", () => {
 		beforeAll(async () => {
 			Key = `${Date.now()}`;
+
 			await client.putObject({ Bucket, Key, Body: "foo" });
 		});
+
 		afterAll(async () => {
 			await client.deleteObject({ Bucket, Key });
 		});
+
 		it("should succeed with valid bucket", async () => {
 			const result = await client.listObjects({
 				Bucket,
 			});
+
 			expect(result.$metadata.httpStatusCode).toEqual(200);
+
 			expect(result.Contents instanceof Array).toEqual(true);
 		});
 
 		it("should throw with invalid bucket", async () => {
 			try {
 				await client.listObjects({ Bucket: "invalid-bucket" });
+
 				assert(false, "Should throw an exception");
 			} catch (ignored) {
 				console.log("Exception should be thrown");
@@ -121,9 +135,11 @@ describe("@aws-sdk/client-s3", () => {
 		let Etag: string;
 
 		const multipartObjectKey = `${Key}-multipart`;
+
 		beforeAll(() => {
 			Key = `${Date.now()}`;
 		});
+
 		afterEach(async () => {
 			if (UploadId) {
 				await client.abortMultipartUpload({
@@ -132,6 +148,7 @@ describe("@aws-sdk/client-s3", () => {
 					UploadId,
 				});
 			}
+
 			await client.deleteObject({
 				Bucket,
 				Key: multipartObjectKey,
@@ -144,8 +161,11 @@ describe("@aws-sdk/client-s3", () => {
 				Bucket,
 				Key: multipartObjectKey,
 			});
+
 			expect(createResult.$metadata.httpStatusCode).toEqual(200);
+
 			expect(typeof createResult.UploadId).toEqual("string");
+
 			UploadId = createResult.UploadId as string;
 
 			//upload part
@@ -156,8 +176,11 @@ describe("@aws-sdk/client-s3", () => {
 				PartNumber: 1,
 				Body: createBuffer("1KB"),
 			});
+
 			expect(uploadResult.$metadata.httpStatusCode).toEqual(200);
+
 			expect(typeof uploadResult.ETag).toEqual("string");
+
 			Etag = uploadResult.ETag as string;
 
 			//list parts
@@ -166,8 +189,11 @@ describe("@aws-sdk/client-s3", () => {
 				Key: multipartObjectKey,
 				UploadId,
 			});
+
 			expect(listPartsResult.$metadata.httpStatusCode).toEqual(200);
+
 			expect(listPartsResult.Parts?.length).toEqual(1);
+
 			expect(listPartsResult.Parts?.[0].ETag).toEqual(Etag);
 
 			//complete multipart upload // TODO FB bug here
@@ -177,6 +203,7 @@ describe("@aws-sdk/client-s3", () => {
 				UploadId,
 				MultipartUpload: { Parts: [{ ETag: Etag, PartNumber: 1 }] },
 			});
+
 			expect(completeResult.$metadata.httpStatusCode).toEqual(200);
 
 			//validate the object is uploaded
@@ -184,6 +211,7 @@ describe("@aws-sdk/client-s3", () => {
 				Bucket,
 				Key: multipartObjectKey,
 			});
+
 			expect(headResult.$metadata.httpStatusCode).toEqual(200);
 		});
 
@@ -193,9 +221,11 @@ describe("@aws-sdk/client-s3", () => {
 				Bucket,
 				Key: multipartObjectKey,
 			});
+
 			expect(createResult.$metadata.httpStatusCode).toEqual(200);
 
 			const toAbort = createResult.UploadId;
+
 			expect(typeof toAbort).toEqual("string");
 
 			//abort multipart upload
@@ -204,13 +234,16 @@ describe("@aws-sdk/client-s3", () => {
 				Key: multipartObjectKey,
 				UploadId: toAbort,
 			});
+
 			expect(abortResult.$metadata.httpStatusCode).toEqual(204);
 
 			//validate multipart upload is aborted // TODO FB bug here
 			const listUploadsResult = await client.listMultipartUploads({
 				Bucket,
 			});
+
 			expect(listUploadsResult.$metadata.httpStatusCode).toEqual(200);
+
 			expect(
 				(listUploadsResult.Uploads || []).map(
 					(upload) => upload.UploadId,
@@ -225,13 +258,17 @@ describe("@aws-sdk/client-s3", () => {
 jsrocks,13
 node4life,22
 esfuture,29`;
+
 		beforeAll(async () => {
 			Key = `${Date.now()}`;
+
 			await client.putObject({ Bucket, Key, Body: csvFile });
 		});
+
 		afterAll(async () => {
 			await client.deleteObject({ Bucket, Key });
 		});
+
 		it("should succeed", async () => {
 			const { Payload } = await client.selectObjectContent({
 				Bucket,
@@ -256,7 +293,9 @@ esfuture,29`;
 			for await (const event of Payload!) {
 				events.push(event);
 			}
+
 			expect(events.length).toEqual(3);
+
 			expect(
 				new TextDecoder().decode(events[0].Records?.Payload),
 			).toEqual("node4life\nesfuture\n");
@@ -269,16 +308,21 @@ esfuture,29`;
 		// TODO FB
 		beforeAll(async () => {
 			Key = `${Date.now()}`;
+
 			await client.putObject({ Bucket: mrapArn, Key, Body: "foo" });
 		});
+
 		afterAll(async () => {
 			await client.deleteObject({ Bucket: mrapArn, Key });
 		});
+
 		it("should succeed with valid MRAP ARN", async () => {
 			const result = await client.listObjects({
 				Bucket: mrapArn,
 			});
+
 			expect(result.$metadata.httpStatusCode).toEqual(200);
+
 			expect(result.Contents instanceof Array).toEqual(true);
 		});
 	});

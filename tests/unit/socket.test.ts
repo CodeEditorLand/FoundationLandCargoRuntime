@@ -3,6 +3,7 @@ import net from "net";
 describe("createServer and connect", () => {
 	it("should create a server and connect to it", (done) => {
 		const server = net.createServer();
+
 		server.listen(() => {
 			const client = net.connect((server.address() as any).port, () => {
 				client.end(() => {
@@ -18,14 +19,18 @@ describe("createServer and connect", () => {
 		const server = net.createServer((socket) => {
 			socket.on("data", (data) => {
 				expect(data.toString()).toEqual(message);
+
 				socket.write(data);
 			});
 		});
+
 		server.listen(() => {
 			const client = net.connect((server.address() as any).port, () => {
 				client.write(message);
+
 				client.on("data", (data) => {
 					expect(data.toString()).toEqual(message);
+
 					client.end(() => {
 						server.close(done);
 					});
@@ -40,10 +45,12 @@ describe("createServer and connect", () => {
 		const server = net.createServer((socket) => {
 			socket.write(message);
 		});
+
 		server.listen(() => {
 			const client = net.connect((server.address() as any).port, () => {
 				client.on("data", (data) => {
 					expect(data.toString()).toEqual(message);
+
 					client.end(() => {
 						server.close(done);
 					});
@@ -61,6 +68,7 @@ describe("error handling", () => {
 			.connect(nonExistentPort, "localhost")
 			.on("error", (error) => {
 				expect(error).toBeInstanceOf(Error);
+
 				client.end();
 
 				done(); // Test passes if an error event is emitted
@@ -78,8 +86,10 @@ describe("error handling", () => {
 			const client = net.connect((server.address() as any).port, () => {
 				client.write("hello");
 			});
+
 			client.on("close", () => {
 				client.end();
+
 				server.close(done);
 			});
 		});
@@ -90,6 +100,7 @@ describe("error handling", () => {
 			setTimeout(() => {
 				socket.write("hello", (err) => {
 					expect(err).toBeTruthy();
+
 					server.close();
 
 					done();

@@ -39,10 +39,13 @@ declare module "zlib" {
 	interface ZlibOptions {
 		level?: number | undefined; // compression only
 	}
+
 	interface ZstdOptions {
 		level?: number | undefined; // compression only
 	}
+
 	type InputType = string | ArrayBuffer | QuickJS.ArrayBufferView;
+
 	type CompressCallback = (error: Error | null, result: Buffer) => void;
 
 	/**

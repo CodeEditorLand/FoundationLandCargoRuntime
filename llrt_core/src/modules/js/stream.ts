@@ -19,6 +19,7 @@ import { pipeline } from "readable-stream/lib/internal/streams/pipeline.js";
 function inherits(ctor: any, superCtor: any) {
 	if (superCtor) {
 		ctor.super_ = superCtor;
+
 		ctor.prototype = Object.create(superCtor.prototype, {
 			constructor: {
 				value: ctor,
@@ -71,6 +72,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 	// source gets the 'end' or 'close' events.  Only dest.end() once.
 	if (!dest._isStdio && (!options || options.end !== false)) {
 		source.on("end", onend);
+
 		source.on("close", onclose);
 	}
 
@@ -78,6 +80,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 
 	function onend() {
 		if (didOnEnd) return;
+
 		didOnEnd = true;
 
 		dest.end();
@@ -85,6 +88,7 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 
 	function onclose() {
 		if (didOnEnd) return;
+
 		didOnEnd = true;
 
 		if (typeof dest.destroy === "function") dest.destroy();
@@ -100,26 +104,32 @@ Stream.prototype.pipe = function (dest: any, options: any) {
 	}
 
 	source.on("error", onerror);
+
 	dest.on("error", onerror);
 
 	// remove all the event listeners that were added.
 	function cleanup() {
 		source.removeListener("data", ondata);
+
 		dest.removeListener("drain", ondrain);
 
 		source.removeListener("end", onend);
+
 		source.removeListener("close", onclose);
 
 		source.removeListener("error", onerror);
+
 		dest.removeListener("error", onerror);
 
 		source.removeListener("end", cleanup);
+
 		source.removeListener("close", cleanup);
 
 		dest.removeListener("close", cleanup);
 	}
 
 	source.on("end", cleanup);
+
 	source.on("close", cleanup);
 
 	dest.on("close", cleanup);

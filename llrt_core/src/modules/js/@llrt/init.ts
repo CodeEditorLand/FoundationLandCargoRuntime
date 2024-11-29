@@ -29,6 +29,7 @@ __bootstrap.addAwsSdkInitTask = (service: string) => {
 		if (INITED.has(prefix)) {
 			return;
 		}
+
 		INITED.add(prefix);
 
 		const start = Date.now();
@@ -47,6 +48,7 @@ __bootstrap.addAwsSdkInitTask = (service: string) => {
 					);
 				}
 			});
+
 		initTasks.push(connectTask);
 	}
 };

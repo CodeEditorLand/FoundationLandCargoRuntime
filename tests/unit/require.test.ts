@@ -16,6 +16,7 @@ it("should return same module when require multiple files", () => {
 	const { hello: hello3 } = _require(`${CWD}/fixtures/hello.js`);
 
 	expect(hello1).toEqual(hello2);
+
 	expect(hello1).toEqual(hello3);
 });
 
@@ -43,12 +44,18 @@ it("should be able to use node module with prefix `node:` with require", () => {
 
 	// we check if the log does not throw an exception when called
 	consoleObj.log("log");
+
 	consoleObj.debug("debug");
+
 	consoleObj.info("info");
+
 	consoleObj.assert(false, "text for assertion should display");
+
 	consoleObj.assert(true, "This text should not be seen");
 
 	consoleObj.warn("warn");
+
 	consoleObj.error("error");
+
 	consoleObj.trace("trace");
 });

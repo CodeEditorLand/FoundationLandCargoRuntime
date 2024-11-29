@@ -5,18 +5,25 @@ import util from "util";
 
 it("should format strings correctly", () => {
 	expect(util.format("%s:%s", "foo", "bar")).toEqual("foo:bar");
+
 	expect(util.format(1, 2, 3)).toEqual("1 2 3");
+
 	expect(util.format("%% %s")).toEqual("%% %s");
+
 	expect(util.format("%s:%s", "foo")).toEqual("foo:%s");
+
 	expect(
 		util.format("Hello %%, %s! How are you, %s?", "Alice", "Bob"),
 	).toEqual("Hello %, Alice! How are you, Bob?");
+
 	expect(
 		util.format("The %s %d %f. %i", "quick", "42", "3.14", "abc"),
 	).toEqual("The quick 42 3.14. NaN");
+
 	expect(
 		util.format("Unmatched placeholders: %s %x %% %q", "one", "two"),
 	).toEqual("Unmatched placeholders: one %x % %q two");
+
 	expect(
 		util.format("Unmatched placeholders: %s", "one", "two", "three"),
 	).toEqual("Unmatched placeholders: one two three");
@@ -53,13 +60,19 @@ it("should log using console object", () => {
 
 	// we check if the log does not throw an exception when called
 	consoleObj.log("log");
+
 	consoleObj.debug("debug");
+
 	consoleObj.info("info");
+
 	consoleObj.assert(false, "text for assertion should display");
+
 	consoleObj.assert(true, "This text should not be seen");
 
 	consoleObj.warn("warn");
+
 	consoleObj.error("error");
+
 	consoleObj.trace("trace");
 });
 
@@ -71,13 +84,19 @@ it("should log using node:console object", () => {
 
 	// we check if the log does not throw an exception when called
 	consoleObj.log("log");
+
 	consoleObj.debug("debug");
+
 	consoleObj.info("info");
+
 	consoleObj.assert(false, "text for assertion should display");
+
 	consoleObj.assert(true, "This text should not be seen");
 
 	consoleObj.warn("warn");
+
 	consoleObj.error("error");
+
 	consoleObj.trace("trace");
 });
 
@@ -168,7 +187,9 @@ it("should log complex object", () => {
 
 it("should log Headers", () => {
 	const headers = new Headers();
+
 	headers.append("foo", "bar");
+
 	expect(util.format(headers)).toEqual(`Headers {
   foo: 'bar'
 }`);

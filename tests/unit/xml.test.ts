@@ -12,6 +12,7 @@ describe("XMLParser options and handling", () => {
 		const parser = new XMLParser();
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -31,6 +32,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -48,6 +50,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -67,6 +70,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -87,6 +91,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -103,6 +108,7 @@ describe("XMLParser options and handling", () => {
 		const parser = new XMLParser();
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -120,6 +126,7 @@ describe("XMLParser options and handling", () => {
 		const parser = new XMLParser({ ignoreAttributes: false });
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -141,6 +148,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -157,6 +165,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -172,6 +181,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 
@@ -190,8 +200,10 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
+
 	it("should handle attributes and text content for different objects and siblings", () => {
 		const xmlString =
 			"<root><person>John</person><person>Alice</person><group>Developers</group></root>";
@@ -208,6 +220,7 @@ describe("XMLParser options and handling", () => {
 		});
 
 		const result = parser.parse(xmlString);
+
 		expect(result).toStrictEqual(expectedResult);
 	});
 });
@@ -237,7 +250,9 @@ describe("XML Builder", () => {
 		const node = XmlNode.of("expression", "foo").withName("expression");
 
 		const node2 = XmlNode.of("expression2", "bar").withName("expression");
+
 		xml.addChildNode(node);
+
 		node.addChildNode(node2);
 
 		expect(xml.toString()).toEqual(
@@ -253,8 +268,11 @@ describe("XML Builder", () => {
 		const node2 = XmlNode.of("level2");
 
 		const node3 = XmlNode.of("level3", "foobar");
+
 		xml.addChildNode(node);
+
 		node.addChildNode(node2);
+
 		node2.addChildNode(node3);
 
 		expect(xml.toString()).toEqual(

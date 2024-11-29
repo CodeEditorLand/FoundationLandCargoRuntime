@@ -3,11 +3,13 @@ import timers from "timers";
 describe("timers", () => {
 	it("should set timeout", async () => {
 		const start = Date.now();
+
 		await new Promise((resolve) => {
 			setTimeout(resolve, 10);
 		});
 
 		const end = Date.now();
+
 		expect(end - start >= 10).toBeTruthy();
 	});
 
@@ -21,14 +23,17 @@ describe("timers", () => {
 		const start = Date.now();
 
 		let status = "";
+
 		await new Promise<void>((resolve) => {
 			const timeout = setTimeout(() => {
 				status = "not-cleared";
+
 				resolve();
 			}, 5);
 
 			setTimeout(() => {
 				status = "cleared";
+
 				resolve();
 			}, 10);
 
@@ -38,6 +43,7 @@ describe("timers", () => {
 		const end = Date.now();
 
 		expect(end - start >= 10).toBeTruthy();
+
 		expect(status).toEqual("cleared");
 	});
 
@@ -45,6 +51,7 @@ describe("timers", () => {
 		const start = Date.now();
 
 		let count = 1;
+
 		await new Promise<void>((resolve) => {
 			const interval = setInterval(() => {
 				if (count > 4) {
@@ -52,12 +59,15 @@ describe("timers", () => {
 
 					return resolve();
 				}
+
 				count++;
 			}, 5);
 		});
 
 		const end = Date.now();
+
 		expect(end - start >= 10).toBeTruthy();
+
 		expect(count).toEqual(5);
 	});
 
@@ -65,6 +75,7 @@ describe("timers", () => {
 		const start = Date.now();
 
 		let count = 1;
+
 		await new Promise<void>((resolve) => {
 			const interval = setInterval(() => {
 				if (count == 2) {
@@ -72,6 +83,7 @@ describe("timers", () => {
 
 					return;
 				}
+
 				count++;
 			}, 5);
 
@@ -79,7 +91,9 @@ describe("timers", () => {
 		});
 
 		const end = Date.now();
+
 		expect(end - start > 10).toBeTruthy();
+
 		expect(count).toEqual(2);
 	});
 
@@ -89,21 +103,25 @@ describe("timers", () => {
 
 	it("delay is optional", async () => {
 		const start = Date.now();
+
 		await new Promise((resolve) => {
 			setTimeout(resolve);
 		});
 
 		const end = Date.now();
+
 		expect(end - start >= 0).toBeTruthy();
 	});
 
 	it("delay can be negative.", async () => {
 		const start = Date.now();
+
 		await new Promise((resolve) => {
 			setTimeout(resolve, -1);
 		});
 
 		const end = Date.now();
+
 		expect(end - start >= 0).toBeTruthy();
 	});
 });

@@ -133,15 +133,19 @@ describe(DynamoDBDocument.name, () => {
 				if (input === null) {
 					return null as T;
 				}
+
 				if (Array.isArray(input)) {
 					return input.map(updateTransform) as T;
 				}
+
 				if (input instanceof Set) {
 					return new Set([...input].map(updateTransform)) as T;
 				}
+
 				if (input instanceof NumberValue) {
 					return NumberValue.from(input.toString()) as T;
 				}
+
 				return Object.entries(input).reduce((acc, [k, v]) => {
 					// @ts-ignore
 					acc[updateTransform(k)] = updateTransform(v);
@@ -158,6 +162,7 @@ describe(DynamoDBDocument.name, () => {
 			case "string":
 				return (input + "-x") as T;
 		}
+
 		return input;
 	};
 
@@ -191,6 +196,7 @@ describe(DynamoDBDocument.name, () => {
 					BillingMode: BillingMode.PAY_PER_REQUEST,
 				})
 				.catch(passError);
+
 			await waitUntilTableExists(
 				{ client: dynamodb, maxWaitTime: 120 },
 				{
@@ -328,6 +334,7 @@ describe(DynamoDBDocument.name, () => {
 				})
 				.catch(passError);
 		}
+
 		for (const [k] of Object.entries(data)) {
 			log.executeStatementReadBack[k] = await doc
 				.get({
@@ -460,6 +467,7 @@ describe(DynamoDBDocument.name, () => {
 						},
 					}).catch(() => {});
 				}
+
 				return doc.delete({
 					TableName,
 					Key: { id },
@@ -541,9 +549,11 @@ describe(DynamoDBDocument.name, () => {
 	it("creates the test table if it does not exist", async () => {
 		if (log.describe) {
 			throwIfError(log.describe);
+
 			expect(log.describe?.Table?.TableName).toEqual(TableName);
 		} else {
 			throwIfError(log.create);
+
 			expect(log.create?.TableDescription?.TableName).toEqual(TableName);
 		}
 	});
@@ -601,6 +611,7 @@ describe(DynamoDBDocument.name, () => {
 		expect(log.batchExecuteStatementReadBack?.Responses).toBeInstanceOf(
 			Array,
 		);
+
 		expect(
 			log.batchExecuteStatementReadBack?.Responses?.length,
 		).toBeGreaterThan(0);
@@ -616,6 +627,7 @@ describe(DynamoDBDocument.name, () => {
 
 	it("can query", async () => {
 		throwIfError(log.query);
+
 		expect(log.query?.Items).toContainEqual({
 			id: "map",
 			data: data.map,
@@ -624,6 +636,7 @@ describe(DynamoDBDocument.name, () => {
 
 	it("can scan", async () => {
 		throwIfError(log.scan);
+
 		expect(log.scan?.Items).toContainEqual({
 			id: "map",
 			data: data.map,
@@ -638,11 +651,13 @@ describe(DynamoDBDocument.name, () => {
 	for (const [key, value] of Object.entries(data)) {
 		it(`can write data of type ${key}`, async () => {
 			throwIfError(log.write[key]);
+
 			expect(log.write[key].$metadata).toBeDefined();
 		});
 
 		it(`can execute statement inserting type ${key}`, async () => {
 			const match = log.executeStatement[key];
+
 			expect(match).toBeDefined();
 
 			throwIfError(match);
@@ -650,6 +665,7 @@ describe(DynamoDBDocument.name, () => {
 
 		it(`can read back data inserted via ExecuteStatement of type ${key}`, async () => {
 			throwIfError(log.executeStatementReadBack[key]);
+
 			expect(log.executeStatementReadBack[key].Item).toEqual({
 				id: key + "-statement",
 				data: value,
@@ -658,6 +674,7 @@ describe(DynamoDBDocument.name, () => {
 
 		it(`can read back data inserted via ExecuteTransaction of type ${key}`, async () => {
 			throwIfError(log.executeTransactionReadBack[key]);
+
 			expect(log.executeTransactionReadBack[key].Item).toEqual({
 				id: key + "-exec-transact",
 				data: value,
@@ -666,6 +683,7 @@ describe(DynamoDBDocument.name, () => {
 
 		it(`can read data of type ${key}`, async () => {
 			throwIfError(log.read[key]);
+
 			expect(log.read[key].Item).toEqual({
 				id: key,
 				data: value,
@@ -674,6 +692,7 @@ describe(DynamoDBDocument.name, () => {
 
 		it(`can update data of type ${key}`, async () => {
 			throwIfError(log.updateReadBack[key]);
+
 			expect(log.updateReadBack[key].Item).toEqual({
 				id: key,
 				data: updateTransform(value),
@@ -682,6 +701,7 @@ describe(DynamoDBDocument.name, () => {
 
 		it(`can delete data of type ${key}`, async () => {
 			throwIfError(log.delete[key]);
+
 			expect(log.delete[key].$metadata).toBeDefined();
 		});
 	}

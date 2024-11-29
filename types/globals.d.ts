@@ -14,6 +14,7 @@ declare global {
 			| BigInt64Array
 			| Float32Array
 			| Float64Array;
+
 		type ArrayBufferView = TypedArray | DataView;
 	}
 

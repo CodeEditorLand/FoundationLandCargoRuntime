@@ -20,7 +20,9 @@ declare global {
 
 	class CustomEvent<D = any> implements Event {
 		constructor(type: string, opts?: { details?: D });
+
 		readonly type: string;
+
 		readonly details: D | null;
 	}
 

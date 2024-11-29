@@ -13,7 +13,9 @@ describe("@aws-sdk/client-cognito-identity", () => {
 		const getIdResult = await unAuthClient.getId({
 			IdentityPoolId,
 		});
+
 		expect(getIdResult.$metadata.httpStatusCode).to.equal(200);
+
 		expect(typeof getIdResult.IdentityId).to.equal("string");
 
 		// Test getCredentialsForIdentity() with Id from above
@@ -21,10 +23,13 @@ describe("@aws-sdk/client-cognito-identity", () => {
 			await unAuthClient.getCredentialsForIdentity({
 				IdentityId: getIdResult.IdentityId,
 			});
+
 		expect(getCredentialsResult.$metadata.httpStatusCode).to.equal(200);
+
 		expect(typeof getCredentialsResult.Credentials?.AccessKeyId).to.equal(
 			"string",
 		);
+
 		expect(typeof getCredentialsResult.Credentials?.SecretKey).to.equal(
 			"string",
 		);

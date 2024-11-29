@@ -5,7 +5,9 @@ describe("structuredClone", () => {
 		const clonedObject = structuredClone(originalObject);
 
 		expect(clonedObject).toStrictEqual(originalObject);
+
 		originalObject.foo += "extra";
+
 		expect(clonedObject).not.toStrictEqual(originalObject);
 	});
 
@@ -13,6 +15,7 @@ describe("structuredClone", () => {
 		const originalArray = [1, 2, 3, 4, 5];
 
 		const clonedArray = structuredClone(originalArray);
+
 		expect(clonedArray).toStrictEqual(originalArray);
 	});
 
@@ -22,7 +25,9 @@ describe("structuredClone", () => {
 		const originalArray = [obj, obj, obj, obj, obj];
 
 		const clonedArray = structuredClone(originalArray);
+
 		expect(clonedArray).toStrictEqual(originalArray);
+
 		expect(clonedArray[0]).not.toBe(originalArray[0]);
 	});
 
@@ -30,17 +35,23 @@ describe("structuredClone", () => {
 		const originalObject = { foo: { bar: { baz: "qux" } } };
 
 		const clonedObject = structuredClone(originalObject);
+
 		expect(clonedObject).toStrictEqual(originalObject);
 	});
 
 	it("Handles circular references", () => {
 		const originalObject: any = { foo: { bar: "baz", arr: [1, 2, 3] } };
+
 		originalObject.foo.circularRef = originalObject;
+
 		originalObject.foo.circularRef2 = originalObject;
+
 		originalObject.foo.circularRef3 = originalObject.foo;
+
 		originalObject.ref2 = originalObject;
 
 		const clonedObject = structuredClone(originalObject);
+
 		expect(clonedObject).toStrictEqual(originalObject);
 	});
 
@@ -51,6 +62,7 @@ describe("structuredClone", () => {
 		]);
 
 		const clonedMap = structuredClone(originalMap);
+
 		expect(clonedMap).toStrictEqual(originalMap);
 	});
 
@@ -58,6 +70,7 @@ describe("structuredClone", () => {
 		const originalSet = new Set([1, 2, 3, 4, 5]);
 
 		const clonedSet = structuredClone(originalSet);
+
 		expect(clonedSet).toStrictEqual(originalSet);
 	});
 
@@ -65,6 +78,7 @@ describe("structuredClone", () => {
 		const originalDate = new Date("2022-01-31T12:00:00Z");
 
 		const clonedDate = structuredClone(originalDate);
+
 		expect(clonedDate.getTime()).toEqual(originalDate.getTime());
 	});
 
@@ -72,8 +86,11 @@ describe("structuredClone", () => {
 		const buffer = Buffer.from("hello world");
 
 		const clonedBuffer = structuredClone(buffer);
+
 		expect(clonedBuffer.buffer).toEqual(buffer.buffer);
+
 		buffer.set([1, 2, 3, 4, 5, 6, 7, 8]);
+
 		expect(clonedBuffer).not.toStrictEqual(buffer);
 	});
 
@@ -87,6 +104,7 @@ describe("structuredClone", () => {
 		const clonedObject2 = structuredClone(originalObject, {
 			transfer: [originalObject.foo.arr],
 		});
+
 		expect(clonedObject2.foo.arr).toEqual(originalObject.foo.arr);
 	});
 });

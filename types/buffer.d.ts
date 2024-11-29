@@ -28,6 +28,7 @@ declare module "buffer" {
 		| "latin1"
 		| "us-ascii"
 		| "x-cp1252";
+
 	type WithImplicitCoercion<T> =
 		| T
 		| {
@@ -48,6 +49,7 @@ declare module "buffer" {
 		 * @param data data to create a new Buffer
 		 */
 		from(data: Uint8Array | readonly number[]): Buffer;
+
 		from(
 			data: WithImplicitCoercion<Uint8Array | readonly number[] | string>,
 		): Buffer;
@@ -181,7 +183,9 @@ declare module "buffer" {
 			encoding?: BufferEncoding,
 		): Buffer;
 	}
+
 	interface Buffer extends Uint8Array {}
+
 	var Buffer: BufferConstructor;
 
 	/**

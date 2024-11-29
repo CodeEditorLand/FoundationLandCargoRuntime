@@ -19,5 +19,6 @@ declare module "perf_hooks" {
 		/** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Performance/toJSON) */
 		toJSON(): { timeOrigin: number }; // TODO: llrt currently has only one field
 	}
+
 	var performance: Performance;
 }

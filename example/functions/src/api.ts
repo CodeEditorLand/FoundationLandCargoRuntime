@@ -52,6 +52,7 @@ const API = {
 			text,
 			createdDate: Date.now(),
 		};
+
 		await DOCUMENT_CLIENT.send(
 			new PutCommand({
 				TableName: process.env.TABLE_NAME,

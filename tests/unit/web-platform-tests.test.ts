@@ -31,6 +31,7 @@ const runTest = (test, done) => {
 				default:
 					throw new Error(`Cannot fetch URL: ${url}`);
 			}
+
 			return Promise.resolve({
 				json: () => Promise.resolve(data),
 			});
@@ -41,7 +42,9 @@ const runTest = (test, done) => {
 
 	// Initialize the test harness in the context
 	idlharness(context);
+
 	testharness(context);
+
 	subsetTests(context);
 
 	// Configure the test harness
@@ -61,6 +64,7 @@ const runTest = (test, done) => {
 		) {
 			done(new Error("No tests were executed!"));
 		}
+
 		const failure = tests.find((test) => test.status !== 0);
 
 		done(failure);

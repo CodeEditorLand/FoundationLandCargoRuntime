@@ -62,6 +62,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		};
 
 		if (Array.isArray(name)) name.forEach((n) => addMethod(n));
+
 		else addMethod(name);
 	}
 
@@ -107,6 +108,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 						);
 					}
 				}
+
 				_super.apply(this, args);
 			};
 		});
@@ -153,6 +155,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			obj,
 		);
 	});
+
 	def("toBe", function (expected) {
 		const actual = this._obj;
 
@@ -194,6 +197,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			actual,
 		);
 	});
+
 	def("toMatchObject", function (expected) {
 		const actual = this._obj;
 
@@ -209,10 +213,13 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			actual,
 		);
 	});
+
 	def("toMatch", function (expected: string | RegExp) {
 		if (typeof expected === "string") return this.include(expected);
+
 		else return this.match(expected);
 	});
+
 	def("toContain", function (item) {
 		const actual = this._obj as Iterable<unknown> | string;
 
@@ -222,6 +229,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 
 		return this.contain(item);
 	});
+
 	def("toContainEqual", function (expected) {
 		const obj = utils.flag(this, "object");
 
@@ -236,8 +244,10 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			expected,
 		);
 	});
+
 	def("toBeTruthy", function () {
 		const obj = utils.flag(this, "object");
+
 		this.assert(
 			Boolean(obj),
 			"expected #{this} to be truthy",
@@ -246,8 +256,10 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeFalsy", function () {
 		const obj = utils.flag(this, "object");
+
 		this.assert(
 			!obj,
 			"expected #{this} to be falsy",
@@ -256,9 +268,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeGreaterThan", function (expected: number | bigint) {
 		const actual = this._obj as number | bigint;
+
 		assertTypes(actual, "actual", ["number", "bigint"]);
+
 		assertTypes(expected, "expected", ["number", "bigint"]);
 
 		return this.assert(
@@ -270,9 +285,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeGreaterThanOrEqual", function (expected: number | bigint) {
 		const actual = this._obj as number | bigint;
+
 		assertTypes(actual, "actual", ["number", "bigint"]);
+
 		assertTypes(expected, "expected", ["number", "bigint"]);
 
 		return this.assert(
@@ -284,9 +302,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeLessThan", function (expected: number | bigint) {
 		const actual = this._obj as number | bigint;
+
 		assertTypes(actual, "actual", ["number", "bigint"]);
+
 		assertTypes(expected, "expected", ["number", "bigint"]);
 
 		return this.assert(
@@ -298,9 +319,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeLessThanOrEqual", function (expected: number | bigint) {
 		const actual = this._obj as number | bigint;
+
 		assertTypes(actual, "actual", ["number", "bigint"]);
+
 		assertTypes(expected, "expected", ["number", "bigint"]);
 
 		return this.assert(
@@ -312,23 +336,29 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			false,
 		);
 	});
+
 	def("toBeNaN", function () {
 		return this.be.NaN;
 	});
+
 	def("toBeUndefined", function () {
 		return this.be.undefined;
 	});
+
 	def("toBeNull", function () {
 		return this.be.null;
 	});
+
 	def("toBeDefined", function () {
 		const negate = utils.flag(this, "negate");
+
 		utils.flag(this, "negate", false);
 
 		if (negate) return this.be.undefined;
 
 		return this.not.be.undefined;
 	});
+
 	def(
 		"toBeTypeOf",
 		function (
@@ -355,9 +385,11 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			);
 		},
 	);
+
 	def("toBeInstanceOf", function (obj: any) {
 		return this.instanceOf(obj);
 	});
+
 	def("toHaveLength", function (length: number) {
 		return this.have.length(length);
 	});
@@ -409,6 +441,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			);
 		},
 	);
+
 	def("toBeCloseTo", function (received: number, precision = 2) {
 		const expected = this._obj;
 
@@ -430,9 +463,12 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 			pass = true;
 		} else {
 			expectedDiff = 10 ** -precision / 2;
+
 			receivedDiff = Math.abs(expected - received);
+
 			pass = receivedDiff < expectedDiff;
 		}
+
 		return this.assert(
 			pass,
 			`expected #{this} to be close to #{exp}, received difference is ${receivedDiff}, but expected ${expectedDiff}`,
@@ -582,7 +618,9 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		"resolves",
 		function __VITEST_RESOLVES__(this: any) {
 			const error = new Error("resolves");
+
 			utils.flag(this, "promise", "resolves");
+
 			utils.flag(this, "error", error);
 
 			const test: any = utils.flag(this, "vitest-test");
@@ -617,6 +655,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 								) as Error;
 								// @ts-ignore
 								_error.cause = err;
+
 								_error.stack = (error.stack as string).replace(
 									error.message,
 									_error.message,
@@ -640,7 +679,9 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 		"rejects",
 		function __VITEST_REJECTS__(this: any) {
 			const error = new Error("rejects");
+
 			utils.flag(this, "promise", "rejects");
+
 			utils.flag(this, "error", error);
 
 			const test: any = utils.flag(this, "vitest-test");
@@ -674,6 +715,7 @@ export const JestChaiExpect: ChaiPlugin = (chai, utils) => {
 										actual: value,
 									},
 								) as any;
+
 								_error.stack = (error.stack as string).replace(
 									error.message,
 									_error.message,
@@ -728,6 +770,7 @@ export function recordAsyncExpect(
 
 		// record promise
 		if (!test.promises) test.promises = [];
+
 		test.promises.push(promise);
 	}
 

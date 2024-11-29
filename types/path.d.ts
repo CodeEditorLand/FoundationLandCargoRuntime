@@ -33,6 +33,7 @@ declare module "path" {
 			 */
 			name: string;
 		}
+
 		interface FormatInputPathObject {
 			/**
 			 * The root of the path such as '/' or 'c:\'
@@ -55,6 +56,7 @@ declare module "path" {
 			 */
 			name?: string | undefined;
 		}
+
 		interface PlatformPath {
 			/**
 			 * Normalize a string path, reducing '..' and '.' parts.
@@ -137,6 +139,7 @@ declare module "path" {
 			format(pathObject: FormatInputPathObject): string;
 		}
 	}
+
 	const path: path.PlatformPath;
 
 	export = path;

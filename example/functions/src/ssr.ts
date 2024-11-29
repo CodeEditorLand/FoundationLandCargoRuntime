@@ -9,8 +9,11 @@ type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 type ResponseOptions = {
 	contentType?: string;
+
 	isBase64Encoded?: boolean;
+
 	headers?: Record<string, string>;
+
 	statusCode?: number;
 };
 
@@ -35,6 +38,7 @@ class HttpError extends Error {
 
 	constructor(status: number, message: string) {
 		super(message);
+
 		this.status = status;
 	}
 }
@@ -72,6 +76,7 @@ const apiResponse = async (
 				contentType: "application/json",
 			});
 		}
+
 		if (method === "PUT") {
 			const { text, completedDate } = JSON.parse(body);
 
@@ -106,7 +111,9 @@ const appResponse = async () => {
 			htmlFilePromise,
 			API.getAll(),
 		]);
+
 		htmlContent = html.toString();
+
 		todoItems = items;
 	}
 
@@ -141,10 +148,13 @@ const loadAsset = async (asset: string) => {
 	if (cachedAsset) {
 		return cachedAsset;
 	}
+
 	if (!(await fileExists(safeAsset))) {
 		throw new HttpError(404, "Not found");
 	}
+
 	const data = (await fs.readFile(safeAsset)).toString("base64");
+
 	ASSET_CACHE[safeAsset] = data;
 
 	return data;
@@ -159,6 +169,7 @@ const assetResponse = async (path: string) => {
 
 	if (extIndex > -1) {
 		const ext = path.substring(extIndex + 1);
+
 		contentType = MIME_TYPES[ext as keyof typeof MIME_TYPES];
 	}
 
@@ -174,6 +185,7 @@ export const handler = async (event: any) => {
 			.split("/")
 			.filter((x) => x)
 			.slice(1);
+
 		console.log({ reqSegments, eventPath, method });
 
 		if (reqSegments[0] === "api") {
@@ -184,8 +196,10 @@ export const handler = async (event: any) => {
 			if (reqSegments.length === 0) {
 				return await appResponse();
 			}
+
 			return await assetResponse(reqSegments.join("/"));
 		}
+
 		throw new HttpError(400, "Method not supported");
 	} catch (e) {
 		console.error(e);
@@ -196,6 +210,7 @@ export const handler = async (event: any) => {
 				body: e.message,
 			};
 		}
+
 		return {
 			statusCode: 500,
 			body: "Internal server error",

@@ -61,6 +61,7 @@ export function isAsymmetric(obj: any) {
 
 export function hasAsymmetric(obj: any, seen = new Set()): boolean {
 	if (seen.has(obj)) return false;
+
 	seen.add(obj);
 
 	if (isAsymmetric(obj)) return true;
@@ -146,6 +147,7 @@ function eq(
 				// both are `new Primitive()`s
 				return Object.is(a.valueOf(), b.valueOf());
 			}
+
 		case "[object Date]": {
 			const numA = +a;
 
@@ -159,6 +161,7 @@ function eq(
 		case "[object RegExp]":
 			return a.source === b.source && a.flags === b.flags;
 	}
+
 	if (typeof a !== "object" || typeof b !== "object") return false;
 
 	// Use DOM3 method isEqualNode (IE>=9)
@@ -173,10 +176,12 @@ function eq(
 		// circular references at same depth are equal
 		// circular reference is not equal to non-circular one
 		if (aStack[length] === a) return bStack[length] === b;
+
 		else if (bStack[length] === b) return false;
 	}
 	// Add the first object to the stack of traversed objects.
 	aStack.push(a);
+
 	bStack.push(b);
 	// Recursively compare objects and arrays.
 	// Compare array lengths to determine if a deep comparison is necessary.
@@ -204,6 +209,7 @@ function eq(
 	}
 	// Remove the first object from the stack of traversed objects.
 	aStack.pop();
+
 	bStack.pop();
 
 	return result;
@@ -215,6 +221,7 @@ function keys(obj: object, hasKey: (obj: object, key: string) => boolean) {
 	for (const key in obj) {
 		if (hasKey(obj, key)) keys.push(key);
 	}
+
 	return keys.concat(
 		(Object.getOwnPropertySymbols(obj) as Array<any>).filter(
 			(symbol) =>
@@ -343,7 +350,9 @@ export function iterableEquality(
 		// circular reference is not equal to non-circular one
 		if (aStack[length] === a) return bStack[length] === b;
 	}
+
 	aStack.push(a);
+
 	bStack.push(b);
 
 	const filteredCustomTesters: Array<any> = [
@@ -390,6 +399,7 @@ export function iterableEquality(
 			}
 			// Remove the first value from the stack of traversed values.
 			aStack.pop();
+
 			bStack.pop();
 
 			return allFound;
@@ -431,6 +441,7 @@ export function iterableEquality(
 			}
 			// Remove the first value from the stack of traversed values.
 			aStack.pop();
+
 			bStack.pop();
 
 			return allFound;
@@ -445,10 +456,12 @@ export function iterableEquality(
 		if (nextB.done || !equals(aValue, nextB.value, filteredCustomTesters))
 			return false;
 	}
+
 	if (!bIterator.next().done) return false;
 
 	// Remove the first value from the stack of traversed values.
 	aStack.pop();
+
 	bStack.pop();
 
 	return true;
@@ -505,6 +518,7 @@ export function subsetEquality(
 
 					seenReferences.set(subset[key], true);
 				}
+
 				const result =
 					object != null &&
 					hasPropertyInObject(object, key) &&
@@ -547,6 +561,7 @@ export function arrayBufferEquality(
 
 		try {
 			dataViewA = new DataView(a);
+
 			dataViewB = new DataView(b);
 		} catch {
 			return undefined;

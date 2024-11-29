@@ -28,6 +28,7 @@ declare module "fs/promises" {
 
 	interface FileReadResult<T extends QuickJS.ArrayBufferView> {
 		bytesRead: number;
+
 		buffer: T;
 	}
 
@@ -44,6 +45,7 @@ declare module "fs/promises" {
 		 * @default `buffer.byteLength - offset`
 		 */
 		length?: number | null;
+
 		position?: number | null;
 	}
 
@@ -103,10 +105,12 @@ declare module "fs/promises" {
 			length?: number | null,
 			position?: number | null,
 		): Promise<FileReadResult<T>>;
+
 		read<T extends QuickJS.ArrayBufferView = Buffer>(
 			buffer: T,
 			options?: FileReadOptions<T>,
 		): Promise<FileReadResult<T>>;
+
 		read<T extends QuickJS.ArrayBufferView = Buffer>(
 			options?: FileReadOptions<T>,
 		): Promise<FileReadResult<T>>;
@@ -129,6 +133,7 @@ declare module "fs/promises" {
 				encoding?: null | undefined;
 			} | null,
 		): Promise<Buffer>;
+
 		readFile(
 			options:
 				| {
@@ -218,25 +223,32 @@ declare module "fs/promises" {
 			position?: number | null,
 		): Promise<{
 			bytesWritten: number;
+
 			buffer: TBuffer;
 		}>;
+
 		write<TBuffer extends QuickJS.ArrayBufferView>(
 			buffer: TBuffer,
 			options?: {
 				offset?: number | null;
+
 				length?: number | null;
+
 				position?: number | null;
 			} | null,
 		): Promise<{
 			bytesWritten: number;
+
 			buffer: TBuffer;
 		}>;
+
 		write(
 			data: string,
 			position?: number | null,
 			encoding?: BufferEncoding | null,
 		): Promise<{
 			bytesWritten: number;
+
 			buffer: string;
 		}>;
 
@@ -375,6 +387,7 @@ declare module "fs/promises" {
 		path: PathLike,
 		options?: {
 			withFileTypes?: false | undefined;
+
 			recursive?: boolean | undefined;
 		},
 	): Promise<string[]>;
@@ -388,6 +401,7 @@ declare module "fs/promises" {
 		path: PathLike,
 		options: {
 			withFileTypes: true;
+
 			recursive?: boolean | undefined;
 		},
 	): Promise<Dirent[]>;

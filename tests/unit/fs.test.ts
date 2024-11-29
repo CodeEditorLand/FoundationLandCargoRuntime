@@ -7,22 +7,27 @@ import path from "path";
 describe("readdir", () => {
 	it("should read a directory", async () => {
 		const dir = await fs.readdir(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
 	it("should read a directory with types", async () => {
 		const dir = await fs.readdir(".cargo", { withFileTypes: true });
+
 		expect(dir).toEqual([{ name: "config.toml", parentPath: "./.cargo" }]);
+
 		expect(dir[0].isFile()).toBeTruthy();
 	});
 
 	it("should read a directory using default import", async () => {
 		const dir = await defaultFsImport.promises.readdir(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
 	it("should read a directory using named import", async () => {
 		const dir = await namedFsImport.promises.readdir(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
@@ -32,6 +37,7 @@ describe("readdir", () => {
 		});
 
 		const compare = (a: string, b: string) => (a >= b ? 1 : -1);
+
 		expect(dir.sort(compare)).toEqual(
 			["recursive/readdir.js", "recursive", "readdir.js"].sort(compare),
 		);
@@ -41,6 +47,7 @@ describe("readdir", () => {
 describe("readdirSync", () => {
 	it("should read a directory synchronously", () => {
 		const dir = defaultFsImport.readdirSync(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
@@ -48,17 +55,21 @@ describe("readdirSync", () => {
 		const dir = defaultFsImport.readdirSync(".cargo", {
 			withFileTypes: true,
 		});
+
 		expect(dir).toEqual([{ name: "config.toml", parentPath: "./.cargo" }]);
+
 		expect(dir[0].isFile()).toBeTruthy();
 	});
 
 	it("should read a directory using default import synchronously", () => {
 		const dir = defaultFsImport.readdirSync(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
 	it("should read a directory using named import synchronously", () => {
 		const dir = namedFsImport.readdirSync(".cargo");
+
 		expect(dir).toEqual(["config.toml"]);
 	});
 
@@ -69,6 +80,7 @@ describe("readdirSync", () => {
 
 		const compare = (a: string | Buffer, b: string | Buffer): number =>
 			a >= b ? 1 : -1;
+
 		expect(dir.sort(compare)).toEqual(
 			["recursive/readdir.js", "recursive", "readdir.js"].sort(compare),
 		);
@@ -86,9 +98,13 @@ describe("readfile", () => {
 		const hexText = buf.toString("hex");
 
 		expect(buf).toBeInstanceOf(Buffer);
+
 		expect(buf).toBeInstanceOf(Uint8Array);
+
 		expect(text).toEqual("hello world!");
+
 		expect(base64Text).toEqual("aGVsbG8gd29ybGQh");
+
 		expect(hexText).toEqual("68656c6c6f20776f726c6421");
 	});
 
@@ -96,20 +112,26 @@ describe("readfile", () => {
 		const text = await fs.readFile("fixtures/hello.txt", {
 			encoding: "utf-8",
 		});
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 
 	it("should return a string when encoding is provided as string", async () => {
 		const text = await fs.readFile("fixtures/hello.txt", "utf-8");
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 
 	it("should return a string when encoding is provided as string with different cases", async () => {
 		// @ts-ignore
 		const text = await fs.readFile("fixtures/hello.txt", "Utf-8");
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 });
@@ -125,9 +147,13 @@ describe("readfileSync", () => {
 		const hexText = buf.toString("hex");
 
 		expect(buf).toBeInstanceOf(Buffer);
+
 		expect(buf).toBeInstanceOf(Uint8Array);
+
 		expect(text).toEqual("hello world!");
+
 		expect(base64Text).toEqual("aGVsbG8gd29ybGQh");
+
 		expect(hexText).toEqual("68656c6c6f20776f726c6421");
 	});
 
@@ -135,7 +161,9 @@ describe("readfileSync", () => {
 		const text = defaultFsImport.readFileSync("fixtures/hello.txt", {
 			encoding: "utf-8",
 		});
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 
@@ -144,7 +172,9 @@ describe("readfileSync", () => {
 			"fixtures/hello.txt",
 			"utf-8",
 		);
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 
@@ -154,7 +184,9 @@ describe("readfileSync", () => {
 			"fixtures/hello.txt",
 			"Utf-8",
 		);
+
 		expect(typeof text).toEqual("string");
+
 		expect(text).toEqual("hello world!");
 	});
 });
@@ -171,10 +203,12 @@ describe("mkdtemp", () => {
 			.stat(dirPath)
 			.then(() => true)
 			.catch(() => false);
+
 		expect(dirExists).toBeTruthy();
 
 		// Check that the directory has the correct prefix
 		const dirPrefix = path.basename(dirPath).slice(0, prefix.length);
+
 		expect(dirPrefix).toEqual(prefix);
 
 		// Clean up the temporary directory
@@ -193,10 +227,12 @@ describe("mkdtempSync", () => {
 
 		// Check that the directory exists
 		const dirExists = defaultFsImport.statSync(dirPath);
+
 		expect(dirExists).toBeTruthy();
 
 		// Check that the directory has the correct prefix
 		const dirPrefix = path.basename(dirPath).slice(0, prefix.length);
+
 		expect(dirPrefix).toEqual(prefix);
 
 		// Clean up the temporary directory
@@ -218,6 +254,7 @@ describe("mkdir", () => {
 			.stat(dirPath)
 			.then(() => true)
 			.catch(() => false);
+
 		expect(dirExists).toBeTruthy();
 
 		// Clean up the directory
@@ -240,6 +277,7 @@ describe("mkdirSync", () => {
 
 		// Check that the directory exists
 		const dirExists = defaultFsImport.statSync(dirPath);
+
 		expect(dirExists).toBeTruthy();
 
 		// Clean up the directory
@@ -254,6 +292,7 @@ describe("writeFile", () => {
 		const filePath = path.join(tmpDir, "test");
 
 		const fileContents = "hello";
+
 		await fs.writeFile(filePath, fileContents);
 
 		const contents = (await fs.readFile(filePath)).toString();
@@ -291,24 +330,30 @@ describe("rm", () => {
 		const filePath = path.join(tmpDir, "test");
 
 		const fileContents = "hello";
+
 		await fs.writeFile(filePath, fileContents);
 
 		const contents = (await fs.readFile(filePath)).toString();
+
 		expect(fileContents).toEqual(contents);
 
 		// Should delete file
 		await fs.rm(filePath, { recursive: true });
+
 		await expect(fs.access(filePath)).rejects.toThrow(
 			/[Nn]o such file or directory/,
 		);
 
 		// Check dir still exists and then delete it
 		await fs.access(tmpDir);
+
 		await fs.rm(tmpDir, { recursive: true });
+
 		await expect(fs.access(filePath)).rejects.toThrow(
 			/[Nn]o such file or directory/,
 		);
 	});
+
 	it("should throw an error if file does not exists", async () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
@@ -320,6 +365,7 @@ describe("rm", () => {
 			/[Nn]o such file or directory/,
 		);
 	});
+
 	it("should not throw an error if file does not exists and force is used", async () => {
 		const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "test-"));
 
@@ -342,6 +388,7 @@ describe("rmSync", () => {
 		const filePath = path.join(tmpDir, "test");
 
 		const fileContents = "hello";
+
 		await fs.writeFile(filePath, fileContents);
 
 		const contents = defaultFsImport.readFileSync(filePath).toString();
@@ -350,6 +397,7 @@ describe("rmSync", () => {
 
 		// Should delete file
 		defaultFsImport.rmSync(filePath, { recursive: true });
+
 		expect(() => defaultFsImport.accessSync(filePath)).toThrow(
 			/[Nn]o such file or directory/,
 		);
@@ -358,10 +406,12 @@ describe("rmSync", () => {
 		defaultFsImport.accessSync(tmpDir);
 
 		defaultFsImport.rmSync(tmpDir, { recursive: true });
+
 		expect(() => defaultFsImport.accessSync(tmpDir)).toThrow(
 			/[Nn]o such file or directory/,
 		);
 	});
+
 	it("should throw an error if file does not exists with rm synchronously", async () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
@@ -373,6 +423,7 @@ describe("rmSync", () => {
 			/[Nn]o such file or directory/,
 		);
 	});
+
 	it("should not throw an error if file does not exists and force is used with rm synchronously", async () => {
 		const tmpDir = defaultFsImport.mkdtempSync(
 			path.join(os.tmpdir(), "test-"),
@@ -392,11 +443,13 @@ describe("rmSync", () => {
 describe("access", () => {
 	it("should access a file", async () => {
 		const filePath = "fixtures/hello.txt";
+
 		await fs.access(filePath);
 	});
 
 	it("should throw if not proper permissions", async () => {
 		const filePath = "fixtures/hello.txt";
+
 		await expect(fs.access(filePath, fs.constants.X_OK)).rejects.toThrow(
 			/[pP]ermission denied/,
 		);
@@ -404,6 +457,7 @@ describe("access", () => {
 
 	it("should throw if not exists", async () => {
 		const filePath = "fixtures/nothing";
+
 		await expect(fs.access(filePath)).rejects.toThrow(
 			/[nN]o such file or directory/,
 		);
@@ -411,11 +465,13 @@ describe("access", () => {
 
 	it("should access a file using default import", async () => {
 		const filePath = "fixtures/hello.txt";
+
 		await defaultFsImport.promises.access(filePath);
 	});
 
 	it("should access a file using named import", async () => {
 		const filePath = "fixtures/hello.txt";
+
 		await namedFsImport.promises.access(filePath);
 	});
 });
@@ -429,6 +485,7 @@ describe("accessSync", () => {
 
 	it("should throw if not proper permissions synchronously", () => {
 		const filePath = "fixtures/hello.txt";
+
 		expect(() =>
 			defaultFsImport.accessSync(filePath, fs.constants.X_OK),
 		).toThrow(/[pP]ermission denied/);
@@ -436,6 +493,7 @@ describe("accessSync", () => {
 
 	it("should throw if not exists synchronously", () => {
 		const filePath = "fixtures/nothing";
+
 		expect(() => defaultFsImport.accessSync(filePath)).toThrow(
 			/[Nn]o such file or directory/,
 		);

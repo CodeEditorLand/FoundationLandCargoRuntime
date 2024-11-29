@@ -1,16 +1,19 @@
 describe("JSON Parsing", () => {
 	it("should parse valid JSON", () => {
 		const parsedData = JSON.parse('{"key": "value"}');
+
 		expect(parsedData).toStrictEqual({ key: "value" });
 	});
 
 	it("should handle invalid JSON", () => {
 		const invalidJsonString = '{key: "value"}';
+
 		expect(() => {
 			JSON.parse(invalidJsonString);
 		}).toThrow();
 
 		const emptyJsonString = "";
+
 		expect(() => {
 			JSON.parse(emptyJsonString);
 		}).toThrow();
@@ -20,6 +23,7 @@ describe("JSON Parsing", () => {
 		const parsedData = JSON.parse(
 			'{"name": "John", "age": 25, "address": {"city": "New York", "zip": "10001"}}',
 		);
+
 		expect(parsedData).toStrictEqual({
 			name: "John",
 			age: 25,
@@ -29,21 +33,25 @@ describe("JSON Parsing", () => {
 
 	it("should parse JSON with arrays", () => {
 		const parsedData = JSON.parse('[1, 2, 3, {"key": "value"}]');
+
 		expect(parsedData).toStrictEqual([1, 2, 3, { key: "value" }]);
 	});
 
 	it("should parse JSON with boolean values", () => {
 		const parsedData = JSON.parse('{"isTrue": true, "isFalse": false}');
+
 		expect(parsedData).toStrictEqual({ isTrue: true, isFalse: false });
 	});
 
 	it("should parse JSON with null values", () => {
 		const parsedData = JSON.parse('{"nullableValue": null}');
+
 		expect(parsedData).toStrictEqual({ nullableValue: null });
 	});
 
 	it("should parse JSON with large int value", () => {
 		const parsedData = JSON.parse('{"bigInt": 888888888888888888}');
+
 		expect(parsedData).toStrictEqual({ bigInt: 888888888888888888 });
 	});
 
@@ -51,6 +59,7 @@ describe("JSON Parsing", () => {
 		const specialChars = "!@#$%^&*()_+-={}[]|;:,.<>?/";
 
 		const parsedData = JSON.parse(`{"specialChars": "${specialChars}"}`);
+
 		expect(parsedData).toStrictEqual({ specialChars });
 	});
 });
@@ -62,6 +71,7 @@ describe("JSON Stringified", () => {
 		const jsonString = JSON.stringify(data);
 
 		const parsedData = JSON.parse(jsonString);
+
 		expect(parsedData).toStrictEqual(data);
 	});
 
@@ -78,11 +88,13 @@ describe("JSON Stringified", () => {
 		};
 
 		const parsedData = JSON.parse(JSON.stringify(objWithToJSON));
+
 		expect(parsedData).toStrictEqual({ customKey: "VALUE", customAge: 50 });
 	});
 
 	it("should print floats without fractions as integers", () => {
 		const jsonString = JSON.stringify({ value: 1.0 });
+
 		expect(jsonString).toEqual('{"value":1}');
 	});
 
@@ -90,6 +102,7 @@ describe("JSON Stringified", () => {
 		const jsonString = JSON.stringify({
 			value: 999999999999999999999999999999,
 		});
+
 		expect(jsonString).toEqual('{"value":1e30}');
 	});
 
@@ -143,6 +156,7 @@ describe("JSON Stringified", () => {
         }
     }
 }`;
+
 		expect(jsonString).toEqual(expectedJsonString);
 	});
 
@@ -181,6 +195,7 @@ describe("JSON Stringified", () => {
       }
    }
 }`;
+
 		expect(jsonString).toEqual(expectedJsonString);
 	});
 
@@ -192,6 +207,7 @@ describe("JSON Stringified", () => {
 			key === "secret" ? undefined : value;
 
 		const jsonString = JSON.stringify(data, replacerFunction, 2);
+
 		expect(jsonString).toEqual('{\n  "key": "value"\n}');
 	});
 
@@ -234,6 +250,7 @@ describe("JSON Stringified", () => {
 			b: "123",
 			c: "123",
 		};
+
 		expect(JSON.stringify(valueStart)).toEqual(`{"b":"123","c":"123"}`);
 
 		const jsonStartIndented = JSON.stringify(valueStart, null, "   ");
@@ -242,6 +259,7 @@ describe("JSON Stringified", () => {
    "b": "123",
    "c": "123"
 }`;
+
 		expect(jsonStartIndented).toEqual(expectedJsonStartString);
 
 		const valueMiddle = {
@@ -249,6 +267,7 @@ describe("JSON Stringified", () => {
 			b: undefined,
 			c: "123",
 		};
+
 		expect(JSON.stringify(valueMiddle)).toEqual(`{"a":"123","c":"123"}`);
 
 		const jsonMiddleIndented = JSON.stringify(valueMiddle, null, "   ");
@@ -257,6 +276,7 @@ describe("JSON Stringified", () => {
    "a": "123",
    "c": "123"
 }`;
+
 		expect(jsonMiddleIndented).toEqual(expectedJsonMiddleString);
 
 		const valueEnd = {
@@ -264,6 +284,7 @@ describe("JSON Stringified", () => {
 			b: "123",
 			c: undefined,
 		};
+
 		expect(JSON.stringify(valueEnd)).toEqual(`{"a":"123","b":"123"}`);
 
 		const jsonEndIndented = JSON.stringify(valueEnd, null, "   ");
@@ -272,6 +293,7 @@ describe("JSON Stringified", () => {
    "a": "123",
    "b": "123"
 }`;
+
 		expect(jsonEndIndented).toEqual(expectedJsonEndString);
 
 		const valueMixed = JSON.stringify({
@@ -291,12 +313,15 @@ describe("JSON Stringified", () => {
 
 	it("should stringify arrays with undefined values", () => {
 		const valueStart = [undefined, "123", "123"];
+
 		expect(JSON.stringify(valueStart)).toEqual(`[null,"123","123"]`);
 
 		const valueMiddle = ["123", undefined, "123"];
+
 		expect(JSON.stringify(valueMiddle)).toEqual(`["123",null,"123"]`);
 
 		const valueEnd = ["123", "123", undefined];
+
 		expect(JSON.stringify(valueEnd)).toEqual(`["123","123",null]`);
 	});
 });
