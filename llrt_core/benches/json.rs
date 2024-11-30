@@ -62,6 +62,7 @@ pub fn criterion_benchmark(c:&mut Criterion) {
 
 	c.bench_function("json parse", |b| {
 		let runtime = Runtime::new().unwrap();
+
 		runtime.set_max_stack_size(512 * 1024);
 
 		let ctx = Context::full(&runtime).unwrap();
@@ -71,6 +72,7 @@ pub fn criterion_benchmark(c:&mut Criterion) {
 
 	c.bench_function("json stringify", |b| {
 		let runtime = Runtime::new().unwrap();
+
 		runtime.set_max_stack_size(512 * 1024);
 
 		let ctx = Context::full(&runtime).unwrap();

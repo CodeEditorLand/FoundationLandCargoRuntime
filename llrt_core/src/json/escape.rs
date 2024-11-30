@@ -37,26 +37,34 @@ const ESCAPE_LEN:usize = 34;
 #[allow(dead_code)]
 pub fn escape_json(bytes:&[u8]) -> String {
 	let mut result = String::new();
+
 	escape_json_string(&mut result, bytes);
+
 	result
 }
 
 #[inline(always)]
 pub fn escape_json_string_simple(result:&mut String, bytes:&[u8]) {
 	let len = bytes.len();
+
 	let mut start = 0;
+
 	result.reserve(len);
 
 	for (i, byte) in bytes.iter().enumerate() {
 		let c = JSON_ESCAPE_CHARS[*byte as usize] as usize;
+
 		if c < ESCAPE_LEN {
 			if start < i {
 				result.push_str(unsafe { std::str::from_utf8_unchecked(&bytes[start..i]) });
 			}
+
 			result.push_str(JSON_ESCAPE_QUOTES[c]);
+
 			start = i + 1;
 		}
 	}
+
 	if start < len {
 		result.push_str(unsafe { std::str::from_utf8_unchecked(&bytes[start..len]) });
 	}
@@ -74,17 +82,23 @@ pub fn escape_json_string(result:&mut String, bytes:&[u8]) {
 	const USIZE_BYTES:usize = mem::size_of::<usize>();
 
 	let len = bytes.len();
+
 	if len < USIZE_BYTES * 2 {
 		return escape_json_string_simple(result, bytes);
 	}
 
 	const ESCAPE_LEN:usize = 34;
+
 	const BELOW_SPACE:u8 = b' ' - 1;
+
 	const B:u8 = b'"';
+
 	const C:u8 = b'\\';
 
 	let v_below_space:u8x16 = u8x16::splat(BELOW_SPACE);
+
 	let v_b:u8x16 = u8x16::splat(B);
+
 	let v_c:u8x16 = u8x16::splat(C);
 
 	result.reserve(len);
@@ -98,10 +112,13 @@ pub fn escape_json_string(result:&mut String, bytes:&[u8]) {
 		v_c:u8x16,
 	) {
 		let len = bytes.len();
+
 		if len > 0 {
 			let mut padded_bytes = [b'_'; 16]; //can be max 16 *2 offset
 			padded_bytes[..len].copy_from_slice(bytes);
+
 			let byte_vector = u8x16::from_slice(&padded_bytes);
+
 			process_chunk(&padded_bytes, result, byte_vector, len, v_below_space, v_b, v_c);
 		}
 	}
@@ -123,24 +140,32 @@ pub fn escape_json_string(result:&mut String, bytes:&[u8]) {
 
 		if mask != 0 {
 			let mut cur = mask.trailing_zeros() as usize;
+
 			let mut start = 0;
 
 			while cur < max_len {
 				let c = JSON_ESCAPE_CHARS[chunk[cur] as usize] as usize;
+
 				if c < ESCAPE_LEN {
 					if start < cur {
 						result
 							.push_str(unsafe { std::str::from_utf8_unchecked(&chunk[start..cur]) });
 					}
+
 					result.push_str(JSON_ESCAPE_QUOTES[c]);
+
 					start = cur + 1;
 				}
+
 				mask ^= 1 << cur;
+
 				if mask == 0 {
 					break;
 				}
+
 				cur = mask.trailing_zeros() as usize;
 			}
+
 			if start < max_len {
 				result.push_str(unsafe { std::str::from_utf8_unchecked(&chunk[start..max_len]) });
 			}
@@ -156,6 +181,7 @@ pub fn escape_json_string(result:&mut String, bytes:&[u8]) {
 
 		for chunk in iter {
 			let a = u8x16::from_slice(&chunk);
+
 			process_chunk(chunk, result, a, 16, v_below_space, v_b, v_c);
 		}
 
@@ -164,6 +190,7 @@ pub fn escape_json_string(result:&mut String, bytes:&[u8]) {
 
 	if len < 16 {
 		process_padded_chunk(bytes, result, v_below_space, v_b, v_c);
+
 		return;
 	}
 

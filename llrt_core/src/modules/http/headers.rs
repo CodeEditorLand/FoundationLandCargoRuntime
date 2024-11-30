@@ -44,28 +44,37 @@ impl Headers {
 		if let Some(init) = init.into_inner() {
 			if init.is_array() {
 				let array = init.into_array().unwrap();
+
 				let headers = Self::array_to_headers(array)?;
+
 				return Ok(Self { headers });
 			} else if init.is_object() {
 				return Self::from_value(&ctx, init);
 			}
 		}
+
 		Ok(Self { headers:Vec::new() })
 	}
 
 	pub fn append(&mut self, key:String, value:String) {
 		let key:ImmutableString = key.to_lowercase().into();
+
 		let str_key = key.as_ref();
+
 		if str_key == HEADERS_KEY_SET_COOKIE {
 			return self.headers.push((key, value.into()));
 		}
+
 		if let Some((_, existing_value)) = self.headers.iter_mut().find(|(k, _)| k == &key) {
 			let mut new_value = String::with_capacity(existing_value.len() + 2 + value.len());
+
 			new_value.push_str(existing_value);
+
 			match str_key {
 				HEADERS_KEY_COOKIE => new_value.push_str("; "),
 				_ => new_value.push_str(", "),
 			}
+
 			new_value.push_str(&value);
 			*existing_value = new_value.into();
 		} else {
@@ -75,18 +84,21 @@ impl Headers {
 
 	pub fn get<'js>(&self, ctx:Ctx<'js>, key:String) -> Result<Value<'js>> {
 		let key:ImmutableString = key.to_lowercase().into();
+
 		if key.as_ref() == HEADERS_KEY_SET_COOKIE {
 			let result:Vec<&str> = self
 				.headers
 				.iter()
 				.filter_map(|(k, v)| if k == &key { Some(v.as_ref()) } else { None })
 				.collect();
+
 			return if result.is_empty() {
 				Null.into_js(&ctx)
 			} else {
 				result.join(", ").into_js(&ctx)
 			};
 		}
+
 		self.headers
 			.iter()
 			.find(|(k, _)| *k == key)
@@ -107,15 +119,18 @@ impl Headers {
 
 	pub fn has(&self, key:String) -> bool {
 		let key = key.to_lowercase().into();
+
 		self.headers.iter().any(|(k, _)| k == &key)
 	}
 
 	pub fn set(&mut self, key:String, value:String) {
 		let key:ImmutableString = key.to_lowercase().into();
+
 		let value = value.into();
 
 		if key.as_ref() == HEADERS_KEY_SET_COOKIE {
 			self.headers.retain(|(k, _)| k != &key);
+
 			self.headers.push((key, value));
 		} else {
 			match self.headers.iter_mut().find(|(k, _)| k == &key) {
@@ -127,6 +142,7 @@ impl Headers {
 
 	pub fn delete(&mut self, key:String) {
 		let key = key.to_lowercase().into();
+
 		self.headers.retain(|(k, _)| k != &key);
 	}
 
@@ -143,6 +159,7 @@ impl Headers {
 		for (k, v) in &self.headers {
 			() = callback.call((v.as_ref(), k.as_ref()))?;
 		}
+
 		Ok(())
 	}
 }
@@ -154,22 +171,27 @@ impl Headers {
 
 	pub fn from_http_headers(header_map:&HeaderMap) -> Result<Self> {
 		let mut headers = Vec::new();
+
 		for (n, v) in header_map.iter() {
 			headers.push((n.as_str().into(), String::from_utf8_lossy(v.as_bytes()).into()));
 		}
+
 		Ok(Self { headers })
 	}
 
 	pub fn from_value<'js>(ctx:&Ctx<'js>, value:Value<'js>) -> Result<Self> {
 		if value.is_object() {
 			let headers_obj = value.as_object().unwrap();
+
 			return if headers_obj.instance_of::<Headers>() {
 				Headers::from_js(ctx, value)
 			} else {
 				let map:BTreeMap<String, Coerced<String>> = value.get().unwrap_or_default();
+
 				return Ok(Self::from_map(map));
 			};
 		}
+
 		Ok(Headers::default())
 	}
 
@@ -178,18 +200,23 @@ impl Headers {
 			.into_iter()
 			.map(|(k, v)| (k.to_lowercase().into(), v.to_string().into()))
 			.collect();
+
 		Self { headers }
 	}
 
 	fn array_to_headers(array:Array<'_>) -> Result<Vec<(ImmutableString, ImmutableString)>> {
 		let mut vec = Vec::new();
+
 		for entry in array.into_iter().flatten() {
 			if let Some(array_entry) = entry.as_array() {
 				let key = array_entry.get::<String>(0)?.to_lowercase();
+
 				let value = array_entry.get::<String>(1)?;
+
 				vec.push((key.into(), value.into()));
 			}
 		}
+
 		Ok(vec)
 	}
 }
@@ -203,6 +230,7 @@ impl<'js> IteratorDef<'js> for Headers {
 impl<'js> CustomInspect<'js> for Headers {
 	fn custom_inspect(&self, ctx:Ctx<'js>) -> Result<Object<'js>> {
 		let obj = Object::new(ctx)?;
+
 		for (k, v) in self.headers.iter() {
 			obj.set(k.as_ref(), v.as_ref())?;
 		}

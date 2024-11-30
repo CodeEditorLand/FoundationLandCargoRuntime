@@ -26,11 +26,15 @@ where
 	pub async fn walk(&mut self) -> io::Result<Option<(PathBuf, Metadata)>> {
 		if self.eat_root {
 			self.eat_root = false;
+
 			let (dir, _) = self.stack.pop().unwrap();
+
 			self.append_stack(&dir).await?;
 		}
+
 		if let Some((dir, metadata)) = self.stack.pop() {
 			let metadata = metadata.unwrap();
+
 			if self.recursive && metadata.is_dir() {
 				self.append_stack(&dir).await?;
 			}
@@ -44,11 +48,15 @@ where
 	pub fn walk_sync(&mut self) -> io::Result<Option<(PathBuf, Metadata)>> {
 		if self.eat_root {
 			self.eat_root = false;
+
 			let (dir, _) = self.stack.pop().unwrap();
+
 			self.append_stack_sync(&dir)?;
 		}
+
 		if let Some((dir, metadata)) = self.stack.pop() {
 			let metadata = metadata.unwrap();
+
 			if self.recursive && metadata.is_dir() {
 				self.append_stack_sync(&dir)?;
 			}
@@ -64,15 +72,20 @@ where
 
 		while let Some(entry) = stream.next_entry().await? {
 			let name = entry.file_name();
+
 			let name = name.to_string_lossy();
+
 			if !(self.filter)(name.as_ref()) {
 				continue;
 			}
+
 			let entry_path = entry.path();
+
 			let metadata = fs::symlink_metadata(&entry_path).await?;
 
 			self.stack.push((entry_path, Some(metadata)));
 		}
+
 		Ok(())
 	}
 
@@ -81,12 +94,17 @@ where
 
 		for entry in dir.flatten() {
 			let name = entry.file_name();
+
 			let name = name.to_string_lossy();
+
 			if !(self.filter)(name.as_ref()) {
 				continue;
 			}
+
 			let entry_path = entry.path();
+
 			let metadata = entry_path.symlink_metadata()?;
+
 			self.stack.push((entry_path, Some(metadata)))
 		}
 

@@ -18,8 +18,11 @@ use rquickjs::{
 
 pub async fn given_file(content:&str) -> PathBuf {
 	let tmp_dir = std::env::temp_dir();
+
 	let path = tmp_dir.join(nanoid::nanoid!());
+
 	tokio::fs::write(&path, content).await.unwrap();
+
 	path
 }
 
@@ -28,6 +31,7 @@ where
 	F: for<'js> FnOnce(Ctx<'js>) -> std::pin::Pin<Box<dyn std::future::Future<Output = ()> + 'js>>
 		+ Send, {
 	let rt = AsyncRuntime::new().unwrap();
+
 	let ctx = AsyncContext::full(&rt).await.unwrap();
 
 	async_with!(ctx => |ctx| {
@@ -70,7 +74,9 @@ impl ModuleEvaluator {
 		source:&str,
 	) -> Result<Module<'js, Evaluated>> {
 		let (module, module_eval) = Module::declare(ctx, name, source)?.eval()?;
+
 		module_eval.into_future::<()>().await?;
+
 		Ok(module)
 	}
 
@@ -78,7 +84,9 @@ impl ModuleEvaluator {
 	where
 		M: ModuleDef, {
 		let (module, module_eval) = Module::evaluate_def::<M, _>(ctx, name)?;
+
 		module_eval.into_future::<()>().await?;
+
 		Ok(module)
 	}
 }

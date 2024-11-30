@@ -55,22 +55,28 @@ pub fn json_stringify_replacer_space<'js>(
 	indentation:Option<String>,
 ) -> Result<Option<String>> {
 	let mut result = String::with_capacity(128);
+
 	let mut replacer_fn = None;
+
 	let mut include_keys_replacer = None;
 
 	let tmp_function;
 
 	let mut itoa_buffer = itoa::Buffer::new();
+
 	let mut ryu_buffer = ryu::Buffer::new();
 
 	if let Some(replacer) = replacer {
 		if let Some(function) = replacer.as_function() {
 			tmp_function = function.clone();
+
 			replacer_fn = Some(&tmp_function);
 		} else if let Some(array) = replacer.as_array() {
 			let mut filter = HashSet::with_capacity(array.len());
+
 			for value in array.clone().into_iter() {
 				let value = value?;
+
 				if let Some(string) = value.as_string() {
 					filter.insert(string.to_string()?);
 				} else if let Some(number) = value.as_int() {
@@ -79,11 +85,13 @@ pub fn json_stringify_replacer_space<'js>(
 					filter.insert(ryu_buffer.format(number).to_string());
 				}
 			}
+
 			include_keys_replacer = Some(filter);
 		}
 	}
 
 	let indentation = indentation.as_deref();
+
 	let include_keys_replacer = include_keys_replacer.as_ref();
 
 	let mut ancestors = Vec::with_capacity(10);
@@ -115,8 +123,11 @@ pub fn json_stringify_replacer_space<'js>(
 	}
 
 	context.depth += 1;
+
 	context.indentation = indentation;
+
 	iterate(&mut context)?;
+
 	Ok(Some(result))
 }
 
@@ -125,6 +136,7 @@ pub fn json_stringify_replacer_space<'js>(
 fn write_indentation(result:&mut String, indentation:Option<&str>, depth:usize) {
 	if let Some(indentation) = indentation {
 		result.push('\n');
+
 		result.push_str(&indentation.repeat(depth - 1));
 	}
 }
@@ -133,7 +145,9 @@ fn write_indentation(result:&mut String, indentation:Option<&str>, depth:usize) 
 #[cold]
 fn run_to_json<'js>(context:&mut StringifyContext<'_, 'js>, js_object:&Object<'js>) -> Result<()> {
 	let to_json = js_object.get::<_, Function>(PredefinedAtom::ToJSON)?;
+
 	let val = to_json.call((This(js_object.clone()),))?;
+
 	append_value(
 		&mut StringifyContext {
 			ctx:context.ctx,
@@ -152,6 +166,7 @@ fn run_to_json<'js>(context:&mut StringifyContext<'_, 'js>, js_object:&Object<'j
 		},
 		false,
 	)?;
+
 	Ok(())
 }
 
@@ -170,22 +185,31 @@ fn run_replacer<'js>(
 	add_comma:bool,
 ) -> Result<PrimitiveStatus> {
 	let parent = context.parent;
+
 	let ctx = context.ctx;
+
 	let value = context.value;
+
 	let key = context.key;
+
 	let index = context.index;
+
 	let parent = if let Some(parent) = parent {
 		parent.clone()
 	} else {
 		let parent = Object::new(ctx.clone())?;
+
 		parent.set("", value.clone())?;
+
 		parent
 	};
+
 	let new_value = replacer_fn.call((
 		This(parent),
 		get_key_or_index(context.itoa_buffer, key, index),
 		value,
 	))?;
+
 	write_primitive(
 		&mut StringifyContext {
 			ctx,
@@ -212,10 +236,15 @@ fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<Prim
 	}
 
 	let include_keys_replacer = context.include_keys_replacer;
+
 	let value = context.value;
+
 	let key = context.key;
+
 	let index = context.index;
+
 	let indentation = context.indentation;
+
 	let depth = context.depth;
 
 	let type_of = value.type_of();
@@ -226,6 +255,7 @@ fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<Prim
 
 	if let Some(include_keys_replacer) = include_keys_replacer {
 		let key = get_key_or_index(context.itoa_buffer, key, index);
+
 		if !include_keys_replacer.contains(key) {
 			return Ok(PrimitiveStatus::Ignored);
 		}
@@ -235,6 +265,7 @@ fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<Prim
 		write_indented_separator(context.result, key, add_comma, indentation, depth);
 	} else {
 		write_sep(context.result, add_comma, false);
+
 		if let Some(key) = key {
 			write_key(context.result, key, false);
 		}
@@ -244,25 +275,31 @@ fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<Prim
 		Type::Null | Type::Undefined => context.result.push_str("null"),
 		Type::Bool => {
 			const BOOL_STRINGS:[&str; 2] = ["false", "true"];
+
 			context.result.push_str(BOOL_STRINGS[value.as_bool().unwrap() as usize]);
 		},
 		Type::Int => context.result.push_str(context.itoa_buffer.format(value.as_int().unwrap())),
 		Type::Float => {
 			let float_value = value.as_float().unwrap();
+
 			const EXP_MASK:u64 = 0x7FF0000000000000;
+
 			let bits = float_value.to_bits();
+
 			if bits & EXP_MASK == EXP_MASK {
 				context.result.push_str("null");
 			} else {
 				let str = context.ryu_buffer.format_finite(value.as_float().unwrap());
 
 				let bytes = str.as_bytes();
+
 				let len = bytes.len();
 
 				context.result.push_str(str);
 
 				if &bytes[len - 2..] == b".0" {
 					let len = context.result.len();
+
 					unsafe { context.result.as_mut_vec().set_len(len - 2) }
 				}
 			}
@@ -270,6 +307,7 @@ fn write_primitive(context:&mut StringifyContext, add_comma:bool) -> Result<Prim
 		Type::String => write_string(context.result, &value.as_string().unwrap().to_string()?),
 		_ => return Ok(PrimitiveStatus::Iterate),
 	}
+
 	Ok(PrimitiveStatus::Written)
 }
 
@@ -283,7 +321,9 @@ fn write_indented_separator(
 	depth:usize,
 ) {
 	write_sep(result, add_comma, true);
+
 	result.push_str(&indentation.repeat(depth));
+
 	if let Some(key) = key {
 		write_key(result, key, true);
 	}
@@ -300,6 +340,7 @@ fn detect_circular_reference(
 	itoa_buffer:&mut itoa::Buffer,
 ) -> Result<()> {
 	let parent_ptr = unsafe { parent.unwrap().as_raw().u.ptr as usize };
+
 	let current_ptr = unsafe { value.as_raw().u.ptr as usize };
 
 	while !ancestors.is_empty()
@@ -321,7 +362,9 @@ fn detect_circular_reference(
 				if !key.starts_with('[') {
 					acc.push('.');
 				}
+
 				acc.push_str(key);
+
 				acc
 			},
 		);
@@ -331,10 +374,12 @@ fn detect_circular_reference(
 		}
 
 		message.push_str(first);
+
 		message.push('"');
 
 		return Err(Exception::throw_type(ctx, &message));
 	}
+
 	ancestors.push((
 		current_ptr,
 		key.map(|k| k.into()).unwrap_or_else(|| {
@@ -352,7 +397,9 @@ fn append_value(context:&mut StringifyContext<'_, '_>, add_comma:bool) -> Result
 		PrimitiveStatus::Ignored => Ok(false),
 		PrimitiveStatus::Iterate => {
 			context.depth += 1;
+
 			iterate(context)?;
+
 			Ok(true)
 		},
 	}
@@ -361,8 +408,11 @@ fn append_value(context:&mut StringifyContext<'_, '_>, add_comma:bool) -> Result
 #[inline(always)]
 fn write_key(string:&mut String, key:&str, indent:bool) {
 	string.push('"');
+
 	escape_json_string(string, key.as_bytes());
+
 	const SUFFIXES:[&str; 2] = ["\":", "\": "];
+
 	string.push_str(SUFFIXES[indent as usize]);
 }
 
@@ -376,13 +426,16 @@ fn write_sep(result:&mut String, add_comma:bool, has_indentation:bool) {
 	];
 
 	let index = (add_comma as usize) | ((has_indentation as usize) << 1);
+
 	result.push_str(SEPARATOR_TABLE[index]);
 }
 
 #[inline(always)]
 fn write_string(string:&mut String, value:&str) {
 	string.push('"');
+
 	escape_json_string(string, value.as_bytes());
+
 	string.push('"');
 }
 
@@ -397,14 +450,21 @@ fn get_key_or_index<'a>(
 
 fn iterate(context:&mut StringifyContext<'_, '_>) -> Result<()> {
 	let mut add_comma;
+
 	let mut value_written;
+
 	let elem = context.value;
+
 	let depth = context.depth;
+
 	let ctx = context.ctx;
+
 	let indentation = context.indentation;
+
 	match elem.type_of() {
 		Type::Object => {
 			let js_object = elem.as_object().unwrap();
+
 			if js_object.contains_key(PredefinedAtom::ToJSON)? {
 				return run_to_json(context, js_object);
 			}
@@ -428,6 +488,7 @@ fn iterate(context:&mut StringifyContext<'_, '_>) -> Result<()> {
 
 			for key in js_object.keys::<String>() {
 				let key = key?;
+
 				let val = js_object.get(&key)?;
 
 				add_comma = append_value(
@@ -448,18 +509,23 @@ fn iterate(context:&mut StringifyContext<'_, '_>) -> Result<()> {
 					},
 					value_written,
 				)?;
+
 				value_written = value_written || add_comma;
 			}
 
 			if value_written {
 				write_indentation(context.result, indentation, depth);
 			}
+
 			context.result.push('}');
 		},
 		Type::Array => {
 			context.result.push('[');
+
 			add_comma = false;
+
 			value_written = false;
+
 			let js_array = elem.as_array().unwrap();
 			// only start detect circular reference at this level
 			if depth > CIRCULAR_REF_DETECTION_DEPTH {
@@ -473,8 +539,10 @@ fn iterate(context:&mut StringifyContext<'_, '_>) -> Result<()> {
 					context.itoa_buffer,
 				)?;
 			}
+
 			for (i, val) in js_array.iter::<Value>().enumerate() {
 				let val = val?;
+
 				add_comma = append_value(
 					&mut StringifyContext {
 						ctx,
@@ -493,14 +561,18 @@ fn iterate(context:&mut StringifyContext<'_, '_>) -> Result<()> {
 					},
 					add_comma,
 				)?;
+
 				value_written = value_written || add_comma;
 			}
+
 			if value_written {
 				write_indentation(context.result, indentation, depth);
 			}
+
 			context.result.push(']');
 		},
 		_ => {},
 	}
+
 	Ok(())
 }

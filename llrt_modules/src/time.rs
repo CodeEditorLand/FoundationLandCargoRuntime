@@ -22,6 +22,7 @@ pub(crate) fn now_nanos() -> u64 {
 pub fn init() {
 	if TIME_ORIGIN.load(Ordering::Relaxed) == 0 {
 		let time_origin = now_nanos();
+
 		TIME_ORIGIN.store(time_origin, Ordering::Relaxed)
 	}
 }

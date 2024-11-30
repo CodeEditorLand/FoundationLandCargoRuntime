@@ -35,7 +35,9 @@ impl<'js> CtxExtension<'js> for Ctx<'js> {
 		let ctx = self.clone();
 
 		let type_error_ctor:Constructor = ctx.globals().get(PredefinedAtom::TypeError)?;
+
 		let type_error:Object = type_error_ctor.construct(())?;
+
 		let stack:Option<String> = type_error.get(PredefinedAtom::Stack).ok();
 
 		let (join_channel_tx, join_channel_rx) = oneshot::channel();
@@ -51,15 +53,18 @@ impl<'js> CtxExtension<'js> for Ctx<'js> {
 						Some(handler) => handler,
 						None => {
 							trace!("Future error: {:?}", err);
+
 							return;
 						},
 					};
+
 					if let CaughtError::Exception(err) = err {
 						if err.stack().is_none() {
 							if let Some(stack) = stack {
 								err.set(PredefinedAtom::Stack, stack).unwrap();
 							}
 						}
+
 						error_handler(&ctx, CaughtError::Exception(err));
 					} else {
 						error_handler(&ctx, err);
@@ -67,6 +72,7 @@ impl<'js> CtxExtension<'js> for Ctx<'js> {
 				},
 			}
 		});
+
 		Ok(join_channel_rx)
 	}
 }

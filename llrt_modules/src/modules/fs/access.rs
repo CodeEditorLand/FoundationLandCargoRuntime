@@ -37,6 +37,7 @@ fn verify_metadata(ctx:&Ctx, mode:Opt<u32>, metadata:Metadata) -> Result<()> {
 		#[cfg(unix)]
 		{
 			use std::os::unix::fs::PermissionsExt;
+
 			if permissions.mode() & 0o100 == 0 {
 				return Err(Exception::throw_message(
 					ctx,
@@ -47,6 +48,7 @@ fn verify_metadata(ctx:&Ctx, mode:Opt<u32>, metadata:Metadata) -> Result<()> {
 		#[cfg(windows)]
 		{
 			use std::os::windows::fs::MetadataExt;
+
 			const FILE_ATTRIBUTE_DIRECTORY:u32 = 0x10;
 			// Get the file attributes
 			let file_attributes = metadata.file_attributes();

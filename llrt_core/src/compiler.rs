@@ -15,10 +15,13 @@ use crate::{
 
 fn compress_module(bytes:&[u8]) -> io::Result<Vec<u8>> {
 	let mut compressor = Compressor::with_dictionary(22, COMPRESSION_DICT)?;
+
 	let compressed_bytes = compressor.compress(bytes)?;
+
 	let uncompressed_len = bytes.len() as u32;
 
 	let compressed = add_bytecode_header(compressed_bytes, Some(uncompressed_len));
+
 	Ok(compressed)
 }
 
@@ -27,14 +30,19 @@ pub async fn compile_file(
 	output_filename:&Path,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 	let resolver = (DummyResolver,);
+
 	let loader = (DummyLoader,);
 
 	let rt = Runtime::new()?;
+
 	rt.set_loader(resolver, loader);
+
 	let ctx = Context::full(&rt)?;
 
 	let mut total_bytes:usize = 0;
+
 	let mut compressed_bytes:usize = 0;
+
 	let mut js_bytes:usize = 0;
 
 	ctx.with(|ctx| {
@@ -43,6 +51,7 @@ pub async fn compile_file(
 				&ctx,
 				&["Unable to load: ", &input_filename.to_string_lossy()].concat(),
 			)?;
+
 			js_bytes = source.len();
 
 			let module_name = input_filename.with_extension("").to_string_lossy().to_string();
@@ -50,13 +59,19 @@ pub async fn compile_file(
 			trace!("Compiling module: {}", module_name);
 
 			let module = Module::declare(ctx.clone(), module_name, source)?;
+
 			let bytes = module.write(false)?;
+
 			let filename = output_filename.to_string_lossy().to_string();
+
 			let compressed = compress_module(&bytes)?;
+
 			fs::write(filename, &compressed)?;
 
 			total_bytes += bytes.len();
+
 			compressed_bytes += compressed.len();
+
 			Ok(())
 		})()
 		.catch(&ctx)
@@ -64,7 +79,9 @@ pub async fn compile_file(
 	});
 
 	trace!("JS size: {}", human_file_size(js_bytes));
+
 	trace!("Bytecode size: {}", human_file_size(total_bytes));
+
 	trace!("Compressed bytecode size: {}", human_file_size(compressed_bytes));
 
 	Ok(())

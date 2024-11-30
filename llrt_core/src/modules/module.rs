@@ -18,6 +18,7 @@ fn create_require(ctx:Ctx<'_>) -> Result<Value<'_>> { ctx.globals().get("require
 impl ModuleDef for ModuleModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare("createRequire")?;
+
 		declare.declare("default")?;
 
 		Ok(())

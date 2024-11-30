@@ -40,6 +40,7 @@ impl Hmac {
 
 	fn digest<'js>(&self, ctx:Ctx<'js>, encoding:Opt<String>) -> Result<Value<'js>> {
 		let signature = self.context.clone().sign();
+
 		let bytes:&[u8] = signature.as_ref();
 
 		match encoding.into_inner() {
@@ -54,6 +55,7 @@ impl Hmac {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().context.update(&bytes);
 
 		Ok(this.0)
@@ -93,6 +95,7 @@ impl Hash {
 	#[qjs(rename = "digest")]
 	fn hash_digest<'js>(&self, ctx:Ctx<'js>, encoding:Opt<String>) -> Result<Value<'js>> {
 		let digest = self.context.clone().finish();
+
 		let bytes:&[u8] = digest.as_ref();
 
 		match encoding.0 {
@@ -108,7 +111,9 @@ impl Hash {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().context.update(&bytes);
+
 		Ok(this.0)
 	}
 }
@@ -160,9 +165,11 @@ impl ShaHash {
 	#[qjs(skip)]
 	pub fn new<'js>(ctx:Ctx<'js>, algorithm:ShaAlgorithm, secret:Opt<Value<'js>>) -> Result<Self> {
 		let secret = secret.0;
+
 		let secret = match secret {
 			Some(secret) => {
 				let bytes = get_bytes(&ctx, secret)?;
+
 				Some(bytes)
 			},
 			None => None,
@@ -175,6 +182,7 @@ impl ShaHash {
 	fn sha_digest<'js>(&self, ctx:Ctx<'js>) -> Result<Value<'js>> {
 		if let Some(secret) = &self.secret {
 			let key_value = secret;
+
 			let key = hmac::Key::new(*self.algorithm.hmac_algorithm(), key_value);
 
 			return bytes_to_typed_array(ctx, hmac::sign(&key, &self.bytes).as_ref());
@@ -193,7 +201,9 @@ impl ShaHash {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().bytes = bytes;
+
 		Ok(this.0)
 	}
 }

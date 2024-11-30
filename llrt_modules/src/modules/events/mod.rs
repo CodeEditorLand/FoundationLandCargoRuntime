@@ -39,9 +39,11 @@ impl<'js> EventKey<'js> {
 	fn from_value(ctx:&Ctx, value:Value<'js>) -> Result<Self> {
 		if value.is_string() {
 			let key:String = value.get()?;
+
 			Ok(EventKey::String(key.into()))
 		} else {
 			let sym = value.into_symbol().ok_or("Not a symbol").or_throw(ctx)?;
+
 			Ok(EventKey::Symbol(sym))
 		}
 	}
@@ -105,11 +107,15 @@ impl<'js, T> EmitError<'js> for Result<T> {
 		if let Err(err) = self.catch(ctx) {
 			if this.borrow().has_listener_str("error") {
 				let error_value = err.into_value(ctx)?;
+
 				C::emit_str(This(this), ctx, "error", vec![error_value], false)?;
+
 				return Ok(true);
 			}
+
 			return Err(err.throw(ctx));
 		}
+
 		Ok(false)
 	}
 }
@@ -126,6 +132,7 @@ where
 			.or_throw_msg(ctx, "Prototype for EventEmitter not found")?;
 
 		let on = Function::new(ctx.clone(), Self::on)?;
+
 		let off = Function::new(ctx.clone(), Self::remove_event_listener)?;
 
 		proto.set("once", Func::from(Self::once))?;
@@ -154,6 +161,7 @@ where
 			.or_throw_msg(ctx, "Prototype for EventTarget not found")?;
 
 		let on = Function::new(ctx.clone(), Self::evt_add_event_listener)?;
+
 		let off = Function::new(ctx.clone(), Self::remove_event_listener)?;
 
 		proto.set("dispatchEvent", Func::from(Self::evt_dispatch_event))?;
@@ -167,7 +175,9 @@ where
 
 	fn trace_event_emitter<'a>(&self, tracer:Tracer<'a, 'js>) {
 		let events = self.get_event_list();
+
 		let events = events.read().unwrap();
+
 		for (key, items) in events.iter() {
 			if let EventKey::Symbol(sym) = &key {
 				tracer.mark(sym);
@@ -186,13 +196,17 @@ where
 		listener:Function<'js>,
 	) -> Result<Class<'js, Self>> {
 		let events = this.clone().borrow().get_event_list();
+
 		let mut events = events.write().or_throw(&ctx)?;
 
 		let key = EventKey::from_value(&ctx, event)?;
+
 		if let Some(index) = events.iter_mut().position(|(k, _)| k == &key) {
 			let items = &mut events[index].1;
+
 			if let Some(pos) = items.iter().position(|item| item.callback == listener) {
 				items.remove(pos);
+
 				if items.is_empty() {
 					events.remove(index);
 				}
@@ -211,6 +225,7 @@ where
 		once:bool,
 	) -> Result<Class<'js, Self>> {
 		let event = to_event(ctx, event)?;
+
 		Self::add_event_listener(this, ctx.clone(), event, listener, prepend, once)
 	}
 
@@ -258,11 +273,13 @@ where
 		options:Opt<Object<'js>>,
 	) -> Result<Class<'js, Self>> {
 		let mut once = false;
+
 		if let Some(opt) = options.0 {
 			if let Some(once_opt) = opt.get("once")? {
 				once = once_opt;
 			}
 		}
+
 		Self::add_event_listener(this, ctx, event, listener, false, once)
 	}
 
@@ -275,52 +292,65 @@ where
 		once:bool,
 	) -> Result<Class<'js, Self>> {
 		let this2 = this.clone();
+
 		let events = &this2.borrow().get_event_list();
+
 		let mut events = events.write().or_throw(&ctx)?;
+
 		let key = EventKey::from_value(&ctx, event)?;
+
 		let mut is_new = false;
 
 		let items = match events.iter_mut().find(|(k, _)| k == &key) {
 			Some((_, entry_items)) => entry_items,
 			None => {
 				let new_items = Vec::new();
+
 				is_new = true;
+
 				events.push((key.clone(), new_items));
 				&mut events.last_mut().unwrap().1
 			},
 		};
 
 		let item = EventItem { callback:listener, once };
+
 		if !prepend {
 			items.push(item);
 		} else {
 			items.insert(0, item);
 		}
+
 		if is_new {
 			this2.borrow_mut().on_event_changed(key, true)?
 		}
+
 		Ok(this.0)
 	}
 
 	fn has_listener_str(&self, event:&str) -> bool {
 		let key = EventKey::String(event.into());
+
 		has_key(self.get_event_list(), key)
 	}
 
 	#[allow(dead_code)]
 	fn has_listener(&self, ctx:Ctx<'js>, event:Value<'js>) -> Result<bool> {
 		let key = EventKey::from_value(&ctx, event)?;
+
 		Ok(has_key(self.get_event_list(), key))
 	}
 
 	#[allow(dead_code)]
 	fn get_listeners(&self, ctx:&Ctx<'js>, event:Value<'js>) -> Result<Vec<Function<'js>>> {
 		let key = EventKey::from_value(ctx, event)?;
+
 		Ok(find_all_listeners(self.get_event_list(), key))
 	}
 
 	fn get_listeners_str(&self, event:&str) -> Vec<Function<'js>> {
 		let key = EventKey::String(event.into());
+
 		find_all_listeners(self.get_event_list(), key)
 	}
 
@@ -332,27 +362,40 @@ where
 		defer:bool,
 	) -> Result<()> {
 		trace!("Emitting: {:?}", event);
+
 		let this2 = this.clone();
+
 		let events = &this2.borrow().get_event_list();
+
 		let mut events = events.write().or_throw(ctx)?;
+
 		let key = EventKey::from_value(ctx, event)?;
 
 		if let Some(index) = events.iter_mut().position(|(k, _)| k == &key) {
 			let items = &mut events[index].1;
+
 			let mut callbacks = Vec::with_capacity(items.len());
+
 			items.retain(|item:&EventItem<'_>| {
 				callbacks.push(item.callback.clone());
 				!item.once
 			});
+
 			if items.is_empty() {
 				events.remove(index);
+
 				this.borrow_mut().on_event_changed(key, false)?;
 			}
+
 			drop(events);
+
 			for callback in callbacks {
 				let args = args.iter().map(|arg| arg.to_owned()).collect();
+
 				let args = Rest(args);
+
 				let this = This(this.clone());
+
 				if defer {
 					callback.defer((this, args))?;
 				} else {
@@ -372,6 +415,7 @@ where
 		defer:bool,
 	) -> Result<()> {
 		let event = to_event(ctx, event)?;
+
 		Self::do_emit(event, this, ctx, args.into(), defer)
 	}
 
@@ -390,14 +434,17 @@ where
 		event:Value<'js>,
 	) -> Result<()> {
 		let event_type = event.get_optional("type")?.unwrap();
+
 		Self::do_emit(event_type, this, &ctx, Rest(vec![event]), false)
 	}
 
 	fn event_names(this:This<OwnedBorrow<'js, Self>>, ctx:Ctx<'js>) -> Result<Vec<Value<'js>>> {
 		let events = this.get_event_list();
+
 		let events = events.read().or_throw(&ctx)?;
 
 		let mut names = Vec::with_capacity(events.len());
+
 		for (key, _entry) in events.iter() {
 			let value = match key {
 				EventKey::Symbol(symbol) => symbol.clone().into_value(),
@@ -416,7 +463,9 @@ fn find_all_listeners<'js>(
 	key:EventKey<'js>,
 ) -> Vec<Function<'js>> {
 	let events = events.read().unwrap();
+
 	let items = events.iter().find(|(k, _)| k == &key);
+
 	if let Some((_, callbacks)) = items {
 		callbacks.iter().map(|item| item.callback.clone()).collect()
 	} else {
@@ -430,6 +479,7 @@ fn has_key<'js>(event_list:Arc<RwLock<EventList<'js>>>, key:EventKey<'js>) -> bo
 
 fn to_event<'js>(ctx:&Ctx<'js>, event:&str) -> Result<Value<'js>> {
 	let event = JsString::from_str(ctx.clone(), event)?;
+
 	Ok(event.into_value())
 }
 
@@ -438,6 +488,7 @@ pub struct EventsModule;
 impl ModuleDef for EventsModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare(stringify!(EventEmitter))?;
+
 		declare.declare("default")?;
 
 		Ok(())
@@ -446,8 +497,11 @@ impl ModuleDef for EventsModule {
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		let ctor = Class::<EventEmitter>::create_constructor(ctx)?
 			.expect("Can't create EventEmitter constructor");
+
 		ctor.set(stringify!(EventEmitter), ctor.clone())?;
+
 		exports.export(stringify!(EventEmitter), ctor.clone())?;
+
 		exports.export("default", ctor)?;
 
 		EventEmitter::add_event_emitter_prototype(ctx)?;
@@ -464,6 +518,7 @@ pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 	let globals = ctx.globals();
 
 	Class::<EventTarget>::define(&globals)?;
+
 	Class::<CustomEvent>::define(&globals)?;
 
 	EventTarget::add_event_target_prototype(ctx)?;

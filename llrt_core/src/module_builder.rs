@@ -37,6 +37,7 @@ impl ModuleResolver {
 	#[must_use]
 	pub fn with_module<P:Into<String>>(mut self, path:P) -> Self {
 		self.builtin_resolver.add_module(path.into());
+
 		self
 	}
 }
@@ -115,7 +116,9 @@ impl ModuleBuilder {
 		let module_info:ModuleInfo<M> = module.into();
 
 		self.builtin_resolver = self.builtin_resolver.with_module(module_info.name);
+
 		self.module_loader = self.module_loader.with_module(module_info.name, module_info.module);
+
 		self.module_names.insert(module_info.name);
 
 		self
@@ -123,6 +126,7 @@ impl ModuleBuilder {
 
 	pub fn with_global(mut self, init_global:fn(&Ctx<'_>) -> Result<()>) -> Self {
 		self.init_global.push(init_global);
+
 		self
 	}
 

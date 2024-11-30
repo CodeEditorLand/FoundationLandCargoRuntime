@@ -2,6 +2,7 @@ use std::env;
 
 pub fn get_platform() -> &'static str {
 	let platform = env::consts::OS;
+
 	match platform {
 		"macos" => "darwin",
 		"windows" => "win32",

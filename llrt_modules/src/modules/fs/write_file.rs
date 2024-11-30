@@ -12,7 +12,9 @@ pub async fn write_file<'js>(ctx:Ctx<'js>, path:String, data:Value<'js>) -> Resu
 	let write_error_message = &["Can't write file \"", &path, "\""].concat();
 
 	let bytes = get_bytes(&ctx, data)?;
+
 	file.write_all(&bytes).await.or_throw_msg(&ctx, write_error_message)?;
+
 	file.flush().await.or_throw_msg(&ctx, write_error_message)?;
 
 	Ok(())

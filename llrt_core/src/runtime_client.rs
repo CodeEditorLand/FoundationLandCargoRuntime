@@ -84,17 +84,29 @@ struct LambdaContext<'js, 'a> {
 impl<'js, 'a> IntoJs<'js> for LambdaContext<'js, 'a> {
 	fn into_js(self, ctx:&Ctx<'js>) -> Result<Value<'js>> {
 		let obj = Object::new(ctx.clone())?;
+
 		obj.set("awsRequestId", self.aws_request_id)?;
+
 		obj.set("invokedFunctionArn", self.invoked_function_arn)?;
+
 		obj.set("logGroupName", &self.lambda_environment.log_group_name)?;
+
 		obj.set("logStreamName", &self.lambda_environment.log_stream_name)?;
+
 		obj.set("functionName", &self.lambda_environment.function_name)?;
+
 		obj.set("functionVersion", &self.lambda_environment.function_version)?;
+
 		obj.set("memoryLimitInMB", self.lambda_environment.memory_limit_in_mb)?;
+
 		obj.set("callbackWaitsForEmptyEventLoop", self.callback_waits_for_empty_event_loop)?;
+
 		obj.set("getRemainingTimeInMillis", self.get_remaining_time_in_millis)?;
+
 		obj.set("clientContext", self.client_context)?;
+
 		obj.set("cognitoIdentityJson", self.cognito_identity_json)?;
+
 		Ok(obj.into_value())
 	}
 }
@@ -175,19 +187,27 @@ pub async fn start(ctx:&Ctx<'_>) -> Result<()> {
 
 async fn start_with_cfg(ctx:&Ctx<'_>, config:RuntimeConfig) -> Result<()> {
 	let (module_name, handler_name) = get_module_and_handler_name(ctx, &config.handler)?;
+
 	let task_root = get_task_root();
 
 	// allows CJS handlers
 	let require_function:Function = ctx.globals().get("require")?;
+
 	let require_specifier:String = [task_root.as_str(), module_name].join("/");
+
 	let js_handler_module:Object = require_function.call((require_specifier,))?;
+
 	let js_init = js_handler_module.get::<_, Value>("init")?;
+
 	let js_bootstrap:Object = ctx.globals().get("__bootstrap")?;
+
 	let js_init_tasks:Array = js_bootstrap.get("initTasks")?;
 
 	if js_init.is_function() {
 		let idx = js_init_tasks.len();
+
 		let js_call:Object = js_init.as_function().unwrap().call(())?;
+
 		js_init_tasks.set(idx, js_call)?;
 	}
 
@@ -195,9 +215,11 @@ async fn start_with_cfg(ctx:&Ctx<'_>, config:RuntimeConfig) -> Result<()> {
 	#[allow(clippy::comparison_chain)]
 	if init_tasks_size == 1 {
 		let init_promise = js_init_tasks.get::<Promise>(0)?;
+
 		init_promise.into_future::<()>().await?;
 	} else if init_tasks_size > 1 {
 		let promise_ctor:Object = ctx.globals().get(PredefinedAtom::Promise)?;
+
 		let init_promise:Promise = promise_ctor
 			.get::<_, Function>("all")?
 			.call((This(promise_ctor), js_init_tasks.clone()))?;
@@ -216,14 +238,18 @@ async fn start_with_cfg(ctx:&Ctx<'_>, config:RuntimeConfig) -> Result<()> {
 	let client = HTTP_CLIENT.as_ref().or_throw(ctx)?.clone();
 
 	let base_url = ["http://", &config.runtime_api, "/", ENV_RUNTIME_PATH].concat();
+
 	let handler = handler.as_function().unwrap();
+
 	if let Err(err) = start_process_events(ctx, &client, handler, base_url.as_str(), &config)
 		.await
 		.map_err(|e| CaughtError::from_error(ctx, e))
 	{
 		post_error(ctx, &client, &base_url, "/init/error", &err, None).await?;
+
 		Vm::print_error_and_exit(ctx, err);
 	}
+
 	Ok(())
 }
 
@@ -244,7 +270,9 @@ async fn next_invocation<'js, 'a>(
 
 	if res.status() != StatusCode::OK {
 		let res_bytes = res.collect().await.or_throw(ctx)?.to_bytes();
+
 		let res_str = String::from_utf8_lossy(res_bytes.as_slice());
+
 		return Err(Exception::throw_message(
 			ctx,
 			&["Unexpected /invocation/next response: ", &res_str].concat(),
@@ -255,6 +283,7 @@ async fn next_invocation<'js, 'a>(
 
 	if let Some(trace_id_value) = headers.get(&HEADER_TRACE_ID) {
 		let trace_id_value = String::from_utf8_lossy(trace_id_value.as_bytes());
+
 		env::set_var(ENV_X_AMZN_TRACE_ID, trace_id_value.as_ref());
 	} else {
 		env::remove_var(ENV_X_AMZN_TRACE_ID);
@@ -267,8 +296,10 @@ async fn next_invocation<'js, 'a>(
 
 	let get_remaining_time_in_millis = Func::from(move || {
 		let now = Utc::now();
+
 		deadline_ms - now.timestamp_millis()
 	});
+
 	let get_remaining_time_in_millis =
 		get_remaining_time_in_millis.into_js(ctx)?.into_function().unwrap();
 
@@ -277,11 +308,13 @@ async fn next_invocation<'js, 'a>(
 	} else {
 		rquickjs::Undefined.into_js(ctx)
 	}?;
+
 	let cognito_identity_json = if let Some(json) = headers.get(&HEADER_COGNITO_IDENTITY) {
 		json_parse(ctx, json.as_bytes())
 	} else {
 		rquickjs::Undefined.into_js(ctx)
 	}?;
+
 	let context = LambdaContext {
 		aws_request_id:get_header_value(headers, &HEADER_REQUEST_ID).or_throw(ctx)?,
 		invoked_function_arn:get_header_value(headers, &HEADER_INVOKED_FUNCTION_ARN)
@@ -292,7 +325,9 @@ async fn next_invocation<'js, 'a>(
 		cognito_identity_json,
 		lambda_environment,
 	};
+
 	let bytes = res.collect().await.or_throw(ctx)?.to_bytes();
+
 	let event:Value<'js> = json_parse(ctx, bytes)?;
 
 	Ok(NextInvocationResponse { event, context })
@@ -306,6 +341,7 @@ async fn invoke_response<'js>(
 	result:Value<'js>,
 ) -> Result<()> {
 	let result_json = stringify::json_stringify(ctx, result)?;
+
 	let req = Request::builder()
 		.method("POST")
 		.uri([base_url, "/invocation/", request_id, "/response"].concat())
@@ -314,11 +350,14 @@ async fn invoke_response<'js>(
 		.or_throw(ctx)?;
 
 	let res = client.request(req).await.or_throw(ctx)?;
+
 	match res.status() {
 		StatusCode::ACCEPTED => Ok(()),
 		_ => {
 			let res_bytes = res.collect().await.or_throw(ctx)?.to_bytes();
+
 			let res_str = String::from_utf8_lossy(res_bytes.as_slice());
+
 			Err(Exception::throw_message(
 				ctx,
 				&["Unexpected /invocation/response response: ", &res_str].concat(),
@@ -336,6 +375,7 @@ async fn start_process_events<'js>(
 	config:&RuntimeConfig,
 ) -> rquickjs::Result<()> {
 	let mut iterations = 0;
+
 	let next_invocation_url = [base_url, "/invocation/next"].concat();
 
 	let mut request_id = String::with_capacity(36); //length of uuid
@@ -365,6 +405,7 @@ async fn start_process_events<'js>(
 			}
 
 			let error_path = ["/invocation/", &request_id, "/error"].concat();
+
 			if let Err(err) =
 				post_error(ctx, client, base_url, &error_path, &err, Some(&request_id))
 					.await
@@ -373,15 +414,20 @@ async fn start_process_events<'js>(
 				Vm::print_error_and_exit(ctx, err);
 			}
 		}
+
 		if config.iterations > 0 {
 			if iterations >= config.iterations - 1 {
 				info!("Done in {:?}", now.elapsed().as_millis());
+
 				break;
 			}
+
 			iterations += 1;
 		}
+
 		request_id.clear();
 	}
+
 	Ok(())
 }
 
@@ -398,11 +444,15 @@ async fn process_event<'js>(
 ) -> Result<()> {
 	let NextInvocationResponse { event, context } =
 		next_invocation(ctx, client, next_invocation_url, lambda_environment).await?;
+
 	request_id.clear();
+
 	request_id.push_str(&context.aws_request_id);
+
 	LAMBDA_REQUEST_ID.write().unwrap().replace(context.aws_request_id.to_owned());
 
 	let js_context = context.into_js(ctx)?;
+
 	let handler_result =
 		handler.call::<_, Value>((event.clone(), js_context.as_value().clone()))?;
 
@@ -412,7 +462,9 @@ async fn process_event<'js>(
 		},
 		_ => handler_result,
 	};
+
 	invoke_response(ctx, client, base_url, request_id, result).await?;
+
 	Ok(())
 }
 
@@ -425,23 +477,30 @@ async fn post_error<'js>(
 	request_id:Option<&String>,
 ) -> Result<()> {
 	let mut error_stack = String::new();
+
 	let mut error_type = String::from("Error");
+
 	let error_msg = match error {
 		CaughtError::Error(err) => format!("Error: {:?}", &err),
 		CaughtError::Exception(ex) => {
 			let error_name = get_class_name(ex).unwrap_or(None).unwrap_or(String::from("Error"));
 
 			let mut str = String::with_capacity(100);
+
 			str.push_str(&error_name);
+
 			str.push_str(": ");
+
 			str.push_str(&ex.message().unwrap_or_default());
 
 			error_type = error_name;
 
 			if let Some(mut stack) = ex.stack() {
 				console::replace_newline_with_carriage_return(&mut stack);
+
 				error_stack = stack
 			}
+
 			str
 		},
 		CaughtError::Value(value) => {
@@ -452,10 +511,15 @@ async fn post_error<'js>(
 	};
 
 	let error_object = Object::new(ctx.clone())?;
+
 	error_object.set("errorType", error_type.clone())?;
+
 	error_object.set("errorMessage", error_msg)?;
+
 	error_object.set("stackTrace", error_stack)?;
+
 	error_object.set("requestId", request_id.unwrap_or(&String::from("n/a")))?;
+
 	let error_object = error_object.into_value();
 
 	#[cfg(not(test))]
@@ -474,15 +538,20 @@ async fn post_error<'js>(
 		.header(&HEADER_ERROR_TYPE, error_type)
 		.body(Full::from(bytes::Bytes::from(error_body)))
 		.or_throw(ctx)?;
+
 	let res = client.request(req).await.or_throw(ctx)?;
+
 	if res.status() != StatusCode::ACCEPTED {
 		let res_bytes = res.collect().await.or_throw(ctx)?.to_bytes();
+
 		let res_str = String::from_utf8_lossy(res_bytes.as_slice());
+
 		return Err(Exception::throw_message(
 			ctx,
 			&["Unexpected ", path, " response: ", &res_str].concat(),
 		));
 	}
+
 	Ok(())
 }
 
@@ -491,6 +560,7 @@ fn get_module_and_handler_name<'a>(ctx:&Ctx, handler:&'a str) -> Result<(&'a str
 		.rfind('.')
 		.and_then(|pos| {
 			let (module_name, handler_name) = handler.split_at(pos);
+
 			if !module_name.is_empty() && handler_name.len() > 1 {
 				// removes the dot and make sure the length is greater than 0
 				Some((module_name, &handler_name[1..]))
@@ -531,7 +601,9 @@ fn get_header_value(headers:&HeaderMap, header:&HeaderName) -> StdResult<String,
 mod tests {
 
 	use hyper::header::CONTENT_TYPE;
+
 	use rquickjs::{async_with, CatchResultExt};
+
 	use wiremock::{matchers, Mock, MockServer, ResponseTemplate};
 
 	use crate::{
@@ -593,7 +665,9 @@ mod tests {
 		}
 
 		run_with_handler(&vm, "../fixtures/handler.handler", &runtime_api).await;
+
 		run_with_handler(&vm, "../fixtures/primitive-handler.handler", &runtime_api).await;
+
 		run_with_handler(&vm, "../fixtures/throwing-handler.handler", &runtime_api).await;
 
 		vm.runtime.idle().await;

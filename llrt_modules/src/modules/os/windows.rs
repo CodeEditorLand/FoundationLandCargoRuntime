@@ -18,6 +18,7 @@ pub fn get_version() -> &'static str { &OS_VERSION }
 
 fn release() -> String {
 	let version = OsVersion::current();
+
 	format!("{}.{}.{}", version.major, version.minor, version.build)
 }
 
@@ -25,7 +26,9 @@ fn version() -> Result<String> {
 	let version = OsVersion::current();
 
 	let registry_key = LOCAL_MACHINE.open("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion")?;
+
 	let value = registry_key.get_value("ProductName")?;
+
 	let Value::String(mut value) = value else {
 		return Err(Error::empty());
 	};

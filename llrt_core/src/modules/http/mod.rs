@@ -40,12 +40,14 @@ pub fn get_pool_idle_timeout() -> u64 {
 	let pool_idle_timeout:u64 = env::var(environment::ENV_LLRT_NET_POOL_IDLE_TIMEOUT)
 		.map(|timeout| timeout.parse().unwrap_or(DEFAULT_CONNECTION_POOL_IDLE_TIMEOUT_SECONDS))
 		.unwrap_or(DEFAULT_CONNECTION_POOL_IDLE_TIMEOUT_SECONDS);
+
 	if pool_idle_timeout > 300 {
 		warn!(
 			r#""{}" is exceeds 300s (5min), risking errors due to possible server connection closures."#,
 			environment::ENV_LLRT_NET_POOL_IDLE_TIMEOUT
 		)
 	}
+
 	pool_idle_timeout
 }
 
@@ -84,7 +86,9 @@ pub static TLS_CONFIG:Lazy<io::Result<ClientConfig>> = Lazy::new(|| {
 		if !extra_ca_certs.is_empty() {
 			let file = StdFile::open(extra_ca_certs)
 				.map_err(|_| io::Error::other("Failed to open extra CA certificates file"))?;
+
 			let mut reader = io::BufReader::new(file);
+
 			root_certificates.add_parsable_certificates(
 				rustls_pemfile::certs(&mut reader).filter_map(io::Result::ok),
 			);
@@ -110,9 +114,13 @@ pub fn init(ctx:&Ctx) -> Result<()> {
 	fetch::init(ctx, &globals)?;
 
 	Class::<Request>::define(&globals)?;
+
 	Class::<Response>::define(&globals)?;
+
 	Class::<Headers>::define_with_custom_inspect(&globals)?;
+
 	Class::<URLSearchParams>::define(&globals)?;
+
 	Class::<URL>::define(&globals)?;
 
 	blob::init(ctx, &globals)?;

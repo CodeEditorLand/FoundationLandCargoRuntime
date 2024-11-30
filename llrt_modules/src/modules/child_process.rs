@@ -54,6 +54,7 @@ macro_rules! generate_signal_from_str_fn {
     ($($signal:path),*) => {
         fn process_signal_from_str(signal: &str) -> Option<i32> {
             let signal = ["libc::", signal].concat();
+
             match signal.as_str() {
                 $(stringify!($signal) => Some($signal),)*
                 _ => None,
@@ -92,14 +93,18 @@ fn prepare_shell_args(
 	command_args:Option<Vec<String>>,
 ) -> Vec<String> {
 	let mut string_args = cmd;
+
 	if let Some(command_args) = command_args {
 		string_args.push(' ');
+
 		string_args.push_str(&command_args.join(" "));
 	}
+
 	string_args.push(' ');
 
 	if shell.ends_with("cmd") || shell.ends_with("cmd.exe") {
 		*windows_verbatim_arguments = true;
+
 		vec![
 			String::from("/d"),
 			String::from("/s"),
@@ -164,6 +169,7 @@ impl<'js> ChildProcess<'js> {
 				Some(signal.as_number().unwrap() as i32)
 			} else if signal.is_string() {
 				let signal = signal.as_string().unwrap().to_string()?;
+
 				process_signal_from_str(&signal)
 			} else {
 				None
@@ -205,16 +211,23 @@ impl<'js> ChildProcess<'js> {
 		};
 
 		let stdout_instance = DefaultReadableStream::new(ctx.clone())?;
+
 		let stderr_instance = DefaultReadableStream::new(ctx.clone())?;
+
 		let stdin_instance = DefaultWritableStream::new(ctx.clone())?;
 
 		let instance = Class::instance(ctx.clone(), instance)?;
+
 		let instance2 = instance.clone();
+
 		let instance3 = instance.clone();
+
 		let instance4 = instance.clone();
 
 		instance.set("stderr", stderr_instance.clone())?;
+
 		instance.set("stdout", stdout_instance.clone())?;
+
 		instance.set("stdin", stdin_instance.clone())?;
 
 		match child {
@@ -232,11 +245,13 @@ impl<'js> ChildProcess<'js> {
 					create_output(&ctx, child.stderr.take(), stderr_instance.clone())?;
 
 				let ctx2 = ctx.clone();
+
 				let ctx3 = ctx.clone();
 
 				ctx.spawn_exit(async move {
 					let spawn_proc = async move {
 						let mut exit_code = None;
+
 						let mut exit_signal = None;
 
 						wait_for_process(
@@ -249,6 +264,7 @@ impl<'js> ChildProcess<'js> {
 						.await?;
 
 						let code = exit_code.unwrap_or_default().into_js(&ctx3)?;
+
 						let signal;
 						#[cfg(unix)]
 						{
@@ -275,6 +291,7 @@ impl<'js> ChildProcess<'js> {
 							// ok if sender drops
 							let _ = stderr_join_receiver.await;
 						}
+
 						if let Some(stdout_join_receiver) = stdout_join_receiver {
 							// ok if sender drops
 							let _ = stdout_join_receiver.await;
@@ -283,6 +300,7 @@ impl<'js> ChildProcess<'js> {
 						WritableStream::end(This(stdin_instance));
 
 						ReadableStream::drain(stdout_instance, &ctx3)?;
+
 						ReadableStream::drain(stderr_instance, &ctx3)?;
 
 						ChildProcess::emit_str(
@@ -312,6 +330,7 @@ impl<'js> ChildProcess<'js> {
 					}
 
 					let ex = Exception::from_message(ctx3.clone(), &err_message)?;
+
 					ChildProcess::emit_str(
 						This(instance3),
 						&ctx3,
@@ -319,10 +338,12 @@ impl<'js> ChildProcess<'js> {
 						vec![ex.into()],
 						false,
 					)?;
+
 					Ok(())
 				})?;
 			},
 		}
+
 		Ok(instance)
 	}
 }
@@ -338,6 +359,7 @@ async fn wait_for_process<'js>(
 		tokio::select! {
 			status = child.wait() => {
 				let exit_status = status.or_throw(ctx)?;
+
 				exit_code.replace(exit_status.code().unwrap_or_default());
 
 				#[cfg(unix)]
@@ -348,8 +370,10 @@ async fn wait_for_process<'js>(
 				{
 					_ = exit_signal;
 				}
+
 				break;
 			}
+
 			Ok(signal) = kill_signal_rx.recv() => {
 				#[cfg(unix)]
 				{
@@ -363,13 +387,16 @@ async fn wait_for_process<'js>(
 						}
 					} else {
 						child.kill().await.or_throw(ctx)?;
+
 						break;
 					}
 				}
 				#[cfg(not(unix))]
 				{
 					_ = signal;
+
 					child.kill().await.or_throw(ctx)?;
+
 					break;
 				}
 			},
@@ -389,6 +416,7 @@ fn spawn<'js>(
 	args_and_opts:Rest<Value<'js>>,
 ) -> Result<Class<'js, ChildProcess<'js>>> {
 	let args_0 = args_and_opts.first();
+
 	let args_1 = args_and_opts.get(1);
 
 	let mut opts = None;
@@ -400,16 +428,23 @@ fn spawn<'js>(
 	let mut command_args = if let Some(args_0) = args_0 {
 		if args_0.is_array() {
 			let args = args_0.clone().into_array().or_throw(&ctx)?;
+
 			let mut args_vec = Vec::with_capacity(args.len());
+
 			for arg in args.iter() {
 				let arg:Value = arg?;
+
 				let arg = arg.as_string().or_throw_msg(&ctx, "argument is not a string")?;
+
 				let arg = arg.to_string()?;
+
 				args_vec.push(arg);
 			}
+
 			Some(args_vec)
 		} else if args_0.is_object() {
 			opts = args_0.as_object().map(|o| o.to_owned());
+
 			None
 		} else {
 			None
@@ -430,12 +465,14 @@ fn spawn<'js>(
 			let shell = "cmd.exe".to_string();
 			#[cfg(not(windows))]
 			let shell = "/bin/sh".to_string();
+
 			command_args = Some(prepare_shell_args(
 				&shell,
 				&mut windows_verbatim_arguments,
 				cmd,
 				command_args,
 			));
+
 			shell
 		} else if let Some(shell) = opts.get_optional::<&str, String>("shell")? {
 			command_args = Some(prepare_shell_args(
@@ -444,6 +481,7 @@ fn spawn<'js>(
 				cmd,
 				command_args,
 			));
+
 			shell
 		} else {
 			cmd
@@ -453,6 +491,7 @@ fn spawn<'js>(
 	};
 
 	let mut command = StdCommand::new(cmd.clone());
+
 	if let Some(args) = &command_args {
 		#[cfg(windows)]
 		if windows_verbatim_arguments {
@@ -465,7 +504,9 @@ fn spawn<'js>(
 	}
 
 	let mut stdin = StdioEnum::Piped;
+
 	let mut stdout = StdioEnum::Piped;
+
 	let mut stderr = StdioEnum::Piped;
 
 	if let Some(opts) = opts {
@@ -485,18 +526,23 @@ fn spawn<'js>(
 		if let Some(env) = opts.get_optional::<_, HashMap<String, Coerced<String>>>("env")? {
 			let env:HashMap<String, String> =
 				env.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
+
 			command.envs(env);
 		}
 
 		if let Some(stdio) = opts.get_optional::<_, Value<'js>>("stdio")? {
 			if let Some(stdio_str) = stdio.as_string() {
 				let stdio = str_to_stdio(&ctx, &stdio_str.to_string()?)?;
+
 				stdin = stdio.clone();
+
 				stdout = stdio.clone();
+
 				stderr = stdio;
 			} else if let Some(stdio) = stdio.as_array() {
 				for (i, item) in stdio.iter::<Value>().enumerate() {
 					let item = item?;
+
 					let stdio = if item.is_undefined() || item.is_null() {
 						StdioEnum::Piped
 					} else if let Some(std_io_str) = item.as_string() {
@@ -506,6 +552,7 @@ fn spawn<'js>(
 					} else {
 						StdioEnum::Piped
 					};
+
 					match i {
 						0 => stdin = stdio,
 						1 => stdout = stdio,
@@ -520,7 +567,9 @@ fn spawn<'js>(
 	}
 
 	command.stdin(stdin.to_stdio());
+
 	command.stdout(stdout.to_stdio());
+
 	command.stderr(stderr.to_stdio());
 
 	#[cfg(unix)]
@@ -557,6 +606,7 @@ where
 	T: AsyncRead + Unpin + Send + 'static, {
 	if let Some(output) = output {
 		let receiver = DefaultReadableStream::process(native_readable_stream, ctx, output)?;
+
 		return Ok(Some(receiver));
 	}
 
@@ -568,23 +618,32 @@ pub struct ChildProcessModule;
 impl ModuleDef for ChildProcessModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare("spawn")?;
+
 		declare.declare("default")?;
+
 		Ok(())
 	}
 
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		Class::<ChildProcess>::register(ctx)?;
+
 		Class::<DefaultWritableStream>::register(ctx)?;
+
 		Class::<DefaultReadableStream>::register(ctx)?;
 
 		ChildProcess::add_event_emitter_prototype(ctx)?;
+
 		DefaultWritableStream::add_writable_stream_prototype(ctx)?;
+
 		DefaultWritableStream::add_event_emitter_prototype(ctx)?;
+
 		DefaultReadableStream::add_readable_stream_prototype(ctx)?;
+
 		DefaultReadableStream::add_event_emitter_prototype(ctx)?;
 
 		export_default(ctx, exports, |default| {
 			default.set("spawn", Func::from(spawn))?;
+
 			Ok(())
 		})?;
 
@@ -601,6 +660,7 @@ mod tests {
 	use rquickjs::CatchResultExt;
 
 	use super::*;
+
 	use crate::{
 		buffer,
 		test::{call_test, test_async_with, ModuleEvaluator},
@@ -608,20 +668,24 @@ mod tests {
 
 	async fn given_test_utils(ctx:Ctx<'_>) {
 		buffer::init(&ctx).unwrap();
+
 		ModuleEvaluator::eval_rust::<ChildProcessModule>(ctx.clone(), "child_process")
 			.await
 			.unwrap();
+
 		ModuleEvaluator::eval_js(
 			ctx,
 			"test_utils",
 			r#"
                 export async function driveChild(child) {
                     let output = '';
+
                     child.stdout.on('data', (data) => {
                         output += data.toString();
                     });
 
                     let error = '';
+
                     child.stderr.on('data', (data) => {
                         error += data.toString();
                     });
@@ -653,11 +717,14 @@ mod tests {
 					"test",
 					r#"
                         import { spawn } from "child_process";
+
                         import { driveChild } from "test_utils";
 
                         export async function test() {
                             const child = spawn('echo', ['Hello, world!']);
+
                             const result = await driveChild(child);
+
                             return result;
                         }
                     "#,
@@ -685,11 +752,14 @@ mod tests {
 					"test",
 					r#"
                         import { spawn } from "child_process";
+
                         import { driveChild } from "test_utils";
 
                         export async function test() {
                             const child = spawn('echo', ['Hello, world!'], { shell: true });
+
                             const result = await driveChild(child);
+
                             return result;
                         }
                     "#,

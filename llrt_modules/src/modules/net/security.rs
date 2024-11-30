@@ -34,5 +34,6 @@ pub fn ensure_access(ctx:&Ctx<'_>, resource:&String) -> Result<()> {
 			));
 		}
 	}
+
 	Ok(())
 }

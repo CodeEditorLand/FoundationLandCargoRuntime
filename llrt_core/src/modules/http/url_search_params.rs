@@ -64,6 +64,7 @@ impl<'js> URLSearchParams {
 		if let Some(init) = init.into_inner() {
 			if init.is_string() {
 				let string:String = Coerced::from_js(&ctx, init)?.0;
+
 				return Ok(Self::from_str(string));
 			} else if init.is_array() {
 				return Self::from_array(&ctx, init.into_array().unwrap());
@@ -71,6 +72,7 @@ impl<'js> URLSearchParams {
 				return Self::from_object(&ctx, init.into_object().unwrap());
 			}
 		}
+
 		let url:Url = "http://example.com".parse().unwrap();
 
 		Ok(URLSearchParams { url:Rc::new(RefCell::new(url)) })
@@ -125,6 +127,7 @@ impl<'js> URLSearchParams {
 			.query_pairs()
 			.into_owned()
 			.try_for_each(|(k, v)| callback.call((v, k)))?;
+
 		Ok(())
 	}
 
@@ -145,7 +148,9 @@ impl<'js> URLSearchParams {
 
 	pub fn has(&self, ctx:Ctx<'js>, key:Coerced<String>, value:Opt<Value<'js>>) -> bool {
 		let value = get_coerced_string_value(&ctx, value);
+
 		let key = key.0;
+
 		self.url.borrow().query_pairs().any(|(k, v)| {
 			if let Some(value) = value.as_ref() {
 				return *k == key && *v == *value;
@@ -160,10 +165,12 @@ impl<'js> URLSearchParams {
 
 	pub fn set(&mut self, key:Coerced<String>, value:Coerced<String>) {
 		let key = key.0;
+
 		let value = value.0;
 
 		// Use a HashSet just to filter duplicates
 		let mut uniques = HashSet::new();
+
 		let mut new_query_pairs:Vec<(String, String)> = Vec::new();
 
 		for (k, v) in self.url.borrow().query_pairs() {
@@ -171,6 +178,7 @@ impl<'js> URLSearchParams {
 			let value = if k == key { value.clone() } else { v.to_string() };
 
 			let query_pair = (k.to_string(), value);
+
 			if uniques.insert(query_pair.clone()) {
 				new_query_pairs.push(query_pair);
 			}
@@ -178,6 +186,7 @@ impl<'js> URLSearchParams {
 
 		// Append a new key/value pair
 		let query_pair = (key, value);
+
 		if uniques.insert(query_pair.clone()) {
 			new_query_pairs.push(query_pair);
 		}
@@ -188,6 +197,7 @@ impl<'js> URLSearchParams {
 	pub fn sort(&mut self) {
 		let mut new_pairs:Vec<(String, String)> =
 			self.url.borrow().query_pairs().into_owned().collect();
+
 		new_pairs.sort_by(|(a, _), (b, _)| a.cmp(b));
 
 		if new_pairs.is_empty() {
@@ -203,16 +213,21 @@ impl<'js> URLSearchParams {
 		// each key/value
 		// TODO: This should probably be fixed in the Url crate
 		let url = self.url.borrow();
+
 		url.query_pairs().fold(
 			String::with_capacity(url.query().map_or(0, |q| q.len())),
 			|mut acc, (key, value)| {
 				if !acc.is_empty() {
 					acc.push('&');
 				}
+
 				url::form_urlencoded::byte_serialize(key.as_bytes()).for_each(|b| acc.push_str(b));
+
 				acc.push('=');
+
 				url::form_urlencoded::byte_serialize(value.as_bytes())
 					.for_each(|b| acc.push_str(b));
+
 				acc
 			},
 		)
@@ -232,7 +247,9 @@ impl<'js> URLSearchParams {
 	#[allow(clippy::should_implement_trait)]
 	pub fn from_str(query:String) -> Self {
 		let query = if !query.starts_with('?') { ["?", &query].concat() } else { query };
+
 		let url = "http://example.com".parse::<Url>().unwrap().join(&query).unwrap();
+
 		Self { url:Rc::new(RefCell::new(url)) }
 	}
 
@@ -240,6 +257,7 @@ impl<'js> URLSearchParams {
 
 	pub fn from_array(ctx:&Ctx<'js>, array:Array) -> Result<Self> {
 		let mut url:Url = "http://example.com".parse().unwrap();
+
 		let query_pairs:Vec<(String, String)> = array
 			.into_iter()
 			.map(|value| {
@@ -254,6 +272,7 @@ impl<'js> URLSearchParams {
 						}
 					}
 				};
+
 				Err(Exception::throw_type(
 					ctx,
 					"Invalid tuple: Each query pair must be an iterable [name, value] tuple",
@@ -270,20 +289,28 @@ impl<'js> URLSearchParams {
 
 	pub fn from_object(ctx:&Ctx<'js>, object:Object<'js>) -> Result<Self> {
 		let iterator = Symbol::iterator(ctx.clone());
+
 		if object.contains_key(iterator)? {
 			let array_object:Object = ctx.globals().get(PredefinedAtom::Array)?;
+
 			let array_from:Function = array_object.get(PredefinedAtom::From)?;
+
 			let query_pairs:Array = array_from.call((object,))?;
+
 			return Self::from_array(ctx, query_pairs);
 		}
 
 		let mut url:Url = "http://example.com".parse().unwrap();
+
 		let query_pairs:Vec<(String, String)> = object
 			.keys::<Value<'js>>()
 			.map(|key| {
 				let key = key?;
+
 				let key_string:String = Coerced::from_js(ctx, key.clone())?.0;
+
 				let value:String = object.get::<_, Coerced<String>>(key)?.0;
+
 				Ok((key_string, value))
 			})
 			.collect::<Result<Vec<_>>>()?
@@ -307,6 +334,7 @@ pub struct URLSearchParamsIter {
 impl<'js> URLSearchParamsIter {
 	pub fn next(&mut self, ctx:Ctx<'js>) -> Result<Object<'js>> {
 		let obj = Object::new(ctx.clone())?;
+
 		let value = (*self.params.url.borrow())
 			.query_pairs()
 			.nth(self.index as _)
@@ -314,6 +342,7 @@ impl<'js> URLSearchParamsIter {
 
 		if let Some(value) = value {
 			obj.set("done", false)?;
+
 			obj.set("value", value)?;
 		} else {
 			obj.set("done", true)?;
@@ -328,12 +357,17 @@ impl<'js> URLSearchParamsIter {
 impl<'js> IteratorDef<'js> for URLSearchParams {
 	fn js_entries(&self, ctx:Ctx<'js>) -> Result<Array<'js>> {
 		let array = Array::new(ctx.clone())?;
+
 		for (idx, (key, value)) in self.url.borrow().query_pairs().into_owned().enumerate() {
 			let entry = Array::new(ctx.clone())?;
+
 			entry.set(0, key)?;
+
 			entry.set(1, value)?;
+
 			array.set(idx, entry)?;
 		}
+
 		Ok(array)
 	}
 }
@@ -346,5 +380,6 @@ fn get_coerced_string_value<'js>(ctx:&Ctx<'js>, value:Opt<Value<'js>>) -> Option
 			}
 		}
 	};
+
 	None
 }

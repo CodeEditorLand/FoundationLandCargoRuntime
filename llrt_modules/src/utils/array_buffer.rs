@@ -28,66 +28,79 @@ impl<'js> IntoJs<'js> for ArrayBufferView<'js> {
 impl<'js> FromJs<'js> for ArrayBufferView<'js> {
 	fn from_js(_ctx:&Ctx<'js>, value:Value<'js>) -> Result<Self> {
 		let ty_name = value.type_name();
+
 		let obj = Object::from_value(value.clone())
 			.map_err(|_| Error::new_from_js(ty_name, "ArrayBufferView"))?;
 
 		if let Some(array_buffer) = ArrayBuffer::from_object(obj.clone()) {
 			let buffer = array_buffer.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i8>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u8>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i16>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u16>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i32>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u32>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<f32>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<f64>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<i64>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(typed_array) = TypedArray::<u64>::from_object(obj.clone()) {
 			let buffer = typed_array.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
 		if let Ok(array_buffer) = obj.get::<_, ArrayBuffer>("buffer") {
 			let buffer = array_buffer.as_raw().map(|raw| RawArrayBuffer::new(raw.len, raw.ptr));
+
 			return Ok(ArrayBufferView { value, buffer });
 		}
 
@@ -99,6 +112,7 @@ impl<'js> ArrayBufferView<'js> {
 	#[cfg(feature = "buffer")]
 	pub fn from_buffer(ctx:&Ctx<'js>, buffer:Buffer) -> Result<Self> {
 		let value = buffer.into_js(ctx)?;
+
 		Self::from_js(ctx, value)
 	}
 

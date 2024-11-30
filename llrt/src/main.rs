@@ -42,19 +42,25 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 	let now = Instant::now();
 
 	MinimalTracer::register()?;
+
 	trace!("Started runtime");
 
 	let vm = Vm::new().await?;
+
 	trace!("Initialized VM in {}ms", now.elapsed().as_millis());
 
 	if env::var("AWS_LAMBDA_RUNTIME_API").is_ok() && env::var("_HANDLER").is_ok() {
 		let aws_lambda_json_log_format =
 			env::var("AWS_LAMBDA_LOG_FORMAT") == Ok("JSON".to_string());
+
 		let aws_lambda_log_level = env::var("AWS_LAMBDA_LOG_LEVEL").unwrap_or_default();
+
 		let log_level = LogLevel::from_str(&aws_lambda_log_level);
 
 		console::AWS_LAMBDA_JSON_LOG_LEVEL.store(log_level as usize, Ordering::Relaxed);
+
 		console::AWS_LAMBDA_MODE.store(true, Ordering::Relaxed);
+
 		console::AWS_LAMBDA_JSON_LOG_FORMAT.store(aws_lambda_json_log_format, Ordering::Relaxed);
 
 		start_runtime(&vm).await
@@ -73,6 +79,7 @@ fn print_version() {
 
 fn usage() {
 	print_version();
+
 	println!(
 		r#"
 
@@ -113,27 +120,33 @@ async fn start_cli(vm:&Vm) {
 	if args.len() > 1 {
 		for (i, arg) in args.iter().enumerate() {
 			let arg = arg.as_str();
+
 			if i == 1 {
 				match arg {
 					"-v" | "--version" => {
 						print_version();
+
 						return;
 					},
 					"-h" | "--help" => {
 						usage();
+
 						return;
 					},
 					"-e" | "--eval" => {
 						if let Some(source) = args.get(i + 1) {
 							vm.run(source.as_bytes(), false).await;
 						}
+
 						return;
 					},
 					"test" => {
 						if let Err(error) = run_tests(vm, &args[i + 1..]).await {
 							eprintln!("{error}");
+
 							exit(1);
 						}
+
 						return;
 					},
 					"compile" => {
@@ -144,25 +157,33 @@ async fn start_cli(vm:&Vm) {
 									arg.to_string()
 								} else {
 									let mut buf = PathBuf::from(filename);
+
 									buf.set_extension("lrt");
+
 									buf.to_string_lossy().to_string()
 								};
 
 								let filename = Path::new(filename);
+
 								let output_filename = Path::new(&output_filename);
+
 								if let Err(error) = compile_file(filename, output_filename).await {
 									eprintln!("{error}");
+
 									exit(1);
 								}
+
 								return;
 							} else {
 								eprintln!("compile: input filename is required.");
+
 								exit(1);
 							}
 						}
 						#[cfg(feature = "lambda")]
 						{
 							eprintln!("Not supported in \"lambda\" version.");
+
 							exit(1);
 						}
 					},
@@ -172,20 +193,27 @@ async fn start_cli(vm:&Vm) {
 				let (_, ext) = get_basename_ext_name(arg);
 
 				let filename = Path::new(arg);
+
 				let file_exists = filename.exists();
+
 				if let ".js" | ".mjs" | ".cjs" = ext {
 					if file_exists {
 						return vm.run_file(filename).await;
 					} else {
 						eprintln!("No such file: {}", arg);
+
 						exit(1);
 					}
 				}
+
 				if file_exists {
 					return vm.run_file(filename).await;
 				}
+
 				eprintln!("Unknown command: {}", arg);
+
 				usage();
+
 				exit(1);
 			}
 		}
@@ -204,14 +232,18 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 	for (i, arg) in args.iter().enumerate() {
 		if skip_next {
 			skip_next = false;
+
 			continue;
 		}
+
 		if arg == "-d" {
 			if let Some(dir) = args.get(i + 1) {
 				if !Path::new(dir).exists() {
 					return Err(["\"", dir.as_str(), "\" does not exist"].concat());
 				}
+
 				root = dir;
+
 				skip_next = true;
 			}
 		} else {
@@ -222,6 +254,7 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 	let now = Instant::now();
 
 	let mut entries:Vec<String> = Vec::with_capacity(100);
+
 	let has_filters = !filters.is_empty();
 
 	if has_filters {
@@ -233,6 +266,7 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 	let mut directory_walker = DirectoryWalker::new(PathBuf::from(root), |name| {
 		name != "node_modules" && !name.starts_with('.')
 	});
+
 	directory_walker.set_recursive(true);
 
 	let test_js_extensions:Vec<String> =
@@ -241,7 +275,9 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 	while let Some((entry, _)) = directory_walker.walk().await.map_err(|e| e.to_string())? {
 		if let Some(name) = entry.file_name() {
 			let name = name.to_string_lossy();
+
 			let name = name.as_ref();
+
 			for ext_name in &test_js_extensions {
 				if name.ends_with(ext_name)
 					&& (!has_filters || filters.iter().any(|&f| name.contains(f)))
@@ -256,6 +292,7 @@ async fn run_tests(vm:&Vm, args:&[std::string::String]) -> Result<(), String> {
 
 	vm.run_with(|ctx| {
 		ctx.globals().set("__testEntries", entries)?;
+
 		Ok(())
 	})
 	.await;

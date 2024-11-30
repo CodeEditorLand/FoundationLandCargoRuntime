@@ -29,7 +29,9 @@ impl Crc32c {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().hasher.write(&bytes);
+
 		Ok(this.0)
 	}
 }
@@ -56,7 +58,9 @@ impl Crc32 {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().hasher.write(&bytes);
+
 		Ok(this.0)
 	}
 }

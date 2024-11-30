@@ -58,6 +58,7 @@ pub(crate) struct ReadFileOptions {
 impl<'js> FromJs<'js> for ReadFileOptions {
 	fn from_js(_ctx:&Ctx<'js>, value:Value<'js>) -> Result<Self> {
 		let ty_name = value.type_name();
+
 		let obj = value.as_object().ok_or(Error::new_from_js(ty_name, "Object"))?;
 
 		let encoding = obj.get_optional::<_, String>("encoding")?;

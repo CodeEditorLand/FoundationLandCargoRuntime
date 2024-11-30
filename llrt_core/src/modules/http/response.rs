@@ -37,67 +37,129 @@ use crate::{
 
 static STATUS_TEXTS:Lazy<HashMap<u16, &'static str>> = Lazy::new(|| {
 	let mut map = HashMap::new();
+
 	map.insert(100, "Continue");
+
 	map.insert(101, "Switching Protocols");
+
 	map.insert(102, "Processing");
+
 	map.insert(103, "Early Hints");
+
 	map.insert(200, "OK");
+
 	map.insert(201, "Created");
+
 	map.insert(202, "Accepted");
+
 	map.insert(203, "Non-Authoritative Information");
+
 	map.insert(204, "No Content");
+
 	map.insert(205, "Reset Content");
+
 	map.insert(206, "Partial Content");
+
 	map.insert(207, "Multi-Status");
+
 	map.insert(208, "Already Reported");
+
 	map.insert(226, "IM Used");
+
 	map.insert(300, "Multiple Choices");
+
 	map.insert(301, "Moved Permanently");
+
 	map.insert(302, "Found");
+
 	map.insert(303, "See Other");
+
 	map.insert(304, "Not Modified");
+
 	map.insert(305, "Use Proxy");
+
 	map.insert(307, "Temporary Redirect");
+
 	map.insert(308, "Permanent Redirect");
+
 	map.insert(400, "Bad Request");
+
 	map.insert(401, "Unauthorized");
+
 	map.insert(402, "Payment Required");
+
 	map.insert(403, "Forbidden");
+
 	map.insert(404, "Not Found");
+
 	map.insert(405, "Method Not Allowed");
+
 	map.insert(406, "Not Acceptable");
+
 	map.insert(407, "Proxy Authentication Required");
+
 	map.insert(408, "Request Timeout");
+
 	map.insert(409, "Conflict");
+
 	map.insert(410, "Gone");
+
 	map.insert(411, "Length Required");
+
 	map.insert(412, "Precondition Failed");
+
 	map.insert(413, "Payload Too Large");
+
 	map.insert(414, "URI Too Long");
+
 	map.insert(415, "Unsupported Media Type");
+
 	map.insert(416, "Range Not Satisfiable");
+
 	map.insert(417, "Expectation Failed");
+
 	map.insert(418, "I'm a teapot");
+
 	map.insert(421, "Misdirected Request");
+
 	map.insert(422, "Unprocessable Content");
+
 	map.insert(423, "Locked");
+
 	map.insert(424, "Failed Dependency");
+
 	map.insert(425, "Too Early");
+
 	map.insert(426, "Upgrade Required");
+
 	map.insert(428, "Precondition Required");
+
 	map.insert(429, "Too Many Requests");
+
 	map.insert(431, "Request Header Fields Too Large");
+
 	map.insert(451, "Unavailable For Legal Reasons");
+
 	map.insert(500, "Internal Server Error");
+
 	map.insert(501, "Not Implemented");
+
 	map.insert(502, "Bad Gateway");
+
 	map.insert(503, "Service Unavailable");
+
 	map.insert(504, "Gateway Timeout");
+
 	map.insert(505, "HTTP Version Not Supported");
+
 	map.insert(506, "Variant Also Negotiates");
+
 	map.insert(507, "Insufficient Storage");
+
 	map.insert(508, "Loop Detected");
+
 	map.insert(510, "Not Extended");
+
 	map.insert(511, "Network Authentication Required");
 
 	map
@@ -119,7 +181,9 @@ impl<'js> Response<'js> {
 		abort_receiver:Option<mc_oneshot::Receiver<Value<'js>>>,
 	) -> Result<Self> {
 		let response_headers = response.headers();
+
 		let mut content_type = None;
+
 		if let Some(content_type_header) =
 			response_headers.get(HeaderName::from_static("content-type"))
 		{
@@ -129,6 +193,7 @@ impl<'js> Response<'js> {
 		}
 
 		let mut content_encoding = None;
+
 		if let Some(content_encoding_header) =
 			response_headers.get(HeaderName::from_static("content-encoding"))
 		{
@@ -138,6 +203,7 @@ impl<'js> Response<'js> {
 		}
 
 		let headers = Headers::from_http_headers(response.headers())?;
+
 		let headers = Class::instance(ctx.clone(), headers)?;
 
 		let status = response.status();
@@ -162,6 +228,7 @@ impl<'js> Response<'js> {
 		let bytes = match &mut self.body {
 			Some(BodyVariant::Incoming(incoming)) => {
 				let mut body = incoming.take().ok_or(Exception::throw_type(ctx, "Already read"))?;
+
 				let bytes = if let Some(abort_signal) = &self.abort_receiver {
 					select! {
 						err = abort_signal.recv() => return Err(ctx.throw(err)),
@@ -173,6 +240,7 @@ impl<'js> Response<'js> {
 
 				if let Some(content_encoding) = &self.body_attributes.content_encoding {
 					let mut data:Vec<u8> = Vec::with_capacity(bytes.len());
+
 					match content_encoding.as_str() {
 						"zstd" => ZstdDecoder::new(&bytes[..])?.read_to_end(&mut data)?,
 						"br" => BrotliDecoder::new(&bytes[..]).read_to_end(&mut data)?,
@@ -182,6 +250,7 @@ impl<'js> Response<'js> {
 							return Err(Exception::throw_message(ctx, "Unsupported encoding"));
 						},
 					};
+
 					data
 				} else {
 					bytes.to_vec()
@@ -190,6 +259,7 @@ impl<'js> Response<'js> {
 			Some(BodyVariant::Provided(provided)) => {
 				if let Some(blob) = provided.as_object().and_then(Class::<Blob>::from_object) {
 					let blob = blob.borrow();
+
 					blob.get_bytes()
 				} else {
 					get_bytes(ctx, provided.clone())?
@@ -227,17 +297,22 @@ impl<'js> Response<'js> {
 	#[qjs(constructor)]
 	pub fn new(ctx:Ctx<'js>, body:Opt<Value<'js>>, options:Opt<Object<'js>>) -> Result<Self> {
 		let mut status = 200;
+
 		let mut headers = None;
+
 		let mut status_text = None;
+
 		let mut abort_receiver = None;
 
 		if let Some(opt) = options.0 {
 			if let Some(status_opt) = opt.get("status")? {
 				status = status_opt;
 			}
+
 			if let Some(headers_opt) = opt.get("headers")? {
 				headers = Some(Headers::from_value(&ctx, headers_opt)?);
 			}
+
 			if let Some(status_text_opt) = opt.get("statusText")? {
 				status_text = Some(status_text_opt);
 			}
@@ -308,6 +383,7 @@ impl<'js> Response<'js> {
 		if let Some(text) = &self.status_text {
 			return text.to_string();
 		}
+
 		STATUS_TEXTS.get(&self.status).unwrap_or(&"").to_string()
 	}
 
@@ -316,6 +392,7 @@ impl<'js> Response<'js> {
 		if let Some(BodyVariant::Incoming(body)) = &self.body {
 			return body.is_none();
 		}
+
 		false
 	}
 
@@ -323,6 +400,7 @@ impl<'js> Response<'js> {
 		if let Some(bytes) = self.take_bytes(&ctx).await? {
 			return Ok(String::from_utf8_lossy(&bytes).to_string());
 		}
+
 		Ok("".into())
 	}
 
@@ -330,6 +408,7 @@ impl<'js> Response<'js> {
 		if let Some(bytes) = self.take_bytes(&ctx).await? {
 			return json_parse(&ctx, bytes);
 		}
+
 		Err(Exception::throw_syntax(&ctx, "JSON input is empty"))
 	}
 
@@ -337,6 +416,7 @@ impl<'js> Response<'js> {
 		if let Some(bytes) = self.take_bytes(&ctx).await? {
 			return ArrayBuffer::new(ctx, bytes);
 		}
+
 		ArrayBuffer::new(ctx, Vec::<u8>::new())
 	}
 
@@ -344,6 +424,7 @@ impl<'js> Response<'js> {
 		if let Some(bytes) = self.take_bytes(&ctx).await? {
 			return TypedArray::new(ctx, bytes).map(|m| m.into_value());
 		}
+
 		TypedArray::new(ctx, Vec::<u8>::new()).map(|m| m.into_value())
 	}
 
@@ -351,15 +432,18 @@ impl<'js> Response<'js> {
 		if let Some(bytes) = self.take_bytes(&ctx).await? {
 			return Ok(Blob::from_bytes(bytes, self.body_attributes.content_type.clone()));
 		}
+
 		Ok(Blob::from_bytes(Vec::<u8>::new(), None))
 	}
 
 	fn clone(&mut self, ctx:Ctx<'js>) -> Result<Self> {
 		let body = if self.body.is_some() {
 			let array_buffer_future = self.array_buffer(ctx.clone());
+
 			let array_buffer = tokio::task::block_in_place(move || {
 				Handle::current().block_on(array_buffer_future)
 			})?;
+
 			Some(BodyVariant::Provided(array_buffer.into_value()))
 		} else {
 			None
@@ -398,16 +482,20 @@ impl<'js> Response<'js> {
 	#[qjs(static, rename = "json")]
 	fn json_static(ctx:Ctx<'js>, body:Value<'js>, options:Opt<Object<'js>>) -> Result<Self> {
 		let mut status = 200;
+
 		let mut headers = None;
+
 		let mut status_text = None;
 
 		if let Some(opt) = options.0 {
 			if let Some(status_opt) = opt.get("status")? {
 				status = status_opt;
 			}
+
 			if let Some(headers_opt) = opt.get("headers")? {
 				headers = Some(Headers::from_value(&ctx, headers_opt)?);
 			}
+
 			if let Some(status_text_opt) = opt.get("statusText")? {
 				status_text = Some(status_text_opt);
 			}
@@ -441,8 +529,11 @@ impl<'js> Response<'js> {
 		let status = status.0.unwrap_or(302_u16);
 
 		let mut header = BTreeMap::new();
+
 		header.insert("location".to_string(), Coerced(url.to_string()));
+
 		let headers = Headers::from_map(header);
+
 		let headers = Class::instance(ctx.clone(), headers)?;
 
 		Ok(Self {
@@ -463,6 +554,7 @@ impl<'js> Response<'js> {
 impl<'js> Trace<'js> for Response<'js> {
 	fn trace<'a>(&self, tracer:Tracer<'a, 'js>) {
 		self.headers.trace(tracer);
+
 		if let Some(BodyVariant::Provided(body)) = &self.body {
 			body.trace(tracer);
 		}

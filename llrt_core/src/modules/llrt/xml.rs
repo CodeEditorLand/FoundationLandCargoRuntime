@@ -58,6 +58,7 @@ impl<'js> Trace<'js> for XMLParser<'js> {
 		if let Some(tag_value_processor) = &self.tag_value_processor {
 			tracer.mark(tag_value_processor)
 		}
+
 		if let Some(attribute_value_processor) = &self.attribute_value_processor {
 			tracer.mark(attribute_value_processor)
 		}
@@ -84,19 +85,28 @@ impl<'js> XMLParser<'js> {
 	#[qjs(constructor)]
 	pub fn new(_ctx:Ctx<'js>, options:Opt<Object<'js>>) -> Result<Self> {
 		let mut tag_value_processor = None;
+
 		let mut attribute_value_processor = None;
+
 		let mut attribute_name_prefix = String::from("@_");
+
 		let mut ignore_attributes = true;
+
 		let mut text_node_name = String::from("#text");
+
 		if let Some(options) = options.0 {
 			tag_value_processor = options.get_optional("tagValueProcessor")?;
+
 			attribute_value_processor = options.get_optional("attributeValueProcessor")?;
+
 			if let Some(prefix) = options.get_optional("attributeNamePrefix")? {
 				attribute_name_prefix = prefix;
 			}
+
 			if let Some(attributes_ignored) = options.get_optional("ignoreAttributes")? {
 				ignore_attributes = attributes_ignored
 			}
+
 			if let Some(name) = options.get_optional("textNodeName")? {
 				text_node_name = name
 			}
@@ -120,16 +130,25 @@ impl<'js> XMLParser<'js> {
 
 	pub fn parse(&self, ctx:Ctx<'js>, xml:Value<'js>) -> Result<Object<'js>> {
 		let bytes = get_bytes(&ctx, xml)?;
+
 		let mut reader = Reader::from_reader(bytes.as_ref());
+
 		let config = reader.config_mut();
+
 		config.trim_text(true);
 
 		let mut current_obj = StackObject::new(ctx.clone())?;
+
 		current_obj.has_value = true;
+
 		let mut buf = Vec::new();
+
 		let mut current_key:Rc<str> = "".into();
+
 		let mut current_value:Option<Rc<str>> = None;
+
 		let mut path:Vec<(Rc<str>, StackObject<'js>)> = vec![];
+
 		let mut has_attributes = false;
 
 		loop {
@@ -140,17 +159,22 @@ impl<'js> XMLParser<'js> {
 					current_key = Self::get_tag_name(&ctx, &reader, tag)?;
 
 					let mut obj = StackObject::new(ctx.clone())?;
+
 					self.process_attributes(&ctx, &reader, &path, tag, &mut obj, &mut false)?;
+
 					current_obj.has_value = true;
 
 					Self::process_end(&ctx, &current_obj, obj.into_value(&ctx)?, &current_key)?;
 				},
 				Ok(Event::Start(ref tag)) => {
 					has_attributes = false;
+
 					current_key = Self::get_tag_name(&ctx, &reader, tag)?;
+
 					path.push((current_key.clone(), current_obj));
 
 					let obj = StackObject::new(ctx.clone())?;
+
 					current_obj = obj;
 
 					self.process_attributes(
@@ -164,7 +188,9 @@ impl<'js> XMLParser<'js> {
 				},
 				Ok(Event::End(_)) => {
 					let (parent_tag, mut parent_obj) = path.pop().unwrap();
+
 					parent_obj.has_value = true;
+
 					let value = if let Some(value) = current_value.take() {
 						value.into_js(&ctx)?
 					} else {
@@ -177,12 +203,17 @@ impl<'js> XMLParser<'js> {
 				},
 				Ok(Event::CData(text)) => {
 					let text = text.escape().or_throw(&ctx)?;
+
 					let tag_value = String::from_utf8_lossy(text.as_ref());
+
 					let tag_value = tag_value.as_ref();
+
 					let tag_value =
 						self.process_tag_value(&path, &current_key, tag_value, has_attributes)?;
+
 					if has_attributes {
 						current_obj.has_value = true;
+
 						current_obj.obj.set(self.text_node_name.as_ref(), tag_value.as_ref())?;
 					} else {
 						current_value = Some(tag_value)
@@ -195,12 +226,15 @@ impl<'js> XMLParser<'js> {
 								.or_else(|| self.entities.get(v).map(|x| x.as_ref()))
 						})
 						.or_throw(&ctx)?;
+
 					let tag_value = tag_value.as_ref();
+
 					let tag_value =
 						self.process_tag_value(&path, &current_key, tag_value, has_attributes)?;
 
 					if has_attributes {
 						current_obj.has_value = true;
+
 						current_obj.obj.set(self.text_node_name.as_ref(), tag_value.as_ref())?;
 					} else {
 						current_value = Some(tag_value)
@@ -213,6 +247,7 @@ impl<'js> XMLParser<'js> {
 				_ => {},
 			}
 		}
+
 		Ok(current_obj.obj)
 	}
 }
@@ -220,7 +255,9 @@ impl<'js> XMLParser<'js> {
 impl<'js> XMLParser<'js> {
 	fn get_tag_name(ctx:&Ctx<'js>, reader:&Reader<&[u8]>, tag:&BytesStart<'_>) -> Result<Rc<str>> {
 		let tag = tag.name();
+
 		let tag_name = reader.decoder().decode(tag.as_ref()).or_throw(ctx)?;
+
 		Ok(tag_name.as_ref().into())
 	}
 
@@ -232,14 +269,20 @@ impl<'js> XMLParser<'js> {
 	) -> Result<()> {
 		if current_obj.obj.contains_key(tag)? {
 			let parent_value:Value = current_obj.obj.get(tag)?;
+
 			if !parent_value.is_array() {
 				let array = Array::new(ctx.clone())?;
+
 				array.set(0, parent_value)?;
+
 				array.set(1, value)?;
+
 				current_obj.obj.set(tag, array.as_value())?;
 			} else {
 				let array = parent_value.as_array().or_throw(ctx)?;
+
 				array.set(array.len(), value)?;
+
 				current_obj.obj.set(tag, array.as_value())?;
 			}
 		} else {
@@ -247,6 +290,7 @@ impl<'js> XMLParser<'js> {
 				.obj
 				.prop(tag, Property::from(value).configurable().enumerable().writable())?;
 		}
+
 		Ok(())
 	}
 
@@ -259,15 +303,20 @@ impl<'js> XMLParser<'js> {
 	) -> Result<()> {
 		if let Some(attribute_value_processor) = &self.attribute_value_processor {
 			let jpath = path.join(".");
+
 			let jpath = jpath.as_str();
+
 			if let Some(new_value) =
 				attribute_value_processor.call::<_, Option<String>>((key, value, jpath))?
 			{
 				stack_object.obj.set(key, new_value)?;
+
 				return Ok(());
 			}
 		}
+
 		stack_object.obj.set(key, value)?;
+
 		Ok(())
 	}
 
@@ -282,29 +331,39 @@ impl<'js> XMLParser<'js> {
 	) -> Result<()> {
 		if !self.ignore_attributes {
 			let jpath_str = path.iter().map(|(k, _)| k.as_ref()).collect::<Vec<_>>();
+
 			for attribute in tag.attributes() {
 				stack_object.has_value = true;
 				*has_attributes = true;
+
 				let attr = attribute.or_throw(ctx)?;
 
 				let value = reader.decoder().decode(attr.value.as_ref()).or_throw(ctx)?;
+
 				let value = value.as_ref();
 
 				let key_slice = attr.key.as_ref();
+
 				if !self.attribute_name_prefix.is_empty() {
 					let prefix_bytes = self.attribute_name_prefix.as_bytes();
+
 					let mut key_bytes = Vec::with_capacity(prefix_bytes.len() + key_slice.len());
+
 					key_bytes.extend_from_slice(prefix_bytes);
+
 					key_bytes.extend_from_slice(key_slice);
 
 					let key = reader.decoder().decode(&key_bytes).or_throw(ctx)?;
+
 					self.set_attribute(stack_object, &jpath_str, key.as_ref(), value)?;
 				} else {
 					let key = reader.decoder().decode(key_slice).or_throw(ctx)?;
+
 					self.set_attribute(stack_object, &jpath_str, key.as_ref(), value)?;
 				};
 			}
 		}
+
 		Ok(())
 	}
 
@@ -331,6 +390,7 @@ impl<'js> XMLParser<'js> {
 				return Ok(new_value.into());
 			}
 		}
+
 		Ok::<_, Error>(value.into())
 	}
 }
@@ -350,7 +410,9 @@ impl XmlText {
 	#[qjs(constructor)]
 	fn new(value:String) -> Self {
 		let mut escaped = String::with_capacity(value.len());
+
 		escape_element(&mut escaped, &value);
+
 		XmlText { value:escaped.into() }
 	}
 
@@ -397,6 +459,7 @@ impl<'js> XmlNode<'js> {
 
 		if let Some(text) = child_text.0 {
 			let xml_text = Class::instance(ctx.clone(), XmlText::new(text))?;
+
 			node.children.push(xml_text.into_value());
 		}
 
@@ -409,37 +472,47 @@ impl<'js> XmlNode<'js> {
 
 	fn with_name(this:This<Class<'js, Self>>, name:String) -> Class<'js, Self> {
 		this.borrow_mut().name = name;
+
 		this.0
 	}
 
 	fn add_attribute(this:This<Class<'js, Self>>, name:String, value:String) -> Class<'js, Self> {
 		let this2 = this.clone();
+
 		let mut borrow = this2.borrow_mut();
+
 		if let Some(pos) = borrow.attributes.iter().position(|(a, _)| a == &name) {
 			borrow.attributes[pos] = (name, value);
 		} else {
 			borrow.attributes.push((name, value));
 		}
+
 		this.0
 	}
 
 	fn add_child_node(this:This<Class<'js, Self>>, value:Value<'js>) -> Result<Class<'js, Self>> {
 		let this2 = this.clone();
+
 		this2.borrow_mut().children.push(value);
+
 		Ok(this.0)
 	}
 
 	fn remove_attribute(this:This<Class<'js, Self>>, name:String) -> Class<'js, Self> {
 		let this2 = this.clone();
+
 		let mut borrow = this2.borrow_mut();
+
 		if let Some(pos) = borrow.attributes.iter().position(|(a, _)| a == &name) {
 			borrow.attributes.remove(pos);
 		}
+
 		this.0
 	}
 
 	fn to_string(this:This<Class<'js, Self>>, ctx:Ctx<'js>) -> Result<String> {
 		let class = this.0;
+
 		let mut xml_text = String::with_capacity(8);
 
 		let mut stack = vec![NodeStackEntry::Node(class)];
@@ -448,20 +521,28 @@ impl<'js> XmlNode<'js> {
 			match node {
 				NodeStackEntry::Node(node) => {
 					let borrow = node.borrow();
+
 					xml_text.push('<');
+
 					xml_text.push_str(&borrow.name);
 
 					for (attribute_name, attribute) in &borrow.attributes {
 						xml_text.push(' ');
+
 						xml_text.push_str(attribute_name);
+
 						xml_text.push_str("=\"");
+
 						escape_attribute(&mut xml_text, attribute);
+
 						xml_text.push('"');
 					}
 
 					let has_children = !borrow.children.is_empty();
+
 					if has_children {
 						stack.push(NodeStackEntry::End(borrow.name.clone()));
+
 						xml_text.push('>');
 
 						// Add children to the stack in reverse order (to
@@ -474,7 +555,9 @@ impl<'js> XmlNode<'js> {
 									xml_text.push_str(&text.borrow().value);
 								} else {
 									let to_string_fn = obj.get::<_, Function>("toString")?;
+
 									let string_value:String = to_string_fn.call(())?;
+
 									xml_text.push_str(&string_value);
 								}
 							} else {
@@ -484,17 +567,21 @@ impl<'js> XmlNode<'js> {
 									.map_err(|err| format!("Unable to convert {:?} to string", err))
 									.or_throw(&ctx)?
 									.to_string()?;
+
 								xml_text.push_str(&string_value);
 							}
 						}
 					} else {
 						xml_text.push_str("/>");
 					}
+
 					drop(borrow);
 				},
 				NodeStackEntry::End(name) => {
 					xml_text.push_str("</");
+
 					xml_text.push_str(&name);
+
 					xml_text.push('>');
 				},
 			}
@@ -506,6 +593,7 @@ impl<'js> XmlNode<'js> {
 
 fn escape_attribute(text:&mut String, value:&str) {
 	text.reserve(value.len());
+
 	for c in value.chars() {
 		match c {
 			'&' => text.push_str(AMP),
@@ -519,6 +607,7 @@ fn escape_attribute(text:&mut String, value:&str) {
 
 fn escape_element(text:&mut String, value:&str) {
 	text.reserve(value.len());
+
 	for c in value.chars() {
 		match c {
 			'&' => text.push_str(AMP),
@@ -540,7 +629,9 @@ pub struct LlrtXmlModule;
 impl ModuleDef for LlrtXmlModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare(stringify!(XMLParser))?;
+
 		declare.declare(stringify!(XmlText))?;
+
 		declare.declare(stringify!(XmlNode))?;
 
 		declare.declare("default")?;
@@ -551,8 +642,11 @@ impl ModuleDef for LlrtXmlModule {
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		export_default(ctx, exports, |default| {
 			Class::<XMLParser>::define(default)?;
+
 			Class::<XmlText>::define(default)?;
+
 			Class::<XmlNode>::define(default)?;
+
 			Ok(())
 		})?;
 

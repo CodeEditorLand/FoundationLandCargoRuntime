@@ -33,11 +33,15 @@ mod tests {
 
             for json_str in json_data {
                 let json = json_str.to_string();
+
                 let json2 = json.clone();
 
                 let value = json_parse(&ctx, json2)?;
+
                 let new_json = json_stringify_replacer_space(&ctx, value.clone(),None,Some("  ".into()))?.unwrap();
+
                 let builtin_json = ctx.json_stringify_replacer_space(value,Null,"  ".to_string())?.unwrap().to_string()?;
+
                 assert_eq!(new_json, builtin_json);
             }
 
@@ -50,9 +54,11 @@ mod tests {
 	async fn json_stringify_undefined() {
 		with_js_runtime(|ctx| {
             let stringified = json_stringify(&ctx, Undefined.into_js(&ctx)?)?;
+
             let stringified_2 = ctx
                 .json_stringify(Undefined)?
                 .map(|v| v.to_string().unwrap());
+
             assert_eq!(stringified, stringified_2);
 
             let obj: Value = ctx.eval(
@@ -60,9 +66,11 @@ mod tests {
             )?;
 
             let stringified = json_stringify(&ctx, obj.clone())?;
+
             let stringified_2 = ctx
                 .json_stringify(obj)?
                 .map(|v| v.to_string().unwrap());
+
             assert_eq!(stringified, stringified_2);
 
             Ok(())
@@ -74,9 +82,13 @@ mod tests {
 	async fn json_stringify_objects() {
 		with_js_runtime(|ctx| {
 			let date:Value = ctx.eval("let obj = { date: new Date(0) };obj;")?;
+
 			let stringified = json_stringify(&ctx, date.clone())?.unwrap();
+
 			let stringified_2 = ctx.json_stringify(date)?.unwrap().to_string()?;
+
 			assert_eq!(stringified, stringified_2);
+
 			Ok(())
 		})
 		.await;
@@ -89,12 +101,17 @@ mod tests {
             let big_int_value = json_parse(&ctx, b"99999999999999999999999999999999999999999999999999999999999999999999999999999999999")?;
 
             let stringified = json_stringify(&ctx, big_int_value.clone())?.unwrap();
+
             let stringified_2 = ctx.json_stringify(big_int_value)?.unwrap().to_string()?.replace("e+", "e");
+
             assert_eq!(stringified, stringified_2);
 
             let big_int_value: Value = ctx.eval("999999999999")?;
+
             let stringified = json_stringify(&ctx, big_int_value.clone())?.unwrap();
+
             let stringified_2 = ctx.json_stringify(big_int_value)?.unwrap().to_string()?;
+
             assert_eq!(stringified, stringified_2);
 
             Ok(())
@@ -106,20 +123,31 @@ mod tests {
 	async fn json_circular_ref() {
 		with_js_runtime(|ctx| {
 			let obj1 = Object::new(ctx.clone())?;
+
 			let obj2 = Object::new(ctx.clone())?;
+
 			let obj3 = Object::new(ctx.clone())?;
+
 			let obj4 = Object::new(ctx.clone())?;
+
 			obj4.set("key", "value")?;
+
 			obj3.set("sub2", obj4.clone())?;
+
 			obj2.set("sub1", obj3)?;
+
 			obj1.set("root1", obj2.clone())?;
+
 			obj1.set("root2", obj2.clone())?;
+
 			obj1.set("root3", obj2.clone())?;
 
 			let value = obj1.clone().into_value();
 
 			let stringified = json_stringify(&ctx, value.clone())?.unwrap();
+
 			let stringified_2 = ctx.json_stringify(value.clone())?.unwrap().to_string()?;
+
 			assert_eq!(stringified, stringified_2);
 
 			obj4.set("recursive", obj1.clone())?;
@@ -128,6 +156,7 @@ mod tests {
 
 			if let Err(error_message) = stringified.catch(&ctx) {
 				let error_str = error_message.to_string();
+
 				assert_eq!(
 					"Error: Circular reference detected at: \"...root1.sub1.sub2.recursive\"\n",
 					error_str
@@ -137,22 +166,30 @@ mod tests {
 			}
 
 			let array1 = Array::new(ctx.clone())?;
+
 			let array2 = Array::new(ctx.clone())?;
+
 			let array3 = Array::new(ctx.clone())?;
 
 			let obj5 = Object::new(ctx.clone())?;
+
 			obj5.set("key", obj1.clone())?;
+
 			array3.set(2, obj5)?;
+
 			array2.set(1, array3)?;
+
 			array1.set(0, array2)?;
 
 			obj4.remove("recursive")?;
+
 			obj1.set("recursiveArray", array1)?;
 
 			let stringified = json_stringify(&ctx, value.clone());
 
 			if let Err(error_message) = stringified.catch(&ctx) {
 				let error_str = error_message.to_string();
+
 				assert_eq!(
 					"Error: Circular reference detected at: \"...recursiveArray[0][1][2].key\"\n",
 					error_str

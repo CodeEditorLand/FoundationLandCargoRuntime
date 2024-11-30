@@ -88,15 +88,18 @@ fn get_params_rm_dir(options:Opt<Object>) -> bool {
 	if let Some(options) = options.0 {
 		recursive = options.get("recursive").unwrap_or_default();
 	}
+
 	recursive
 }
 
 fn get_params_rm(options:Opt<Object>) -> (bool, bool) {
 	let mut recursive = false;
+
 	let mut force = false;
 
 	if let Some(options) = options.0 {
 		recursive = options.get("recursive").unwrap_or_default();
+
 		force = options.get("force").unwrap_or_default();
 	}
 	(recursive, force)

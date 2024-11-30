@@ -20,11 +20,13 @@ pub static HTTP_DENY_LIST:Lazy<Option<StdResult<Vec<Uri>, InvalidUri>>> =
 
 pub fn init() {
 	let allow_list = build_access_list(env::var(ENV_LLRT_NET_ALLOW));
+
 	if let Some(allow_list) = allow_list {
 		llrt_modules::net::set_allow_list(allow_list);
 	}
 
 	let deny_list = build_access_list(env::var(ENV_LLRT_NET_DENY));
+
 	if let Some(deny_list) = deny_list {
 		llrt_modules::net::set_deny_list(deny_list);
 	}
@@ -35,7 +37,9 @@ fn build_http_access_list(list:Option<Vec<String>>) -> Option<StdResult<Vec<Uri>
 		list.iter()
 			.flat_map(|entry| {
 				let with_http = ["http://", entry].concat();
+
 				let with_https = ["https://", entry].concat();
+
 				vec![with_http, with_https]
 			})
 			.map(|url| url.parse())
@@ -70,21 +74,29 @@ pub fn ensure_url_access(ctx:&Ctx<'_>, uri:&Uri) -> Result<()> {
 
 	if let Some(deny_list) = &*HTTP_DENY_LIST {
 		let deny_list = deny_list.as_ref().unwrap();
+
 		if url_match(deny_list, uri) {
 			return Err(url_restricted_error(ctx, "URL denied", uri));
 		}
 	}
+
 	Ok(())
 }
 
 fn url_restricted_error(ctx:&Ctx<'_>, message:&str, uri:&Uri) -> Error {
 	let uri_host = uri.host().unwrap_or_default();
+
 	let mut message_string = String::with_capacity(message.len() + 100);
+
 	message_string.push_str(message);
+
 	message_string.push_str(": ");
+
 	message_string.push_str(uri_host);
+
 	if let Some(port) = uri.port_u16() {
 		message_string.push(':');
+
 		message_string.push_str(itoa::Buffer::new().format(port))
 	}
 
@@ -93,7 +105,9 @@ fn url_restricted_error(ctx:&Ctx<'_>, message:&str, uri:&Uri) -> Error {
 
 fn url_match(list:&[Uri], uri:&Uri) -> bool {
 	let host = uri.host().unwrap_or_default();
+
 	let port = uri.port_u16().unwrap_or(80);
+
 	list.iter().any(|entry| {
 		host.ends_with(entry.host().unwrap_or_default()) && entry.port_u16().unwrap_or(80) == port
 	})

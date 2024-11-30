@@ -21,6 +21,7 @@ impl Md5 {
 	#[qjs(rename = "digest")]
 	fn md5_digest<'js>(&self, ctx:Ctx<'js>, encoding:Opt<String>) -> Result<Value<'js>> {
 		let digest = self.hasher.clone().finalize();
+
 		let bytes:&[u8] = digest.as_ref();
 
 		match encoding.0 {
@@ -36,7 +37,9 @@ impl Md5 {
 		value:Value<'js>,
 	) -> Result<Class<'js, Self>> {
 		let bytes = get_bytes(&ctx, value)?;
+
 		this.0.borrow_mut().hasher.update(&bytes);
+
 		Ok(this.0)
 	}
 }

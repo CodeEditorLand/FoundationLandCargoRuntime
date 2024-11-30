@@ -38,6 +38,7 @@ pub struct Buffer(pub Vec<u8>);
 impl<'js> IntoJs<'js> for Buffer {
 	fn into_js(self, ctx:&Ctx<'js>) -> Result<Value<'js>> {
 		let array_buffer = ArrayBuffer::new(ctx.clone(), self.0)?;
+
 		Self::from_array_buffer(ctx, array_buffer)
 	}
 }
@@ -53,6 +54,7 @@ impl<'js> Buffer {
 
 	fn from_array_buffer(ctx:&Ctx<'js>, buffer:ArrayBuffer<'js>) -> Result<Value<'js>> {
 		let constructor:Constructor = ctx.globals().get(stringify!(Buffer))?;
+
 		constructor.construct((buffer,))
 	}
 
@@ -63,6 +65,7 @@ impl<'js> Buffer {
 		length:usize,
 	) -> Result<Value<'js>> {
 		let constructor:Constructor = ctx.globals().get(stringify!(Buffer))?;
+
 		constructor.construct((array_buffer, offset, length))
 	}
 
@@ -73,8 +76,10 @@ impl<'js> Buffer {
 	) -> Result<Value<'js>> {
 		if let Some(encoding) = encoding {
 			let encoder = Encoder::from_str(&encoding).or_throw(ctx)?;
+
 			bytes = encoder.decode(bytes).or_throw(ctx)?;
 		}
+
 		Buffer(bytes).into_js(ctx)
 	}
 }
@@ -83,7 +88,9 @@ fn byte_length<'js>(ctx:Ctx<'js>, value:Value<'js>, encoding:Opt<String>) -> Res
 	// slow path
 	if let Some(encoding) = encoding.0 {
 		let encoder = Encoder::from_str(&encoding).or_throw(&ctx)?;
+
 		let bytes = get_bytes(&ctx, value)?;
+
 		return Ok(encoder.decode(bytes).or_throw(&ctx)?.len());
 	}
 	// fast path
@@ -115,9 +122,13 @@ fn byte_length<'js>(ctx:Ctx<'js>, value:Value<'js>, encoding:Opt<String>) -> Res
 
 fn to_string(this:This<Object<'_>>, ctx:Ctx, encoding:Opt<String>) -> Result<String> {
 	let typed_array = TypedArray::<u8>::from_object(this.0)?;
+
 	let bytes:&[u8] = typed_array.as_ref();
+
 	let encoding = encoding.0.unwrap_or_else(|| String::from("utf-8"));
+
 	let encoder = Encoder::from_str(&encoding).or_throw(&ctx)?;
+
 	encoder.encode_to_string(bytes, true).or_throw(&ctx)
 }
 
@@ -133,7 +144,9 @@ fn alloc<'js>(
 
 			if let Some(encoding) = encoding.0 {
 				let encoder = Encoder::from_str(&encoding).or_throw(&ctx)?;
+
 				let bytes = encoder.decode_from_string(string).or_throw(&ctx)?;
+
 				return alloc_byte_ref(&ctx, &bytes, length);
 			}
 
@@ -141,13 +154,17 @@ fn alloc<'js>(
 
 			return alloc_byte_ref(&ctx, byte_ref, length);
 		}
+
 		if let Some(value) = value.as_int() {
 			let bytes = vec![value as u8; length];
+
 			return Buffer(bytes).into_js(&ctx);
 		}
+
 		if let Some(obj) = value.as_object() {
 			if let Some((array_buffer, source_length, offset)) = obj_to_array_buffer(obj)? {
 				let bytes:&[u8] = array_buffer.as_ref();
+
 				return alloc_byte_ref(&ctx, &bytes[offset..offset + source_length], length);
 			}
 		}
@@ -158,19 +175,26 @@ fn alloc<'js>(
 
 fn alloc_byte_ref<'js>(ctx:&Ctx<'js>, byte_ref:&[u8], length:usize) -> Result<Value<'js>> {
 	let mut bytes = vec![0; length];
+
 	let byte_ref_length = byte_ref.len();
+
 	for i in 0..length {
 		bytes[i] = byte_ref[i % byte_ref_length];
 	}
+
 	Buffer(bytes).into_js(ctx)
 }
 
 fn concat<'js>(ctx:Ctx<'js>, list:Array<'js>, max_length:Opt<usize>) -> Result<Value<'js>> {
 	let mut bytes = Vec::new();
+
 	let mut total_length = 0;
+
 	let mut length;
+
 	for value in list.iter::<Object>() {
 		let typed_array = TypedArray::<u8>::from_object(value?)?;
+
 		let bytes_ref:&[u8] = typed_array.as_ref();
 
 		length = bytes_ref.len();
@@ -181,12 +205,16 @@ fn concat<'js>(ctx:Ctx<'js>, list:Array<'js>, max_length:Opt<usize>) -> Result<V
 
 		if let Some(max_length) = max_length.0 {
 			total_length += length;
+
 			if total_length > max_length {
 				let diff = max_length - (total_length - length);
+
 				bytes.extend_from_slice(&bytes_ref[0..diff]);
+
 				break;
 			}
 		}
+
 		bytes.extend_from_slice(bytes_ref);
 	}
 
@@ -200,6 +228,7 @@ fn from<'js>(
 	length:Opt<usize>,
 ) -> Result<Value<'js>> {
 	let mut encoding:Option<String> = None;
+
 	let mut offset = 0;
 
 	if let Some(offset_or_encoding) = offset_or_encoding.0 {
@@ -213,6 +242,7 @@ fn from<'js>(
 	if let Some(bytes) = get_string_bytes(&value, offset, length.0)? {
 		return Buffer::from_encoding(&ctx, bytes, encoding)?.into_js(&ctx);
 	}
+
 	if let Some(bytes) = get_array_bytes(&ctx, &value, offset, length.0)? {
 		return Buffer::from_encoding(&ctx, bytes, encoding)?.into_js(&ctx);
 	}
@@ -231,6 +261,7 @@ fn from<'js>(
 					start + source_offset,
 					end - source_offset,
 				);
+
 				return Buffer::from_encoding(&ctx, bytes, encoding)?.into_js(&ctx);
 			} else {
 				return Buffer::from_array_buffer_offset_length(
@@ -255,11 +286,15 @@ fn from<'js>(
 
 fn set_prototype<'js>(ctx:&Ctx<'js>, constructor:Object<'js>) -> Result<()> {
 	let _ = &constructor.set(PredefinedAtom::From, Func::from(from))?;
+
 	let _ = &constructor.set(stringify!(alloc), Func::from(alloc))?;
+
 	let _ = &constructor.set(stringify!(concat), Func::from(concat))?;
+
 	let _ = &constructor.set("byteLength", Func::from(byte_length))?;
 
 	let prototype:&Object = &constructor.get(PredefinedAtom::Prototype)?;
+
 	prototype.set(PredefinedAtom::ToString, Func::from(to_string))?;
 	// not assessable from js
 	prototype.prop(PredefinedAtom::Meta, stringify!(Buffer))?;
@@ -273,6 +308,7 @@ pub fn atob(ctx:Ctx<'_>, encoded_value:Coerced<String>) -> Result<rquickjs::Stri
 	let vec = bytes_from_b64(encoded_value.as_bytes()).or_throw(&ctx)?;
 	// SAFETY: QuickJS will replace invalid characters with U+FFFD
 	let str = unsafe { String::from_utf8_unchecked(vec) };
+
 	rquickjs::String::from_str(ctx, &str)
 }
 
@@ -286,11 +322,14 @@ pub fn init<'js>(ctx:&Ctx<'js>) -> Result<()> {
 		" extends Uint8Array {}\n",
 		stringify!(Buffer),
 	))?;
+
 	set_prototype(ctx, buffer)?;
 
 	// Conversion
 	let globals = ctx.globals();
+
 	globals.set("atob", Func::from(atob))?;
+
 	globals.set("btoa", Func::from(btoa))?;
 
 	Ok(())
@@ -301,8 +340,11 @@ pub struct BufferModule;
 impl ModuleDef for BufferModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare(stringify!(Buffer))?;
+
 		declare.declare("atob")?;
+
 		declare.declare("btoa")?;
+
 		declare.declare("default")?;
 
 		Ok(())
@@ -310,12 +352,16 @@ impl ModuleDef for BufferModule {
 
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		let globals = ctx.globals();
+
 		let buf:Constructor = globals.get(stringify!(Buffer))?;
 
 		export_default(ctx, exports, |default| {
 			default.set(stringify!(Buffer), buf)?;
+
 			default.set("atob", Func::from(atob))?;
+
 			default.set("btoa", Func::from(btoa))?;
+
 			Ok(())
 		})?;
 
@@ -330,6 +376,7 @@ impl From<BufferModule> for ModuleInfo<BufferModule> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+
 	use crate::test::{call_test, test_async_with, ModuleEvaluator};
 
 	#[tokio::test]
@@ -337,9 +384,11 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
+
 				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "aGVsbG8gd29ybGQ=".to_string();
+
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
 					"test",
@@ -353,7 +402,9 @@ mod tests {
 				)
 				.await
 				.unwrap();
+
 				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
+
 				assert_eq!(result, "hello world");
 			})
 		})
@@ -365,9 +416,11 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
+
 				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "aGVsbG/Ad29ybGQ=".to_string();
+
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
 					"test",
@@ -381,7 +434,9 @@ mod tests {
 				)
 				.await
 				.unwrap();
+
 				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
+
 				assert_eq!(result, "hello�world");
 			})
 		})
@@ -393,9 +448,11 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				init(&ctx).unwrap();
+
 				ModuleEvaluator::eval_rust::<BufferModule>(ctx.clone(), "buffer").await.unwrap();
 
 				let data = "hello world".to_string();
+
 				let module = ModuleEvaluator::eval_js(
 					ctx.clone(),
 					"test",
@@ -409,7 +466,9 @@ mod tests {
 				)
 				.await
 				.unwrap();
+
 				let result = call_test::<String, _>(&ctx, &module, (data,)).await;
+
 				assert_eq!(result, "aGVsbG8gd29ybGQ=");
 			})
 		})

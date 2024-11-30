@@ -21,6 +21,7 @@ pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 	let globals = ctx.globals();
 
 	Class::<AbortController>::define(&globals)?;
+
 	Class::<AbortSignal>::define(&globals)?;
 
 	AbortSignal::add_event_emitter_prototype(ctx)?;

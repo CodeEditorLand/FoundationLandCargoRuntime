@@ -16,6 +16,7 @@ pub fn set_destroyed_and_error<'js>(
 	error:StdResult<Option<Value<'js>>, RecvError>,
 ) {
 	*is_destroyed = true;
+
 	if let Ok(error) = error {
 		*error_value = error
 	}

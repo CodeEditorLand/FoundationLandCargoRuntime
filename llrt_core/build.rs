@@ -38,23 +38,31 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 	set_nightly_cfg();
 
 	rerun_if_changed!(BUNDLE_JS_DIR);
+
 	rerun_if_changed!("Cargo.toml");
+
 	rerun_if_changed!("patches");
 
 	cargo_patch::patch()?;
 
 	let resolver = (DummyResolver,);
+
 	let loader = (DummyLoader,);
 
 	let rt = Runtime::new()?;
+
 	rt.set_loader(resolver, loader);
+
 	let ctx = Context::full(&rt)?;
 
 	let sdk_bytecode_path = Path::new("src").join("bytecode_cache.rs");
+
 	let mut sdk_bytecode_file = BufWriter::new(File::create(sdk_bytecode_path)?);
 
 	let mut ph_map = phf_codegen::Map::<String>::new();
+
 	let mut lrt_filenames = vec![];
+
 	let mut total_bytes:usize = 0;
 
 	fs::write("../VERSION", env!("CARGO_PKG_VERSION")).expect("Unable to write VERSION file");
@@ -64,6 +72,7 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 			let path = dir_ent.path();
 
 			let path = path.strip_prefix(BUNDLE_JS_DIR)?.to_owned();
+
 			let path_str = path.to_string_lossy().to_string();
 
 			if path_str.starts_with("__tests__") || path.extension().unwrap_or_default() != "js" {
@@ -99,11 +108,15 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 			info!("Compiling module: {}", module_name);
 
 			let lrt_path = PathBuf::from(BUNDLE_LRT_DIR).join(path.with_extension(BYTECODE_EXT));
+
 			let lrt_filename = lrt_path.to_string_lossy().to_string();
+
 			lrt_filenames.push(lrt_filename.clone());
+
 			let bytes = {
 				{
 					let module = Module::declare(ctx.clone(), module_name.clone(), source)?;
+
 					module.write(false)
 				}
 			}
@@ -119,8 +132,10 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 			total_bytes += bytes.len();
 
 			fs::create_dir_all(lrt_path.parent().unwrap())?;
+
 			if cfg!(feature = "uncompressed") {
 				let uncompressed = add_bytecode_header(bytes, None);
+
 				fs::write(&lrt_path, uncompressed)?;
 			} else {
 				fs::write(&lrt_path, bytes)?;
@@ -144,7 +159,9 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 		 {}",
 		ph_map.build()
 	)?;
+
 	writeln!(&mut sdk_bytecode_file, ";")?;
+
 	sdk_bytecode_file.flush()?;
 
 	info!(
@@ -173,14 +190,19 @@ async fn main() -> StdResult<(), Box<dyn Error>> {
 
 fn set_nightly_cfg() {
 	let rustc = std::env::var("RUSTC").unwrap();
+
 	let version = std::process::Command::new(rustc).arg("--version").output().unwrap();
 
 	assert!(version.status.success());
 
 	let stdout = String::from_utf8(version.stdout).unwrap();
+
 	assert!(stdout.contains("rustc"));
+
 	let nightly = stdout.contains("nightly") || stdout.contains("dev");
+
 	println!("cargo::rustc-check-cfg=cfg(rust_nightly)");
+
 	if nightly {
 		println!("cargo::rustc-cfg=rust_nightly");
 	}
@@ -190,6 +212,7 @@ fn compress_bytecode(dictionary_path:String, source_files:Vec<String>) -> io::Re
 	generate_compression_dictionary(&dictionary_path, &source_files)?;
 
 	let mut total_size = 0;
+
 	let tmp_dir = env::temp_dir();
 
 	for filename in source_files {
@@ -210,7 +233,9 @@ fn compress_bytecode(dictionary_path:String, source_files:Vec<String>) -> io::Re
 		}
 
 		let bytes = fs::read(&filename)?;
+
 		let compressed = add_bytecode_header(bytes, Some(uncompressed_file_size));
+
 		fs::write(&filename, compressed)?;
 
 		let compressed_file_size = PathBuf::from(&filename).metadata().unwrap().len() as usize;
@@ -226,28 +251,43 @@ fn generate_compression_dictionary(
 	source_files:&Vec<String>,
 ) -> Result<(), io::Error> {
 	info!("Generating compression dictionary...");
+
 	let file_count = source_files.len();
+
 	let mut dictionary_filenames = source_files.clone();
+
 	let mut dictionary_file_set:HashSet<String> = HashSet::from_iter(dictionary_filenames.clone());
+
 	let mut cmd = Command::new("zstd");
+
 	cmd.args(["--train", "--train-fastcover=steps=60", "--maxdict=40K", "-o", dictionary_path]);
+
 	if file_count < 5 {
 		dictionary_file_set.retain(|file_path| {
 			let metadata = fs::metadata(file_path).unwrap();
+
 			let file_size = metadata.len();
+
 			file_size >= 1024 // 1 kilobyte = 1024 bytes
 		});
+
 		cmd.arg("-B1K");
+
 		dictionary_filenames = dictionary_file_set.into_iter().collect();
 	}
+
 	cmd.args(&dictionary_filenames);
+
 	let mut cmd = cmd.args(source_files).spawn()?;
+
 	let exit_status = cmd.wait()?;
+
 	if !exit_status.success() {
 		return Err(io::Error::new(
 			io::ErrorKind::Other,
 			"Failed to generate compression dictionary",
 		));
 	};
+
 	Ok(())
 }

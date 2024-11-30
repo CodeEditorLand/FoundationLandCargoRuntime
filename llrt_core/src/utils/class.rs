@@ -28,8 +28,11 @@ where
 
 	fn js_iterator(&self, ctx:Ctx<'js>) -> Result<Value<'js>> {
 		let value = self.js_entries(ctx)?;
+
 		let obj = value.as_object();
+
 		let values_fn:Function = obj.get(PredefinedAtom::Values)?;
+
 		values_fn.call((This(value),))
 	}
 }
@@ -47,6 +50,7 @@ where
 	if provided.as_object().map(|p| p.instance_of::<C>()).unwrap_or_default() {
 		return Ok(Some(Class::<C>::from_value(provided)?));
 	}
+
 	Ok(None)
 }
 
@@ -66,14 +70,17 @@ where
 {
 	fn define_with_custom_inspect(globals:&Object<'js>) -> Result<()> {
 		Self::define(globals)?;
+
 		let custom_inspect_symbol =
 			Symbol::for_description(globals, CUSTOM_INSPECT_SYMBOL_DESCRIPTION)?;
+
 		if let Some(proto) = Class::<C>::prototype(globals.ctx().clone()) {
 			proto.prop(
 				custom_inspect_symbol,
 				Accessor::from(|this:This<Class<'js, C>>, ctx| this.borrow().custom_inspect(ctx)),
 			)?;
 		}
+
 		Ok(())
 	}
 }

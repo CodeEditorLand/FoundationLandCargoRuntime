@@ -6,6 +6,7 @@ pub use llrt_utils::fs::DirectoryWalker;
 
 pub fn get_basename_ext_name(path:&str) -> (&str, &str) {
 	let path = path.strip_prefix("./").unwrap_or(path);
+
 	let (basename, ext) = path.split_at(path.rfind('.').unwrap_or(path.len()));
 	(basename, ext)
 }
@@ -26,17 +27,22 @@ pub fn get_js_path(path:&str) -> Option<PathBuf> {
 	fn check_extensions(basename:&str) -> Option<PathBuf> {
 		for ext in JS_EXTENSIONS {
 			let path:&str = &[basename, ext].concat();
+
 			let path = Path::new(path);
+
 			if path.exists() {
 				return Some(path.to_owned());
 			}
 		}
+
 		None
 	}
 
 	if filepath.is_dir() && exists {
 		let basename:&str = &([basename, "/index"].concat());
+
 		return check_extensions(basename);
 	}
+
 	check_extensions(basename)
 }

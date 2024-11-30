@@ -124,35 +124,47 @@ where
 	) -> Class<'js, Self> {
 		if !this.borrow().inner().is_finished {
 			let mut borrow = this.borrow_mut();
+
 			let inner = borrow.inner_mut();
+
 			inner.is_finished = true;
+
 			inner.is_destroyed = true;
+
 			let tx = inner.destroy_tx.clone();
+
 			drop(borrow);
 			// it doesn't matter if channel is closed because then writable is
 			// already closed
 			let _ = tx.send(error.0);
 		}
+
 		this.0
 	}
 
 	fn end(this:This<Class<'js, Self>>) -> Class<'js, Self> {
 		if !this.borrow().inner().is_finished {
 			let mut borrow = this.borrow_mut();
+
 			let inner = borrow.inner_mut();
+
 			inner.is_finished = true;
+
 			let tx = inner.command_tx.clone();
+
 			drop(borrow);
 			// it doesn't matter if channel is closed because then writable is
 			// already closed
 			let _ = tx.send(WriteCommand::End);
 		}
+
 		this.0
 	}
 
 	#[allow(dead_code)]
 	fn flush(this:Class<'js, Self>, ctx:&Ctx<'js>) -> Result<()> {
 		let _ = this.borrow().inner().command_tx.send(WriteCommand::Flush).or_throw(ctx);
+
 		Ok(())
 	}
 
@@ -209,21 +221,31 @@ where
 		writable:T,
 	) -> Result<Receiver<bool>> {
 		let mut borrow = this.borrow_mut();
+
 		let inner = borrow.inner_mut();
+
 		let is_ended = inner.is_finished;
+
 		let mut is_destroyed = inner.is_destroyed;
+
 		let emit_close = inner.emit_close;
+
 		let mut command_rx =
 			inner.command_rx.take().expect("rx from writable process already taken!");
+
 		let mut destroy_rx = inner.destroy_tx.subscribe();
+
 		let mut error_value = None;
 
 		drop(borrow);
+
 		let ctx2 = ctx.clone();
 
 		ctx.spawn_exit(async move {
 			let ctx3 = ctx2.clone();
+
 			let this2 = this.clone();
+
 			let write_function = async move {
 				let mut writer = BufWriter::new(writable);
 
@@ -235,9 +257,11 @@ where
 									Some(WriteCommand::Write(data, cb, flush)) => {
 										let result = async {
 											writer.write_all(&data).await?;
+
 											if flush {
 												writer.flush().await.or_throw(&ctx3)?;
 											}
+
 											Ok::<_, Error>(())
 										}.await;
 
@@ -249,16 +273,19 @@ where
 											},
 											Err(err) => {
 												let err2 = Exception::throw_message(&ctx3, &err.to_string());
+
 												if let Some(cb) = cb {
 													let err = err.into_value(&ctx3)?;
 													() = cb.call((err,))?;
 												}
+
 												return Err(err2);
 											}
 										}
 									},
 									Some(WriteCommand::End) => {
 										writer.shutdown().await.or_throw(&ctx3)?;
+
 										break;
 									},
 									Some(WriteCommand::Flush) => writer.flush().await.or_throw(&ctx3)?,
@@ -267,6 +294,7 @@ where
 							},
 							error = destroy_rx.recv() => {
 								set_destroyed_and_error(&mut is_destroyed,  &mut error_value, error);
+
 								break;
 							}
 						}

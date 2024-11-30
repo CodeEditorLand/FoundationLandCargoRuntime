@@ -28,9 +28,13 @@ pub struct OsModule;
 impl ModuleDef for OsModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare("type")?;
+
 		declare.declare("release")?;
+
 		declare.declare("tmpdir")?;
+
 		declare.declare("platform")?;
+
 		declare.declare("version")?;
 
 		declare.declare("default")?;
@@ -41,9 +45,13 @@ impl ModuleDef for OsModule {
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		export_default(ctx, exports, |default| {
 			default.set("type", Func::from(get_type))?;
+
 			default.set("release", Func::from(get_release))?;
+
 			default.set("tmpdir", Func::from(get_tmp_dir))?;
+
 			default.set("platform", Func::from(get_platform))?;
+
 			default.set("version", Func::from(get_version))?;
 
 			Ok(())
@@ -58,6 +66,7 @@ impl From<OsModule> for ModuleInfo<OsModule> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+
 	use crate::test::{call_test, test_async_with, ModuleEvaluator};
 
 	#[tokio::test]

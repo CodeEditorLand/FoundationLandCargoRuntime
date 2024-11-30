@@ -5,7 +5,9 @@ use crate::utils::result::ResultExt;
 
 pub fn json_parse<'js, T:Into<Vec<u8>>>(ctx:&Ctx<'js>, json:T) -> Result<Value<'js>> {
 	let mut json:Vec<u8> = json.into();
+
 	let tape = simd_json::to_tape(&mut json).or_throw(ctx)?;
+
 	let tape = tape.0;
 
 	if let Some(first) = tape.first() {
@@ -36,13 +38,17 @@ fn parse_node<'js>(ctx:&Ctx<'js>, tape:&[Node], index:usize) -> Result<(Value<'j
 		Node::Static(node) => Ok((static_node_to_value(ctx, node)?, index + 1)),
 		Node::Object { len, .. } => {
 			let js_object = Object::new(ctx.clone())?;
+
 			let mut current_index = index + 1;
 
 			for _ in 0..len {
 				if let Node::String(key) = tape[current_index] {
 					current_index += 1;
+
 					let (value, new_index) = parse_node(ctx, tape, current_index)?;
+
 					current_index = new_index;
+
 					js_object.set(key, value)?;
 				}
 			}
@@ -51,11 +57,14 @@ fn parse_node<'js>(ctx:&Ctx<'js>, tape:&[Node], index:usize) -> Result<(Value<'j
 		},
 		Node::Array { len, .. } => {
 			let js_array = Array::new(ctx.clone())?;
+
 			let mut current_index = index + 1;
 
 			for i in 0..len {
 				let (value, new_index) = parse_node(ctx, tape, current_index)?;
+
 				current_index = new_index;
+
 				js_array.set(i, value)?;
 			}
 

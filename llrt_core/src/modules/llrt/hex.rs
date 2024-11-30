@@ -27,6 +27,7 @@ pub struct LlrtHexModule;
 impl LlrtHexModule {
 	pub fn encode<'js>(ctx:Ctx<'js>, buffer:Value<'js>) -> Result<String> {
 		let bytes = get_bytes(&ctx, buffer)?;
+
 		Ok(bytes_to_hex_string(&bytes))
 	}
 
@@ -41,15 +42,20 @@ impl LlrtHexModule {
 impl ModuleDef for LlrtHexModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare(stringify!(encode))?;
+
 		declare.declare(stringify!(decode))?;
+
 		declare.declare("default")?;
+
 		Ok(())
 	}
 
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		export_default(ctx, exports, |default| {
 			default.set(stringify!(encode), Func::from(Self::encode))?;
+
 			default.set(stringify!(decode), Func::from(Self::decode))?;
+
 			Ok(())
 		})?;
 

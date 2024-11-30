@@ -15,6 +15,7 @@ pub async fn open(
 	mode:Opt<u32>,
 ) -> Result<FileHandle> {
 	let mut options = OpenOptions::new();
+
 	match flags.0.as_deref().unwrap_or("r") {
 		// We are not supporting the sync modes
 		"a" => options.append(true).create(true),
@@ -33,6 +34,7 @@ pub async fn open(
 	#[cfg(unix)]
 	{
 		let mode = mode.0.unwrap_or(0o666);
+
 		options.mode(mode);
 	}
 	#[cfg(not(unix))]
@@ -41,6 +43,7 @@ pub async fn open(
 	}
 
 	let path = PathBuf::from(path);
+
 	let file = options.open(&path).await.or_throw_msg(&ctx, "Cannot open file")?;
 
 	Ok(FileHandle::new(file, path))
@@ -57,11 +60,13 @@ mod tests {
 	#[tokio::test]
 	async fn test_file_handle_read() {
 		let path = given_file("Hello World").await.to_string_lossy().to_string();
+
 		let path_1 = path.clone();
 
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				buffer::init(&ctx).unwrap();
+
 				ModuleEvaluator::eval_rust::<FsPromisesModule>(ctx.clone(), "fs/promises")
 					.await
 					.unwrap();
@@ -74,9 +79,12 @@ mod tests {
 
                         export async function test(path) {
                             let filehandle = null;
+
                             try {
                                 filehandle = await open(path, 'r+');
+
                                 let { buffer } = await filehandle.read();
+
                                 return Array.from(buffer);
                             } finally {
                                 await filehandle?.close();

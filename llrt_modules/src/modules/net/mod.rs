@@ -73,7 +73,9 @@ impl NetStream {
 				Socket::process_unix_stream(socket, ctx, stream, allow_half_open)
 			},
 		}?;
+
 		let had_error = rw_join(ctx, readable_done, writable_done).await?;
+
 		Ok(had_error)
 	}
 }
@@ -113,6 +115,7 @@ fn get_address_parts(
 	addr:StdResult<SocketAddr, std::io::Error>,
 ) -> Result<(String, u16, String)> {
 	let addr = addr.or_throw(ctx)?;
+
 	Ok((
 		addr.ip().to_string(),
 		addr.port(),
@@ -126,8 +129,10 @@ async fn rw_join<'js>(
 	writable_done:Receiver<bool>,
 ) -> Result<bool> {
 	let (readable_res, writable_res) = tokio::join!(readable_done, writable_done);
+
 	let had_error = readable_res.or_throw_msg(ctx, "Readable sender dropped")?
 		|| writable_res.or_throw_msg(ctx, "Writable sender dropped")?;
+
 	Ok(had_error)
 }
 
@@ -136,10 +141,15 @@ pub struct NetModule;
 impl ModuleDef for NetModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare("createConnection")?;
+
 		declare.declare("connect")?;
+
 		declare.declare("createServer")?;
+
 		declare.declare(stringify!(Socket))?;
+
 		declare.declare(stringify!(Server))?;
+
 		declare.declare("default")?;
 
 		Ok(())
@@ -148,30 +158,40 @@ impl ModuleDef for NetModule {
 	fn evaluate<'js>(ctx:&Ctx<'js>, exports:&Exports<'js>) -> Result<()> {
 		export_default(ctx, exports, |default| {
 			Class::<Socket>::define(default)?;
+
 			Class::<Server>::define(default)?;
 
 			Socket::add_event_emitter_prototype(ctx)?;
+
 			Server::add_event_emitter_prototype(ctx)?;
 
 			let connect = Func::from(|ctx, args| {
 				struct Args<'js>(Ctx<'js>);
+
 				let Args(ctx) = Args(ctx);
+
 				let this = Socket::new(ctx.clone(), false)?;
+
 				Socket::connect(This(this), ctx.clone(), args)
 			})
 			.into_js(ctx)?;
 
 			default.set("createConnection", connect.clone())?;
+
 			default.set("connect", connect)?;
+
 			default.set(
 				"createServer",
 				Func::from(|ctx, args| {
 					struct Args<'js>(Ctx<'js>);
+
 					let Args(ctx) = Args(ctx);
+
 					Server::new(ctx.clone(), args)
 				}),
 			)
 		})?;
+
 		Ok(())
 	}
 }

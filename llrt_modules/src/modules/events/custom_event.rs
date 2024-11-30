@@ -15,11 +15,13 @@ impl<'js> CustomEvent<'js> {
 	#[qjs(constructor)]
 	pub fn new(_ctx:Ctx<'js>, event_type:String, options:Opt<Value<'js>>) -> Result<Self> {
 		let mut detail = None;
+
 		if let Some(options) = options.0 {
 			if let Some(opt) = options.get_optional("detail")? {
 				detail = opt;
 			}
 		}
+
 		Ok(Self { event_type, detail })
 	}
 
@@ -28,6 +30,7 @@ impl<'js> CustomEvent<'js> {
 		if let Some(detail) = &self.detail {
 			return Ok(detail.clone());
 		}
+
 		Null.into_js(&ctx)
 	}
 

@@ -71,6 +71,7 @@ impl<'js> URL<'js> {
 	#[qjs(constructor)]
 	pub fn new(ctx:Ctx<'js>, input:Value<'js>, base:Opt<Value<'js>>) -> Result<Self> {
 		let input:Result<Coerced<String>> = Coerced::from_js(&ctx, input);
+
 		if let Some(base) = base.into_inner() {
 			if let Some(base) = base.as_string() {
 				if let Ok(base) = base.to_string() {
@@ -105,6 +106,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "hash")]
 	pub fn set_hash(&mut self, hash:String) -> String {
 		quirks::set_hash(&mut self.url.borrow_mut(), hash.as_str());
+
 		hash
 	}
 
@@ -114,6 +116,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "host")]
 	pub fn set_host(&mut self, host:Coerced<String>) -> String {
 		let _ = quirks::set_host(&mut self.url.borrow_mut(), host.as_str());
+
 		host.0
 	}
 
@@ -126,6 +129,7 @@ impl<'js> URL<'js> {
 		if !has_colon_delimiter(hostname.as_str()) {
 			let _ = quirks::set_hostname(&mut self.url.borrow_mut(), hostname.as_str());
 		}
+
 		hostname.0
 	}
 
@@ -135,6 +139,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "href")]
 	pub fn set_href(&mut self, href:String) -> Result<String> {
 		let _ = quirks::set_href(&mut self.url.borrow_mut(), href.as_str());
+
 		Ok(href)
 	}
 
@@ -147,6 +152,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "password")]
 	pub fn set_password(&mut self, password:Coerced<String>) -> String {
 		let _ = quirks::set_password(&mut self.url.borrow_mut(), password.as_str());
+
 		password.0
 	}
 
@@ -156,6 +162,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "pathname")]
 	pub fn set_pathname(&mut self, pathname:Coerced<String>) -> String {
 		quirks::set_pathname(&mut self.url.borrow_mut(), pathname.as_str());
+
 		pathname.0
 	}
 
@@ -170,9 +177,11 @@ impl<'js> URL<'js> {
 		}
 
 		let port_string:Result<Coerced<String>> = Coerced::from_js(&ctx, port.clone());
+
 		if let Ok(port_string) = port_string {
 			let _ = quirks::set_port(&mut self.url.borrow_mut(), port_string.as_str());
 		}
+
 		port
 	}
 
@@ -182,6 +191,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "protocol")]
 	pub fn set_protocol(&mut self, protocol:Coerced<String>) -> String {
 		let _ = quirks::set_protocol(&mut self.url.borrow_mut(), protocol.as_str());
+
 		protocol.0
 	}
 
@@ -191,6 +201,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "search")]
 	pub fn set_search(&mut self, search:Coerced<String>) -> String {
 		quirks::set_search(&mut self.url.borrow_mut(), search.as_str());
+
 		search.0
 	}
 
@@ -203,6 +214,7 @@ impl<'js> URL<'js> {
 	#[qjs(set, rename = "username")]
 	pub fn set_username(&mut self, username:Coerced<String>) -> String {
 		let _ = quirks::set_username(&mut self.url.borrow_mut(), username.as_str());
+
 		username.0
 	}
 
@@ -235,12 +247,15 @@ impl<'js> URL<'js> {
 impl<'js> URL<'js> {
 	pub fn from_str(ctx:Ctx<'js>, input:&str) -> Result<Self> {
 		let url:Url = input.parse().map_err(|_| Exception::throw_type(&ctx, "Invalid URL"))?;
+
 		Self::from_url(ctx, url)
 	}
 
 	pub fn from_url(ctx:Ctx<'js>, url:Url) -> Result<Self> {
 		let url = Rc::new(RefCell::new(url));
+
 		let search_params = URLSearchParams::from_url(&url);
+
 		let search_params = Class::instance(ctx, search_params)?;
 
 		Ok(Self { url, search_params })
@@ -253,22 +268,29 @@ pub fn url_to_http_options<'js>(ctx:Ctx<'js>, url:Class<'js, URL<'js>>) -> Resul
 	let url = url.borrow();
 
 	let port = url.port();
+
 	let username = url.username();
+
 	let search = url.search();
+
 	let hash = url.url.borrow().fragment().unwrap_or("").to_string();
 
 	obj.set("protocol", url.protocol())?;
+
 	obj.set("hostname", url.hostname())?;
 
 	if !hash.is_empty() {
 		obj.set("hash", hash)?;
 	}
+
 	if !search.is_empty() {
 		obj.set("search", search)?;
 	}
 
 	obj.set("pathname", url.pathname())?;
+
 	obj.set("path", [url.pathname(), url.search()].join(""))?;
+
 	obj.set("href", url.href())?;
 
 	if !username.is_empty() {
@@ -289,6 +311,7 @@ pub fn domain_to_ascii(domain:&str) -> String { quirks::domain_to_ascii(domain) 
 // options are ignored, no windows support yet
 pub fn path_to_file_url<'js>(ctx:Ctx<'js>, path:String, _:Opt<Value>) -> Result<URL<'js>> {
 	let url = Url::from_file_path(path).unwrap();
+
 	URL::from_url(ctx, url)
 }
 
@@ -311,12 +334,17 @@ pub fn file_url_to_path<'js>(ctx:Ctx<'js>, url:Value<'js>) -> Result<String> {
 
 pub fn url_format<'js>(url:Class<'js, URL<'js>>, options:Opt<Value<'js>>) -> Result<String> {
 	let url = url.borrow();
+
 	let mut string = url.protocol();
+
 	string.push_str("//");
 
 	let mut include_fragment = true;
+
 	let mut unicode_encode = false;
+
 	let mut include_auth = true;
+
 	let mut include_search = true;
 
 	// Parse options if provided
@@ -325,12 +353,15 @@ pub fn url_format<'js>(url:Class<'js, URL<'js>>, options:Opt<Value<'js>>) -> Res
 			if let Ok(value) = options.get("unicode") {
 				unicode_encode = value;
 			}
+
 			if let Ok(value) = options.get("auth") {
 				include_auth = value;
 			}
+
 			if let Ok(value) = options.get("fragment") {
 				include_fragment = value;
 			}
+
 			if let Ok(value) = options.get("search") {
 				include_search = value
 			}
@@ -339,13 +370,18 @@ pub fn url_format<'js>(url:Class<'js, URL<'js>>, options:Opt<Value<'js>>) -> Res
 
 	if include_auth {
 		let username = url.username();
+
 		let password = url.password();
+
 		if !username.is_empty() {
 			string.push_str(&username);
+
 			if !password.is_empty() {
 				string.push(':');
+
 				string.push_str(&password);
 			}
+
 			string.push('@');
 		}
 	}

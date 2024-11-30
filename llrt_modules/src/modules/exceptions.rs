@@ -22,9 +22,11 @@ impl DOMException {
 	#[qjs(constructor)]
 	pub fn new(ctx:Ctx<'_>, message:Opt<String>, name:Opt<String>) -> Result<Self> {
 		let error_ctor:Constructor = ctx.globals().get(PredefinedAtom::Error)?;
+
 		let new:Object = error_ctor.construct((message.clone(),))?;
 
 		let message = message.0.unwrap_or(String::from(""));
+
 		let name = name.0.unwrap_or(String::from("Error"));
 
 		Ok(Self { message, name, stack:new.get::<_, String>(PredefinedAtom::Stack)? })
@@ -51,11 +53,15 @@ impl DOMException {
 
 pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 	let globals = ctx.globals();
+
 	Class::<DOMException>::define(&globals)?;
 
 	let dom_ex_proto = Class::<DOMException>::prototype(ctx.clone()).unwrap();
+
 	let error_ctor:Object = globals.get(PredefinedAtom::Error)?;
+
 	let error_proto = error_ctor.get_prototype();
+
 	dom_ex_proto.set_prototype(error_proto.as_ref())?;
 
 	Ok(())

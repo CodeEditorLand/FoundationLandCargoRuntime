@@ -14,6 +14,7 @@ pub fn init(ctx:&Ctx<'_>) -> Result<()> {
 	let globals = ctx.globals();
 
 	Class::<TextEncoder>::define(&globals)?;
+
 	Class::<TextDecoder>::define(&globals)?;
 
 	Ok(())

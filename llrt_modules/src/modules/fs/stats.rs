@@ -169,6 +169,7 @@ impl Stats {
 		#[cfg(unix)]
 		{
 			_ = ctx;
+
 			Ok(self.metadata.atime_nsec() as u64 / 1e6 as u64)
 		}
 		#[cfg(not(unix))]
@@ -182,6 +183,7 @@ impl Stats {
 		#[cfg(unix)]
 		{
 			_ = ctx;
+
 			Ok(self.metadata.mtime_nsec() as u64 / 1e6 as u64)
 		}
 		#[cfg(not(unix))]
@@ -195,6 +197,7 @@ impl Stats {
 		#[cfg(unix)]
 		{
 			_ = ctx;
+
 			Ok(self.metadata.ctime_nsec() as u64 / 1e6 as u64)
 		}
 		#[cfg(not(unix))]
@@ -227,6 +230,7 @@ impl Stats {
 		#[cfg(unix)]
 		{
 			_ = ctx;
+
 			Ok(SystemTime::UNIX_EPOCH + Duration::from_nanos(self.metadata.ctime_nsec() as u64))
 		}
 		#[cfg(not(unix))]

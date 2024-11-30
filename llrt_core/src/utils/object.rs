@@ -20,7 +20,9 @@ use rquickjs::{
 #[allow(dead_code)]
 pub fn array_to_hash_map<'js>(ctx:&Ctx<'js>, array:Array<'js>) -> Result<HashMap<String, String>> {
 	let value = object_from_entries(ctx, array)?;
+
 	let value = value.into_value();
+
 	HashMap::from_js(ctx, value)
 }
 
@@ -29,12 +31,15 @@ pub fn array_to_btree_map<'js>(
 	array:Array<'js>,
 ) -> Result<BTreeMap<String, Coerced<String>>> {
 	let value = object_from_entries(ctx, array)?;
+
 	let value = value.into_value();
+
 	BTreeMap::from_js(ctx, value)
 }
 
 pub fn object_from_entries<'js>(ctx:&Ctx<'js>, array:Array<'js>) -> Result<Object<'js>> {
 	let obj = Object::new(ctx.clone())?;
+
 	for value in array.into_iter().flatten() {
 		if let Some(entry) = value.as_array() {
 			if let Ok(key) = entry.get::<Value>(0) {
@@ -44,6 +49,7 @@ pub fn object_from_entries<'js>(ctx:&Ctx<'js>, array:Array<'js>) -> Result<Objec
 			}
 		}
 	}
+
 	Ok(obj)
 }
 
@@ -53,10 +59,14 @@ where
 	K: IntoJs<'js>,
 	V: IntoJs<'js>, {
 	let array = Array::new(ctx.clone())?;
+
 	for (idx, (key, value)) in map.into_iter().enumerate() {
 		let entry = Array::new(ctx.clone())?;
+
 		entry.set(0, key)?;
+
 		entry.set(1, value)?;
+
 		array.set(idx, entry)?;
 	}
 
@@ -70,7 +80,9 @@ pub trait CreateSymbol<'js> {
 impl<'js> CreateSymbol<'js> for Symbol<'js> {
 	fn for_description(globals:&Object<'js>, description:&'static str) -> Result<Symbol<'js>> {
 		let symbol_function:Function = globals.get(PredefinedAtom::Symbol)?;
+
 		let for_function:Function = symbol_function.get(PredefinedAtom::For)?;
+
 		for_function.call((description,))
 	}
 }

@@ -20,6 +20,7 @@ impl<'js> ObjectExt<'js> for Value<'js> {
 		if let Some(obj) = self.as_object() {
 			return obj.get_optional(k);
 		}
+
 		Ok(None)
 	}
 }

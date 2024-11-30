@@ -14,6 +14,7 @@ fn uname() -> (String, String, String) {
 	let mut info = std::mem::MaybeUninit::uninit();
 	// SAFETY: `info` is a valid pointer to a `libc::utsname` struct.
 	let res = unsafe { libc::uname(info.as_mut_ptr()) };
+
 	if res != 0 {
 		return (String::new(), String::new(), String::new());
 	}

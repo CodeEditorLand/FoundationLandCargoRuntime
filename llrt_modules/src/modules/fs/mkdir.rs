@@ -57,10 +57,12 @@ pub fn mkdir_sync<'js>(ctx:Ctx<'js>, path:String, options:Opt<Object<'js>>) -> R
 
 fn get_params(options:Opt<Object>) -> (bool, u32) {
 	let mut recursive = false;
+
 	let mut mode = 0o777;
 
 	if let Some(options) = options.0 {
 		recursive = options.get("recursive").unwrap_or_default();
+
 		mode = options.get("mode").unwrap_or(0o777);
 	}
 	(recursive, mode)
@@ -72,11 +74,14 @@ fn random_chars(len:usize) -> String {
 	let random = SystemRandom::new();
 
 	let mut bytes = vec![0u8; len];
+
 	random.fill(&mut bytes).unwrap();
+
 	bytes
 		.iter()
 		.map(|&byte| {
 			let idx = (byte as usize) % CHARS.len();
+
 			CHARS[idx] as char
 		})
 		.collect::<String>()
@@ -84,15 +89,19 @@ fn random_chars(len:usize) -> String {
 
 pub async fn mkdtemp(ctx:Ctx<'_>, prefix:String) -> Result<String> {
 	let path = [prefix.as_str(), random_chars(6).as_str()].join(",");
+
 	fs::create_dir_all(&path)
 		.await
 		.or_throw_msg(&ctx, &["Can't create dir \"", &path, "\""].concat())?;
+
 	Ok(path)
 }
 
 pub fn mkdtemp_sync(ctx:Ctx<'_>, prefix:String) -> Result<String> {
 	let path = [prefix.as_str(), random_chars(6).as_str()].join(",");
+
 	std::fs::create_dir_all(&path)
 		.or_throw_msg(&ctx, &["Can't create dir \"", &path, "\""].concat())?;
+
 	Ok(path)
 }

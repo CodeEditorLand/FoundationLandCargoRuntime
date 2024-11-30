@@ -85,6 +85,7 @@ impl<'js> Socket<'js> {
 	#[qjs(constructor)]
 	pub fn ctor(ctx:Ctx<'js>, opts:Opt<Object<'js>>) -> Result<Class<'js, Self>> {
 		let mut allow_half_open = false;
+
 		if let Some(opts) = opts.0 {
 			if let Some(opt_allow_half_open) = opts.get_optional("allowHalfOpen")? {
 				allow_half_open = opt_allow_half_open;
@@ -110,6 +111,7 @@ impl<'js> Socket<'js> {
 		cb:Opt<Function<'js>>,
 	) -> Result<()> {
 		WritableStream::write_flushed(this, ctx.clone(), value, cb)?;
+
 		Ok(())
 	}
 
@@ -123,6 +125,7 @@ impl<'js> Socket<'js> {
 		}
 
 		// ReadableStream::destroy(This(this.clone()), ctx.clone())?;
+
 		WritableStream::end(this);
 
 		Ok(())
@@ -134,6 +137,7 @@ impl<'js> Socket<'js> {
 		error:Opt<Value<'js>>,
 	) -> Class<'js, Self> {
 		ReadableStream::destroy(This(this.clone()), ctx.clone(), Opt(None));
+
 		WritableStream::destroy(This(this.clone()), ctx.clone(), error);
 
 		this.0
@@ -171,10 +175,15 @@ impl<'js> Socket<'js> {
 		let allow_half_open = this.borrow().allow_half_open;
 
 		let mut port = None;
+
 		let mut host = String::from(LOCALHOST);
+
 		let mut path = None;
+
 		let mut listener = None;
+
 		let mut last = None;
+
 		let mut addr = None;
 
 		let mut args = args.into_iter();
@@ -182,7 +191,9 @@ impl<'js> Socket<'js> {
 		if let Some(first) = args.next() {
 			if let Some(opts) = first.as_object() {
 				port = opts.get_optional("port")?;
+
 				path = opts.get_optional("path")?;
+
 				if let Some(host_arg) = opts.get_optional("host")? {
 					host = host_arg
 				}
@@ -190,6 +201,7 @@ impl<'js> Socket<'js> {
 				path = Some(path_arg.to_string()?);
 			} else if let Some(port_arg) = first.as_int() {
 				port = Some(port_arg as u16);
+
 				if let Some(next) = args.next() {
 					if let Some(host_arg) = next.as_string() {
 						host = host_arg.to_string()?;
@@ -213,9 +225,12 @@ impl<'js> Socket<'js> {
 		if let Some(path) = path.clone() {
 			ensure_access(&ctx, &path)?;
 		}
+
 		if let Some(port) = port {
 			let hostname = get_hostname(&host, port);
+
 			ensure_access(&ctx, &hostname)?;
+
 			addr = Some(hostname);
 		}
 
@@ -236,18 +251,23 @@ impl<'js> Socket<'js> {
 
 		ctx.clone().spawn_exit(async move {
 			let ctx2 = ctx.clone();
+
 			let ctx3 = ctx.clone();
+
 			let this3 = this2.clone();
+
 			let connect = async move {
 				let (readable_done, writable_done) = if let Some(path) = path {
 					#[cfg(unix)]
 					{
 						let stream = UnixStream::connect(path).await.or_throw(&ctx3)?;
+
 						Self::process_unix_stream(&this2, &ctx3, stream, allow_half_open)
 					}
 					#[cfg(not(unix))]
 					{
 						_ = path;
+
 						return Err(Exception::throw_type(
 							&ctx3,
 							"Unix domain sockets are not supported on this platform",
@@ -255,6 +275,7 @@ impl<'js> Socket<'js> {
 					}
 				} else if let Some(addr) = addr {
 					let stream = TcpStream::connect(addr).await.or_throw(&ctx3)?;
+
 					Self::process_tcp_stream(&this2, &ctx3, stream, allow_half_open)
 				} else {
 					unreachable!()
@@ -271,6 +292,7 @@ impl<'js> Socket<'js> {
 			.await;
 
 			connect.emit_error(&ctx2, this3)?;
+
 			Ok(())
 		})?;
 
@@ -283,6 +305,7 @@ impl<'js> Socket<'js> {
 		let emitter = EventEmitter::new();
 
 		let readable_stream_inner = ReadableStreamInner::new(emitter.clone(), false);
+
 		let writable_stream_inner = WritableStreamInner::new(emitter.clone(), false);
 
 		let instance = Class::instance(
@@ -304,6 +327,7 @@ impl<'js> Socket<'js> {
 				allow_half_open,
 			},
 		)?;
+
 		Ok(instance)
 	}
 
@@ -316,6 +340,7 @@ impl<'js> Socket<'js> {
 		Self::set_addresses(this, ctx, &stream)?;
 
 		let (reader, writer) = stream.into_split();
+
 		Self::process_stream(this, ctx, reader, writer, allow_half_open)
 	}
 
@@ -327,6 +352,7 @@ impl<'js> Socket<'js> {
 		allow_half_open:bool,
 	) -> Result<(Receiver<bool>, Receiver<bool>)> {
 		let (reader, writer) = stream.into_split();
+
 		Self::process_stream(this, ctx, reader, writer, allow_half_open)
 	}
 
@@ -338,19 +364,26 @@ impl<'js> Socket<'js> {
 		allow_half_open:bool,
 	) -> Result<(Receiver<bool>, Receiver<bool>)> {
 		let this2 = this.clone();
+
 		let readable_done =
 			ReadableStream::process_callback(this.clone(), ctx, reader, move || {
 				if !allow_half_open {
 					WritableStream::end(This(this2));
 				}
 			})?;
+
 		let writable_done = WritableStream::process(this.clone(), ctx, writer)?;
 
 		trace!("Connected to stream");
+
 		let mut borrow = this.borrow_mut();
+
 		borrow.connecting = false;
+
 		borrow.pending = false;
+
 		borrow.ready_state = ReadyState::Open;
+
 		drop(borrow);
 
 		Ok((readable_done, writable_done))
@@ -365,17 +398,24 @@ impl<'js> Socket<'js> {
 
 		let (remote_address, remote_port, remote_family) =
 			get_address_parts(ctx, stream.peer_addr())?;
+
 		borrow.remote_address = Some(remote_address);
+
 		borrow.remote_port = Some(remote_port);
+
 		borrow.remote_family = Some(remote_family);
 
 		let (local_address, local_port, local_family) =
 			get_address_parts(ctx, stream.local_addr())?;
+
 		borrow.local_address = Some(local_address);
+
 		borrow.local_port = Some(local_port);
+
 		borrow.local_family = Some(local_family);
 
 		drop(borrow);
+
 		Ok(())
 	}
 }
@@ -385,7 +425,9 @@ mod tests {
 	use std::time::Duration;
 
 	use rand::Rng;
+
 	use rquickjs::{function::IntoArgs, module::Evaluated, Ctx, FromJs, Module};
+
 	use tokio::{
 		io::{AsyncReadExt, AsyncWriteExt},
 		net::TcpListener,
@@ -401,14 +443,17 @@ mod tests {
 		let listerner = TcpListener::bind(("127.0.0.1", port)).await.unwrap();
 
 		let (mut stream, _) = listerner.accept().await.unwrap();
+
 		stream.set_nodelay(true).unwrap();
 
 		// Read
 		let mut buf = vec![0; 1024];
+
 		let n = stream.read(&mut buf).await.unwrap();
 
 		// Write
 		stream.write_all(&buf[..n]).await.unwrap();
+
 		stream.flush().await.unwrap();
 	}
 
@@ -421,6 +466,7 @@ mod tests {
 		T: FromJs<'js>,
 		A: IntoArgs<'js>, {
 		tokio::time::sleep(Duration::from_millis(100)).await;
+
 		call_test::<T, _>(ctx, module, args).await
 	}
 
@@ -429,9 +475,11 @@ mod tests {
 		test_async_with(|ctx| {
 			Box::pin(async move {
 				buffer::init(&ctx).unwrap();
+
 				ModuleEvaluator::eval_rust::<NetModule>(ctx.clone(), "net").await.unwrap();
 
 				let mut rng = rand::thread_rng();
+
 				let port:u16 = rng.gen_range(49152..=65535);
 
 				let module = ModuleEvaluator::eval_js(
@@ -442,7 +490,9 @@ mod tests {
 
                         export async function test(port) {
                             const socket = connect({ port });
+
                             const txData = "Hello World";
+
                             return new Promise((resolve, reject) => {
                                 socket.on('connect', () => {
                                     socket.write(txData, (err) => {
@@ -451,6 +501,7 @@ mod tests {
                                         }
                                     });
                                 });
+
                                 socket.on('data', (rxData) => {
                                     resolve(rxData.toString() === txData);
                                 });
@@ -463,6 +514,7 @@ mod tests {
 
 				let (ok, _) =
 					tokio::join!(call_test_delay::<bool, _>(&ctx, &module, (port,)), server(port));
+
 				assert!(ok)
 			})
 		})

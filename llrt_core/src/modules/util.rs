@@ -14,9 +14,13 @@ pub struct UtilModule;
 impl ModuleDef for UtilModule {
 	fn declare(declare:&Declarations) -> Result<()> {
 		declare.declare(stringify!(TextDecoder))?;
+
 		declare.declare(stringify!(TextEncoder))?;
+
 		declare.declare(stringify!(format))?;
+
 		declare.declare("default")?;
+
 		Ok(())
 	}
 
@@ -25,10 +29,13 @@ impl ModuleDef for UtilModule {
 			let globals = ctx.globals();
 
 			let encoder:Function = globals.get(stringify!(TextEncoder))?;
+
 			let decoder:Function = globals.get(stringify!(TextDecoder))?;
 
 			default.set(stringify!(TextEncoder), encoder)?;
+
 			default.set(stringify!(TextDecoder), decoder)?;
+
 			default.set("format", Func::from(format_plain))?;
 
 			Ok(())

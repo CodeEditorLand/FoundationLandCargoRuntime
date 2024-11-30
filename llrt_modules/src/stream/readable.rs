@@ -67,7 +67,9 @@ impl<'js> ReadableStreamInner<'js> {
 						if self.state == ReadableState::Paused {
 							let _ = self.data_listener_attached_tx.send(());
 						}
+
 						self.state = ReadableState::Flowing;
+
 						self.listener = Some("data");
 					} else {
 						self.listener = None;
@@ -76,6 +78,7 @@ impl<'js> ReadableStreamInner<'js> {
 				"readable" => {
 					if added {
 						self.state = ReadableState::Paused;
+
 						self.listener = Some("readable");
 					} else {
 						self.listener = None;
@@ -84,12 +87,15 @@ impl<'js> ReadableStreamInner<'js> {
 				_ => {},
 			}
 		}
+
 		Ok(())
 	}
 
 	pub fn new(emitter:EventEmitter<'js>, emit_close:bool) -> Self {
 		let (destroy_tx, _) = broadcast::channel::<Option<Value<'js>>>(1);
+
 		let (listener_attached_tx, _) = broadcast::channel::<()>(1);
+
 		Self {
 			emitter,
 			destroy_tx,
@@ -160,10 +166,15 @@ where
 		error:Opt<Value<'js>>,
 	) -> Class<'js, Self> {
 		let mut borrow = this.borrow_mut();
+
 		let inner = borrow.inner_mut();
+
 		inner.is_destroyed = true;
+
 		let _ = inner.destroy_tx.send(error.0);
+
 		drop(borrow);
+
 		this.0
 	}
 
@@ -177,20 +188,27 @@ where
 
 	fn drain(this:Class<'js, Self>, ctx:&Ctx<'js>) -> Result<()> {
 		let this2 = this.clone();
+
 		let borrow = this2.borrow();
+
 		let inner = borrow.inner();
+
 		let listener = inner.listener;
 
 		if let Some(listener) = listener {
 			let ba_buffer = inner.buffer.clone();
+
 			if ba_buffer.len() > 0 {
 				drop(borrow);
+
 				let args = match listener {
 					"data" => {
 						let buffer = ba_buffer.read(None).unwrap_or_default();
+
 						if buffer.is_empty() {
 							return Ok(());
 						}
+
 						vec![Buffer(buffer).into_js(ctx)?]
 					},
 					"readable" => {
@@ -200,9 +218,11 @@ where
 						vec![]
 					},
 				};
+
 				Self::emit_str(This(this), ctx, listener, args, false)?;
 			}
 		}
+
 		Ok(())
 	}
 
@@ -230,26 +250,39 @@ where
 		on_end:C,
 	) -> Result<Receiver<bool>> {
 		let ctx2 = ctx.clone();
+
 		ctx.spawn_exit(async move {
 			let this2 = this.clone();
+
 			let ctx3 = ctx2.clone();
 
 			let borrow = this2.borrow();
+
 			let inner = borrow.inner();
+
 			let mut destroy_rx = inner.destroy_tx.subscribe();
+
 			let is_ended = inner.is_ended;
+
 			let mut is_destroyed = inner.is_destroyed;
+
 			let emit_close = inner.emit_close;
 
 			let mut listener_attached_tx = inner.data_listener_attached_tx.subscribe();
+
 			let ba_buffer = inner.buffer.clone();
+
 			let mut has_data = false;
+
 			drop(borrow);
 
 			let read_function = async move {
 				let mut reader:BufReader<T> = BufReader::new(readable);
+
 				let mut buffer = Vec::<u8>::with_capacity(DEFAULT_BUFFER_SIZE);
+
 				let mut last_state = ReadableState::Init;
+
 				let mut error_value = None;
 
 				if !is_ended && !is_destroyed {
@@ -259,9 +292,12 @@ where
 								let bytes_read = result.or_throw(&ctx3)?;
 
 								let mut state = this2.borrow().inner().state.clone();
+
 								if !has_data && state == ReadableState::Init {
 									this2.borrow_mut().inner_mut().state = ReadableState::Paused;
+
 									state =  ReadableState::Paused;
+
 									has_data = true;
 								}
 
@@ -284,6 +320,7 @@ where
 											vec![Buffer(buffer.clone()).into_js(&ctx3)?],
 											false
 										)?;
+
 										buffer.clear();
 									},
 									ReadableState::Paused => {
@@ -293,6 +330,7 @@ where
 										}
 
 										let write_buffer_future = ba_buffer.write(&mut buffer);
+
 										Self::emit_str(
 											This(this2.clone()),
 											&ctx3,
@@ -300,16 +338,20 @@ where
 											vec![],
 											false
 										)?;
+
 										tokio::select!{
 											capacity = write_buffer_future => {
 												buffer.clear();
 												//increase buffer capacity if bytearray buffer has more capacity to reduce read syscalls
 												buffer.reserve(buffer.capacity()-capacity);
 											}
+
 											error = destroy_rx.recv()  => {
 												set_destroyed_and_error(&mut is_destroyed,  &mut error_value, error);
+
 												break;
 											}
+
 											_ = listener_attached_tx.recv() => {
 												ba_buffer.clear().await
 												//don't clear buffer
@@ -325,8 +367,10 @@ where
 
 
 							}
+
 							error = destroy_rx.recv()  => {
 								set_destroyed_and_error(&mut is_destroyed,  &mut error_value, error);
+
 								break;
 							},
 						}
@@ -334,8 +378,11 @@ where
 				}
 
 				let mut borrow = this2.borrow_mut();
+
 				let inner = borrow.inner_mut();
+
 				inner.buffer.close().await;
+
 				if is_destroyed {
 					inner.is_destroyed = true;
 				} else {
@@ -343,10 +390,12 @@ where
 				}
 
 				drop(borrow);
+
 				drop(reader);
 
 				if !is_destroyed {
 					on_end();
+
 					Self::emit_str(This(this2), &ctx3, "end", vec![], false)?;
 				}
 

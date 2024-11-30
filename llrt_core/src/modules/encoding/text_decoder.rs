@@ -20,7 +20,9 @@ impl<'js> TextDecoder {
 	pub fn new(ctx:Ctx<'js>, label:Opt<String>, options:Opt<Object<'js>>) -> Result<Self> {
 		let encoding =
 			label.0.filter(|lbl| !lbl.is_empty()).unwrap_or_else(|| String::from("utf-8"));
+
 		let mut fatal = false;
+
 		let mut ignore_bom = false;
 
 		let encoder = Encoder::from_str(&encoding).or_throw_range(&ctx, None)?;
@@ -29,6 +31,7 @@ impl<'js> TextDecoder {
 			if let Some(opt) = options.get_optional("fatal")? {
 				fatal = opt;
 			}
+
 			if let Some(opt) = options.get_optional("ignoreBOM")? {
 				ignore_bom = opt;
 			}
@@ -48,6 +51,7 @@ impl<'js> TextDecoder {
 
 	pub fn decode(&self, ctx:Ctx<'js>, buffer:Value<'js>) -> Result<String> {
 		let bytes = get_bytes(&ctx, buffer)?;
+
 		let start_pos = if !self.ignore_bom {
 			match bytes.get(..3) {
 				Some([0xFF, 0xFE, ..]) | Some([0xFE, 0xFF, ..]) => 2,

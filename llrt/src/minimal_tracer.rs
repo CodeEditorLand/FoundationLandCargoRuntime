@@ -53,21 +53,30 @@ fn string_to_level(string:&str) -> Option<Level> {
 impl MinimalTracer {
 	pub fn register() -> Result<(), tracing::subscriber::SetGlobalDefaultError> {
 		let mut enabled = false;
+
 		let mut filters:Vec<LogFilter> = Vec::with_capacity(10);
+
 		if let Ok(env_value) = env::var(environment::ENV_LLRT_LOG) {
 			enabled = true;
+
 			for filter in env_value.split(',') {
 				let mut target = Some(filter);
+
 				let mut level = None;
+
 				if let Some(equals_index) = target.unwrap().find('=') {
 					let (first, second) = filter.split_at(equals_index);
+
 					target = Some(first);
+
 					level = string_to_level(&second[1..])
 				}
+
 				let target_level = string_to_level(target.unwrap());
 
 				if let Some(target_level) = target_level {
 					level = Some(target_level);
+
 					target = None;
 				}
 
@@ -89,24 +98,30 @@ impl Subscriber for MinimalTracer {
 			}
 
 			let mut matches:bool;
+
 			for filter in &self.filters {
 				matches = true;
+
 				if let Some(level) = filter.level {
 					if metadata.level() > &level {
 						matches = false;
 					}
 				}
+
 				if let Some(target) = &filter.target {
 					if !metadata.target().starts_with(target) {
 						matches = false;
 					}
 				}
+
 				if matches {
 					return true;
 				}
 			}
+
 			return false;
 		}
+
 		false
 	}
 
@@ -122,14 +137,17 @@ impl Subscriber for MinimalTracer {
 		let metadata = event.metadata();
 
 		let level = metadata.level();
+
 		let target = metadata.target();
 
 		let mut text = String::new();
 
 		let mut visitor = StringVisitor::new(&mut text);
+
 		event.record(&mut visitor);
 
 		let current_time:DateTime<Utc> = Utc::now();
+
 		let timestamp = current_time.format("%Y-%m-%dT%H:%M:%S%.3fZ");
 
 		println!("{timestamp} {level} {target}: {text}");

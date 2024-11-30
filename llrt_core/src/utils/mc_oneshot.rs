@@ -37,6 +37,7 @@ impl<T:Clone> Sender<T> {
 	pub fn send(&self, value:T) {
 		if !self.is_sent.load(Ordering::Relaxed) {
 			self.value.write().unwrap().replace(value);
+
 			self.is_sent.store(true, Ordering::Relaxed);
 		}
 	}
@@ -69,6 +70,7 @@ impl<T:Clone> Future for ReceiverWaiter<T> {
 	fn poll(self: Pin<&mut Self>, cx:&mut Context<'_>) -> Poll<Self::Output> {
 		if self.is_sent.load(Ordering::Relaxed) {
 			let a = self.get_mut().value.read().unwrap().clone().unwrap();
+
 			return Poll::Ready(a);
 		}
 
@@ -80,6 +82,7 @@ impl<T:Clone> Future for ReceiverWaiter<T> {
 
 pub fn channel<T:Clone>() -> (Sender<T>, Receiver<T>) {
 	let is_sent = Arc::new(AtomicBool::new(false));
+
 	let value = Arc::new(RwLock::new(None));
 
 	(
@@ -97,6 +100,7 @@ mod tests {
 		let (tx, rx1) = super::channel::<bool>();
 
 		let rx2 = tx.subscribe();
+
 		let rx3 = tx.subscribe();
 
 		let a = tokio::spawn(async move {
@@ -114,10 +118,13 @@ mod tests {
 		tx.send(true);
 
 		let val = rx3.recv().await;
+
 		assert!(val);
 
 		let (a, b) = join!(a, b);
+
 		a.unwrap();
+
 		b.unwrap();
 	}
 }

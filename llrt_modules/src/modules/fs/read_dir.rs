@@ -93,18 +93,23 @@ pub struct ReadDir {
 impl<'js> IntoJs<'js> for ReadDir {
 	fn into_js(self, ctx:&Ctx<'js>) -> Result<Value<'js>> {
 		let arr = Array::new(ctx.clone())?;
+
 		for (index, item) in self.items.into_iter().enumerate() {
 			if let Some(metadata) = item.metadata {
 				let dirent = Dirent { metadata };
 
 				let dirent = Class::instance(ctx.clone(), dirent)?;
+
 				dirent.set(PredefinedAtom::Name, item.name)?;
+
 				dirent.set("parentPath", &self.root)?;
+
 				arr.set(index, dirent)?;
 			} else {
 				arr.set(index, item.name)?;
 			}
 		}
+
 		arr.into_js(ctx)
 	}
 }
@@ -143,6 +148,7 @@ pub fn read_dir_sync<'js>(
 		process_options_and_create_directory_walker(&mut path, options);
 
 	let mut items = Vec::with_capacity(64);
+
 	while let Some((child, metadata)) = directory_walker.walk_sync()? {
 		append_directory_and_metadata_to_vec(
 			with_file_types,
@@ -165,6 +171,7 @@ fn process_options_and_create_directory_walker(
 	options:Opt<Object>,
 ) -> OptionsAndDirectoryWalker {
 	let mut with_file_types = false;
+
 	let mut is_recursive = false;
 
 	if let Some(options) = options.0 {
@@ -192,6 +199,7 @@ fn process_options_and_create_directory_walker(
 				if !is_absolute(path.clone()) {
 					path.insert_str(0, CURRENT_DIR_STR);
 				}
+
 				path.len() + 1
 			},
 		}

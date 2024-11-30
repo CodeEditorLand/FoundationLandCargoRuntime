@@ -51,14 +51,23 @@ pub fn structured_clone<'js>(
 	options:Opt<Object<'js>>,
 ) -> Result<Value<'js>> {
 	let globals = ctx.globals();
+
 	let date_ctor:Constructor = globals.get(PredefinedAtom::Date)?;
+
 	let map_ctor:Constructor = globals.get(PredefinedAtom::Map)?;
+
 	let set_ctor:Constructor = globals.get(PredefinedAtom::Set)?;
+
 	let reg_exp_ctor:Constructor = globals.get(PredefinedAtom::RegExp)?;
+
 	let error_ctor:Constructor = globals.get(PredefinedAtom::Error)?;
+
 	let array_ctor:Constructor = globals.get(PredefinedAtom::Array)?;
+
 	let array_from:Function = array_ctor.get(PredefinedAtom::From)?;
+
 	let array_buffer:Constructor = globals.get(PredefinedAtom::ArrayBuffer)?;
+
 	let is_view_fn:Function = array_buffer.get("isView")?;
 
 	let mut transfer_set = None;
@@ -71,13 +80,17 @@ pub fn structured_clone<'js>(
 			for item in transfer_array.iter::<Value>() {
 				set.insert(item?);
 			}
+
 			transfer_set = Some(set);
 		}
 	}
 
 	let mut tape = Vec::<TapeItem>::with_capacity(10);
+
 	let mut stack = Vec::with_capacity(10);
+
 	let mut visited = Vec::<(usize, usize)>::with_capacity(10);
+
 	let mut index = 0usize;
 
 	stack.push(StackItem::Value(0, value, None, None));
@@ -88,10 +101,13 @@ pub fn structured_clone<'js>(
 				if let Some(set) = &transfer_set {
 					if let Some(value) = set.get(&value) {
 						append_transfer_value(&mut tape, value, parent, object_key, array_index)?;
+
 						index += 1;
+
 						continue;
 					}
 				}
+
 				match value.type_of() {
 					Type::Object => {
 						if check_circular(
@@ -104,6 +120,7 @@ pub fn structured_clone<'js>(
 							index,
 						) {
 							index += 1;
+
 							continue;
 						}
 
@@ -118,7 +135,9 @@ pub fn structured_clone<'js>(
 								object_key,
 								array_index,
 							)?;
+
 							index += 1;
+
 							continue;
 						}
 
@@ -131,7 +150,9 @@ pub fn structured_clone<'js>(
 								object_key,
 								array_index,
 							)?;
+
 							index += 1;
+
 							continue;
 						}
 
@@ -157,12 +178,15 @@ pub fn structured_clone<'js>(
 							)?;
 
 							index += 1;
+
 							continue;
 						}
 
 						if is_view_fn.call::<_, bool>((value.clone(),))? {
 							append_buffer(&mut tape, object, parent, object_key, array_index)?;
+
 							index += 1;
+
 							continue;
 						}
 
@@ -178,11 +202,14 @@ pub fn structured_clone<'js>(
 							array_index,
 							value:TapeValue::Object(new),
 						});
+
 						stack.push(StackItem::ObjectEnd);
 
 						for key in object.keys::<String>() {
 							let key = key?;
+
 							let value = object.get(&key)?;
+
 							stack.push(StackItem::Value(index, value, Some(key), None));
 						}
 					},
@@ -197,16 +224,21 @@ pub fn structured_clone<'js>(
 							index,
 						) {
 							index += 1;
+
 							continue;
 						}
+
 						let new = Array::new(ctx.clone())?;
+
 						tape.push(TapeItem {
 							parent,
 							object_key,
 							array_index,
 							value:TapeValue::Array(new),
 						});
+
 						stack.push(StackItem::ObjectEnd);
+
 						let array = value.as_array().unwrap();
 
 						// reverse for loop of items in array
@@ -228,6 +260,7 @@ pub fn structured_clone<'js>(
 						});
 					},
 				}
+
 				index += 1;
 			},
 			StackItem::ObjectEnd => {
@@ -243,18 +276,24 @@ pub fn structured_clone<'js>(
 			TapeValue::Value(value) => value,
 			TapeValue::Collection(mut value, _) => value.take().unwrap(),
 		};
+
 		if tape.is_empty() {
 			return Ok(value);
 		}
+
 		let parent = &mut tape[item.parent];
+
 		let array_index = item.array_index;
+
 		let object_key = item.object_key;
+
 		match &mut parent.value {
 			TapeValue::Array(array) => {
 				array.set(array_index.unwrap(), value)?;
 			},
 			TapeValue::Object(object) => {
 				let string = object_key.unwrap();
+
 				object.set(string, value)?;
 			},
 			TapeValue::Collection(collection_value, collection_type) => {
@@ -284,10 +323,15 @@ fn append_buffer<'js>(
 	array_index:Option<usize>,
 ) -> Result<()> {
 	let ctor:Constructor = object.get(PredefinedAtom::Constructor)?;
+
 	let slice:Function = object.get("slice")?;
+
 	let clone:Value = slice.call((This(object.clone()),))?;
+
 	let new = ctor.construct((clone,))?;
+
 	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(new) });
+
 	Ok(())
 }
 
@@ -306,14 +350,18 @@ fn append_collection<'js>(
 	index:usize,
 ) -> Result<()> {
 	let array:Array = array_from.call((object.clone(),))?;
+
 	tape.push(TapeItem {
 		parent,
 		object_key,
 		array_index,
 		value:TapeValue::Collection(None, collection_type),
 	});
+
 	stack.push(StackItem::ObjectEnd);
+
 	stack.push(StackItem::Value(index, array.into(), None, None));
+
 	Ok(())
 }
 
@@ -328,11 +376,15 @@ fn check_circular(
 	index:usize,
 ) -> bool {
 	let hash = fxhash::hash(value);
+
 	if let Some(visited) = visited.iter().find(|v| v.0 == hash) {
 		append_circular(tape, visited, object_key, parent, array_index);
+
 		return true;
 	}
+
 	visited.push((hash, index));
+
 	false
 }
 
@@ -346,6 +398,7 @@ fn append_transfer_value<'js>(
 	array_index:Option<usize>,
 ) -> Result<()> {
 	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(value.clone()) });
+
 	Ok(())
 }
 
@@ -381,7 +434,9 @@ fn append_ctor_value<'js>(
 	array_index:Option<usize>,
 ) -> Result<()> {
 	let clone:Value = ctor.construct((object.clone(),))?;
+
 	tape.push(TapeItem { parent, object_key, array_index, value:TapeValue::Value(clone) });
+
 	Ok(())
 }
 
@@ -396,6 +451,7 @@ mod tests {
 	async fn clone() {
 		with_js_runtime(|ctx| {
 			crate::modules::buffer::init(&ctx)?;
+
 			let value:Object = ctx.eval(
 				r#"
 const a = {
