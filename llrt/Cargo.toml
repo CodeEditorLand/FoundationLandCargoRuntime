@@ -13,13 +13,13 @@ uncompressed = ["llrt_core/uncompressed"]
 
 [dependencies]
 llrt_core = { path = "../llrt_core" }
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { version = "0.1.41", features = ["log"] }
 chrono = { version = "0.4.38", default-features = false, features = ["std"] }
 tracing-core = "0.1.33"
 tokio = { version = "1", features = ["full"] }
 
 [target.'cfg(not(target_os = "windows"))'.dependencies]
-snmalloc-rs = { version = "0.3.6", features = ["lto"] }
+snmalloc-rs = { version = "0.3.7", features = ["lto"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 mimalloc = { version = "0.1.43" }

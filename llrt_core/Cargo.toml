@@ -32,7 +32,7 @@ rquickjs = { version = "0.8.1", features = [
 	"rust-alloc",
 ], default-features = false }
 tokio = { version = "1", features = ["full"] }
-tracing = { version = "0.1.40", features = ["log"] }
+tracing = { version = "0.1.41", features = ["log"] }
 uuid = { version = "1.11.0", default-features = false, features = [
 	"v1",
 	"v3",
@@ -47,8 +47,8 @@ tracing-core = "0.1.33"
 webpki = "0.22.4"
 async-trait = "0.1.83"
 zstd = { version = "0.13.2", default-features = false, features = [] }
-libc = "0.2.165"
-bytes = "1.8.0"
+libc = "0.2.167"
+bytes = "1.9.0"
 uuid-simd = "0.8.0"
 simd-json = { version = "0.14.3", default-features = false, features = [
 	"big-int-as-float",
@@ -66,7 +66,7 @@ hyper-rustls = { version = "0.27.3", default-features = false, features = [
 ] }
 hyper-util = "0.1.10"
 http-body-util = "0.1.2"
-rustls = { version = "0.23.18", default-features = false, features = [
+rustls = { version = "0.23.19", default-features = false, features = [
 	"tls12",
 	"ring",
 ] }
