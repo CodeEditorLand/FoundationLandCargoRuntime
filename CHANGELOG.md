@@ -1,14 +1,14 @@
--   ES2023. New language feature including top-level await etc
--   Increased Web-API compliance (encoding, url, etc)
--   Renamed modules
--   Support for extra CA certs (see README)
--   Support for UTF-16 (BE/LE) encodings
--   Typescript types for LLRT
--   Increased cold start performance (8% to 20%) on "hello world" Lambda
-    functions (ARM64, 128Mb memory)
--   Minor performance updates
--   Easier integration with external projects (LLRT as a crate)
--   Updated dependencies
+- ES2023. New language feature including top-level await etc
+- Increased Web-API compliance (encoding, url, etc)
+- Renamed modules
+- Support for extra CA certs (see README)
+- Support for UTF-16 (BE/LE) encodings
+- Typescript types for LLRT
+- Increased cold start performance (8% to 20%) on "hello world" Lambda functions
+  (ARM64, 128Mb memory)
+- Minor performance updates
+- Easier integration with external projects (LLRT as a crate)
+- Updated dependencies
 
 A huge thanks to
 [all contributors](HTTPS://github.com/awslabs/llrt/graphs/contributors)!
