@@ -3,7 +3,7 @@ name = "llrt_utils"
 description = "LLRT utilities"
 version = "0.2.0-beta"
 edition = "2021"
-license = "Apache-2.0"
+license-file = "LICENSE"
 repository = "https://github.com/awslabs/llrt"
 
 [features]
@@ -21,7 +21,7 @@ rquickjs = { version = "0.8.1", features = [
 	"array-buffer",
 ], default-features = false }
 tokio = { version = "1", optional = true }
-tracing = "0.1"
+tracing = { version = "0.1" }
 phf = { version = "0.11.2", features = ["macros"], optional = true }
 
 [lints.rust]
